@@ -1,0 +1,19 @@
+# prismgo_api.model.CreateDriverDto
+
+## Load the model package
+```dart
+import 'package:prismgo_api/api.dart';
+```
+
+## Properties
+Name | Type | Description | Notes
+------------ | ------------- | ------------- | -------------
+**name** | **String** |  | 
+**phone** | **String** |  | 
+**licenceNo** | **String** |  | 
+**licenceExpiry** | [**DateTime**](DateTime.md) |  | [optional] 
+**defaultVehicleId** | **String** |  | [optional] 
+
+[[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
+
+

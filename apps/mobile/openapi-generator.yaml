@@ -1,0 +1,9 @@
+# Dart client for the PrismGo API. Regenerate with: ./tool/generate_api.sh
+generatorName: dart-dio
+inputSpec: ../api/openapi.json
+outputDir: packages/prismgo_api
+additionalProperties:
+  pubName: prismgo_api
+  pubAuthor: BlackPrism
+  pubDescription: PrismGo API client, generated from apps/api/openapi.json
+  serializationLibrary: json_serializable

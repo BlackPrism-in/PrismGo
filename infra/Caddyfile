@@ -1,0 +1,45 @@
+# SITE_ADDRESS: the public domain (e.g. prismgo.example.com) for automatic HTTPS,
+# or http://:80 for a plain-HTTP local test.
+{$SITE_ADDRESS} {
+	encode zstd gzip
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+
+	# API, API docs and the live socket (Caddy proxies WebSockets as-is).
+	# Each API replica is looked up from Docker DNS and balanced on its own; a replica
+	# that refuses connections is skipped for 10 s, and requests retry for up to 15 s
+	# so a restart or rolling update doesn't surface as 502/503.
+	handle /api/* {
+		reverse_proxy {
+			dynamic a api 4000 {
+				refresh 5s
+			}
+			lb_policy round_robin
+			lb_try_duration 15s
+			lb_try_interval 250ms
+			fail_duration 10s
+		}
+	}
+
+	# Single-page app: hashed assets cached long, index.html never.
+	handle {
+		root * /srv
+		@assets path /assets/*
+		@pages not path /assets/*
+		header @assets Cache-Control "public, max-age=31536000, immutable"
+		header @pages Cache-Control "no-cache"
+		try_files {path} /index.html
+		file_server
+	}
+
+	log {
+		output stdout
+		format console
+	}
+}

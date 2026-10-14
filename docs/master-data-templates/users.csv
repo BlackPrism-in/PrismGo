@@ -1,0 +1,6 @@
+name,phone,email,roles,department
+Asha Rao,9812345600,asha@example.com,super_admin,
+Tarun Mehta,9812345610,tarun@example.com,transport_manager,Operations
+Hema Iyer,9812345601,hema@example.com,hod;requester,Operations
+Farhan Ali,9812345602,farhan@example.com,hod;requester,Finance
+Rahul Verma,9812345620,,requester,Operations

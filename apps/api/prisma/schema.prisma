@@ -1,0 +1,439 @@
+// PrismGo database schema.
+// Enum values mirror packages/shared/src (roles, statuses) — keep them in sync.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ──────────────────────────────────────────────────────────────────
+
+enum Role {
+  requester
+  hod
+  transport_manager
+  super_admin
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum RequestStatus {
+  draft
+  pending_approval
+  approved
+  rejected
+  assigned
+  in_progress
+  completed
+  cancelled
+}
+
+enum ApprovalDecision {
+  approved
+  rejected
+}
+
+enum TripStatus {
+  scheduled
+  in_progress
+  completed
+  cancelled
+}
+
+enum VehicleStatus {
+  available
+  on_trip
+  maintenance
+  inactive
+}
+
+enum DriverStatus {
+  active
+  on_leave
+  inactive
+}
+
+enum TripEventType {
+  assigned
+  reassigned
+  started
+  picked_up
+  dropped
+  ended
+  gps_lost
+}
+
+enum TripEventSource {
+  tracker
+  manager
+  system
+}
+
+enum NotificationChannel {
+  in_app
+  whatsapp
+  sms
+  push
+}
+
+enum NotificationStatus {
+  queued
+  sent
+  failed
+}
+
+enum DevicePlatform {
+  android
+  ios
+}
+
+// ─── Organisation and people ────────────────────────────────────────────────
+
+model Organisation {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  timezone  String   @default("Asia/Kolkata")
+  /// Org-level settings, e.g. { "approvalSlaHours": 4, "geofenceRadiusM": 150 }
+  settings  Json     @default("{}")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  departments   Department[]
+  users         User[]
+  vehicles      Vehicle[]
+  drivers       Driver[]
+  tripRequests  TripRequest[]
+  trips         Trip[]
+  notifications Notification[]
+  auditLogs     AuditLog[]
+
+  @@map("organisations")
+}
+
+model Department {
+  id         String   @id @default(uuid()) @db.Uuid
+  orgId      String   @map("org_id") @db.Uuid
+  name       String
+  costCentre String?  @map("cost_centre")
+  hodUserId  String?  @unique @map("hod_user_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  org          Organisation  @relation(fields: [orgId], references: [id])
+  hod          User?         @relation("DepartmentHod", fields: [hodUserId], references: [id])
+  members      User[]        @relation("DepartmentMembers")
+  tripRequests TripRequest[]
+
+  @@unique([orgId, name])
+  @@map("departments")
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  orgId        String     @map("org_id") @db.Uuid
+  departmentId String?    @map("department_id") @db.Uuid
+  name         String
+  /// E.164 format, e.g. +919812345678. Login identity.
+  phone        String     @unique
+  email        String?
+  roles        Role[]
+  status       UserStatus @default(active)
+  lastLoginAt  DateTime?  @map("last_login_at")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  org               Organisation   @relation(fields: [orgId], references: [id])
+  department        Department?    @relation("DepartmentMembers", fields: [departmentId], references: [id])
+  headOf            Department?    @relation("DepartmentHod")
+  requests          TripRequest[]  @relation("RequestRequester")
+  cancelledRequests TripRequest[]  @relation("RequestCancelledBy")
+  approvals         Approval[]
+  assignedTrips     Trip[]         @relation("TripAssignedBy")
+  refreshTokens     RefreshToken[]
+  deviceTokens      DeviceToken[]
+  notifications     Notification[]
+  tripEvents        TripEvent[]
+  auditLogs         AuditLog[]
+
+  @@index([orgId])
+  @@map("users")
+}
+
+model OtpCode {
+  id         String    @id @default(uuid()) @db.Uuid
+  phone      String
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at")
+  attempts   Int       @default(0)
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  @@index([phone, createdAt])
+  @@map("otp_codes")
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Uuid
+  userId       String    @map("user_id") @db.Uuid
+  tokenHash    String    @unique @map("token_hash")
+  expiresAt    DateTime  @map("expires_at")
+  revokedAt    DateTime? @map("revoked_at")
+  replacedById String?   @map("replaced_by_id") @db.Uuid
+  userAgent    String?   @map("user_agent")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model DeviceToken {
+  id        String         @id @default(uuid()) @db.Uuid
+  userId    String         @map("user_id") @db.Uuid
+  token     String         @unique
+  platform  DevicePlatform
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("device_tokens")
+}
+
+// ─── Fleet ──────────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id          String        @id @default(uuid()) @db.Uuid
+  orgId       String        @map("org_id") @db.Uuid
+  regNo       String        @map("reg_no")
+  type        String
+  make        String?
+  model       String?
+  seats       Int
+  status      VehicleStatus @default(available)
+  /// Device id in the GPS vendor's system; maps tracker data to this vehicle.
+  gpsDeviceId String?       @unique @map("gps_device_id")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  org            Organisation    @relation(fields: [orgId], references: [id])
+  defaultDrivers Driver[]
+  trips          Trip[]
+  locationPoints LocationPoint[]
+
+  @@unique([orgId, regNo])
+  @@map("vehicles")
+}
+
+/// Drivers have no login in the MVP; they are records the transport manager assigns.
+model Driver {
+  id               String       @id @default(uuid()) @db.Uuid
+  orgId            String       @map("org_id") @db.Uuid
+  name             String
+  phone            String
+  licenceNo        String       @map("licence_no")
+  licenceExpiry    DateTime?    @map("licence_expiry") @db.Date
+  status           DriverStatus @default(active)
+  defaultVehicleId String?      @map("default_vehicle_id") @db.Uuid
+  createdAt        DateTime     @default(now()) @map("created_at")
+  updatedAt        DateTime     @updatedAt @map("updated_at")
+
+  org            Organisation @relation(fields: [orgId], references: [id])
+  defaultVehicle Vehicle?     @relation(fields: [defaultVehicleId], references: [id])
+  trips          Trip[]
+
+  @@unique([orgId, licenceNo])
+  @@map("drivers")
+}
+
+// ─── Workflow ───────────────────────────────────────────────────────────────
+
+model TripRequest {
+  id            String        @id @default(uuid()) @db.Uuid
+  /// Human-friendly reference shown in the apps, e.g. PG-1042.
+  number        Int           @unique @default(autoincrement())
+  orgId         String        @map("org_id") @db.Uuid
+  requesterId   String        @map("requester_id") @db.Uuid
+  departmentId  String        @map("department_id") @db.Uuid
+  pickupAddress String        @map("pickup_address")
+  pickupLat     Float         @map("pickup_lat")
+  pickupLng     Float         @map("pickup_lng")
+  dropAddress   String        @map("drop_address")
+  dropLat       Float         @map("drop_lat")
+  dropLng       Float         @map("drop_lng")
+  /// Optional intermediate stops: [{ address, lat, lng }]
+  stops         Json          @default("[]")
+  startAt       DateTime      @map("start_at")
+  returnAt      DateTime?     @map("return_at")
+  passengers    Int           @default(1)
+  purpose       String
+  notes         String?
+  status        RequestStatus @default(draft)
+  submittedAt   DateTime?     @map("submitted_at")
+  cancelledAt   DateTime?     @map("cancelled_at")
+  cancelledById String?       @map("cancelled_by_id") @db.Uuid
+  cancelReason  String?       @map("cancel_reason")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+
+  org         Organisation @relation(fields: [orgId], references: [id])
+  requester   User         @relation("RequestRequester", fields: [requesterId], references: [id])
+  cancelledBy User?        @relation("RequestCancelledBy", fields: [cancelledById], references: [id])
+  department  Department   @relation(fields: [departmentId], references: [id])
+  approvals   Approval[]
+  trips       Trip[]
+
+  @@index([orgId, status])
+  @@index([requesterId])
+  @@index([departmentId, status])
+  @@map("trip_requests")
+}
+
+model Approval {
+  id         String           @id @default(uuid()) @db.Uuid
+  requestId  String           @map("request_id") @db.Uuid
+  approverId String           @map("approver_id") @db.Uuid
+  level      Int              @default(1)
+  decision   ApprovalDecision
+  comment    String?
+  decidedAt  DateTime         @default(now()) @map("decided_at")
+
+  request  TripRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  approver User        @relation(fields: [approverId], references: [id])
+
+  @@unique([requestId, level])
+  @@map("approvals")
+}
+
+/// One trip per assignment. Reassignment cancels the trip and opens a new one.
+/// Double-booking is blocked by exclusion constraints added in the migration SQL.
+model Trip {
+  id               String     @id @default(uuid()) @db.Uuid
+  orgId            String     @map("org_id") @db.Uuid
+  requestId        String     @map("request_id") @db.Uuid
+  vehicleId        String     @map("vehicle_id") @db.Uuid
+  driverId         String     @map("driver_id") @db.Uuid
+  assignedById     String     @map("assigned_by_id") @db.Uuid
+  status           TripStatus @default(scheduled)
+  scheduledStart   DateTime   @map("scheduled_start")
+  scheduledEnd     DateTime   @map("scheduled_end")
+  actualStart      DateTime?  @map("actual_start")
+  actualEnd        DateTime?  @map("actual_end")
+  startOdometerKm  Float?     @map("start_odometer_km")
+  endOdometerKm    Float?     @map("end_odometer_km")
+  distanceKm       Float?     @map("distance_km")
+  /// Google Directions encoded polyline for the planned route.
+  plannedPolyline  String?    @map("planned_polyline")
+  plannedDistanceM Int?       @map("planned_distance_m")
+  plannedDurationS Int?       @map("planned_duration_s")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  org            Organisation    @relation(fields: [orgId], references: [id])
+  request        TripRequest     @relation(fields: [requestId], references: [id])
+  vehicle        Vehicle         @relation(fields: [vehicleId], references: [id])
+  driver         Driver          @relation(fields: [driverId], references: [id])
+  assignedBy     User            @relation("TripAssignedBy", fields: [assignedById], references: [id])
+  events         TripEvent[]
+  locationPoints LocationPoint[]
+
+  @@index([orgId, status])
+  @@index([vehicleId, status])
+  @@index([requestId])
+  @@map("trips")
+}
+
+model TripEvent {
+  id      String          @id @default(uuid()) @db.Uuid
+  tripId  String          @map("trip_id") @db.Uuid
+  type    TripEventType
+  source  TripEventSource
+  actorId String?         @map("actor_id") @db.Uuid
+  at      DateTime        @default(now())
+  lat     Float?
+  lng     Float?
+  note    String?
+
+  trip  Trip  @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([tripId, at])
+  @@map("trip_events")
+}
+
+// ─── Tracking ───────────────────────────────────────────────────────────────
+
+/// GPS history from the vehicle trackers. Idempotent on (vehicle_id, recorded_at).
+/// Monthly partitioning is added when volume needs it (see docs/MVP-PHASES.md).
+model LocationPoint {
+  vehicleId  String   @map("vehicle_id") @db.Uuid
+  recordedAt DateTime @map("recorded_at")
+  tripId     String?  @map("trip_id") @db.Uuid
+  lat        Float
+  lng        Float
+  speedKmh   Float?   @map("speed_kmh")
+  heading    Float?
+  ignition   Boolean?
+  odometerKm Float?   @map("odometer_km")
+  receivedAt DateTime @default(now()) @map("received_at")
+
+  vehicle Vehicle @relation(fields: [vehicleId], references: [id])
+  trip    Trip?   @relation(fields: [tripId], references: [id])
+
+  @@id([vehicleId, recordedAt])
+  @@index([tripId, recordedAt])
+  @@map("location_points")
+}
+
+// ─── Cross-cutting ──────────────────────────────────────────────────────────
+
+model Notification {
+  id             String              @id @default(uuid()) @db.Uuid
+  orgId          String              @map("org_id") @db.Uuid
+  userId         String?             @map("user_id") @db.Uuid
+  /// Set when the recipient has no user account (e.g. a driver on WhatsApp).
+  recipientPhone String?             @map("recipient_phone")
+  channel        NotificationChannel
+  template       String
+  payload        Json                @default("{}")
+  status         NotificationStatus  @default(queued)
+  error          String?
+  sentAt         DateTime?           @map("sent_at")
+  readAt         DateTime?           @map("read_at")
+  createdAt      DateTime            @default(now()) @map("created_at")
+
+  org  Organisation @relation(fields: [orgId], references: [id])
+  user User?        @relation(fields: [userId], references: [id])
+
+  @@index([userId, readAt])
+  @@map("notifications")
+}
+
+/// Append-only. Written in the same transaction as the change it records.
+model AuditLog {
+  id       BigInt   @id @default(autoincrement())
+  orgId    String   @map("org_id") @db.Uuid
+  actorId  String?  @map("actor_id") @db.Uuid
+  entity   String
+  entityId String   @map("entity_id")
+  action   String
+  before   Json?
+  after    Json?
+  at       DateTime @default(now())
+
+  org   Organisation @relation(fields: [orgId], references: [id])
+  actor User?        @relation(fields: [actorId], references: [id])
+
+  @@index([orgId, entity, entityId])
+  @@map("audit_logs")
+}

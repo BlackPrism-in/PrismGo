@@ -1,0 +1,45 @@
+@import 'tailwindcss';
+
+/*
+ * PrismGo palette: cream #FFF6DA, mint #84F2D6, coral #FC6B3F, ink #262525.
+ * Contrast rules: body text is ink on cream/white. Coral is a fill (buttons, marks)
+ * with ink text on it; coral text uses coral-700. Mint is a fill; mint text uses mint-700.
+ */
+@theme {
+  --color-cream: #fff6da;
+  --color-ink: #262525;
+
+  /* Warm neutrals from cream to ink (replace slate). 500+ pass 4.5:1 on cream. */
+  --color-sand-50: #fffbee;
+  --color-sand-100: #fff6da;
+  --color-sand-200: #f0e5c6;
+  --color-sand-300: #ddd0ae;
+  --color-sand-400: #a89d88;
+  --color-sand-500: #736a5e;
+  --color-sand-600: #5c554d;
+  --color-sand-700: #423d39;
+  --color-sand-800: #332f2e;
+  --color-sand-900: #262525;
+
+  --color-coral-50: #ffede6;
+  --color-coral-100: #ffd9cb;
+  --color-coral-500: #fc6b3f;
+  --color-coral-600: #f05a2c;
+  --color-coral-700: #c93103;
+
+  --color-mint-100: #cff9ec;
+  --color-mint-300: #84f2d6;
+  --color-mint-500: #2fd1a8;
+  --color-mint-700: #0e6b55;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  @apply bg-cream text-ink antialiased;
+}
+
+/* Native checkboxes, radios and range inputs in the brand colour. */
+input {
+  accent-color: var(--color-coral-500);
+}

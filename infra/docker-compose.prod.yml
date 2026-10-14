@@ -1,0 +1,91 @@
+# PrismGo production stack. On the server, from the repo root:
+#   cp infra/.env.prod.example infra/.env.prod   # fill it in
+#   docker compose -f infra/docker-compose.prod.yml --env-file infra/.env.prod up -d --build
+name: prismgo-prod
+
+x-api-env: &api-env
+  NODE_ENV: production
+  APP_ENV: ${APP_ENV:-production}
+  PORT: 4000
+  DATABASE_URL: postgresql://prismgo:${POSTGRES_PASSWORD}@postgres:5432/prismgo?schema=public
+  REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+  OTP_TTL_SECONDS: 300
+  OTP_CHANNELS: ${OTP_CHANNELS}
+  OTP_EXPOSE_CODE: ${OTP_EXPOSE_CODE:-false}
+  WHATSAPP_OTP_TEMPLATE: ${WHATSAPP_OTP_TEMPLATE:-login_code}
+  MESSAGING_PROVIDER: ${MESSAGING_PROVIDER}
+  WHATSAPP_PHONE_NUMBER_ID: ${WHATSAPP_PHONE_NUMBER_ID:-}
+  WHATSAPP_ACCESS_TOKEN: ${WHATSAPP_ACCESS_TOKEN:-}
+  GPS_WEBHOOK_SECRET: ${GPS_WEBHOOK_SECRET}
+  WEB_ORIGIN: https://${DOMAIN}
+
+services:
+  postgres:
+    image: postgis/postgis:16-3.4
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: prismgo
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: prismgo
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U prismgo -d prismgo']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ['redis-server', '--appendonly', 'yes', '--requirepass', '${REDIS_PASSWORD}']
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    image: prismgo-api:latest
+    restart: unless-stopped
+    environment: *api-env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # Two instances so a deploy or crash doesn't take the API down.
+    deploy:
+      replicas: 2
+
+  web:
+    build:
+      context: ..
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_GOOGLE_MAPS_API_KEY: ${VITE_GOOGLE_MAPS_API_KEY:-}
+    image: prismgo-web:latest
+    restart: unless-stopped
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:-${DOMAIN}}
+    ports:
+      - '${HTTP_PORT:-80}:80'
+      - '${HTTPS_PORT:-443}:443'
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+
+volumes:
+  pgdata:
+  redisdata:
+  caddy_data:
+  caddy_config:

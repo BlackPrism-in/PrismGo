@@ -1,0 +1,15 @@
+**/node_modules
+**/dist
+**/.dev-dist
+**/.openapi-build
+**/.turbo
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+apps/api/src/generated
+apps/api/.sim-tokens.json
+apps/mobile
+.git
+.github
+**/*.log

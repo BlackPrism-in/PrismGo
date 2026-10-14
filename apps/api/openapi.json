@@ -1,0 +1,3084 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/otp/request": {
+      "post": {
+        "operationId": "AuthController_requestOtp",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestOtpResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/otp/verify": {
+      "post": {
+        "operationId": "AuthController_verifyOtp",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/api/v1/departments": {
+      "get": {
+        "operationId": "DepartmentsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DepartmentDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      },
+      "post": {
+        "operationId": "DepartmentsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      }
+    },
+    "/api/v1/departments/{id}": {
+      "patch": {
+        "operationId": "DepartmentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDepartmentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepartmentDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "departments"
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          {
+            "name": "departmentId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/UserStatus"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Matches name or phone",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      },
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/users/{id}": {
+      "get": {
+        "operationId": "UsersController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/v1/vehicles": {
+      "get": {
+        "operationId": "VehiclesController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/VehicleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "vehicles"
+        ]
+      },
+      "post": {
+        "operationId": "VehiclesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "vehicles"
+        ]
+      }
+    },
+    "/api/v1/vehicles/{id}": {
+      "patch": {
+        "operationId": "VehiclesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVehicleDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "vehicles"
+        ]
+      }
+    },
+    "/api/v1/drivers": {
+      "get": {
+        "operationId": "DriversController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriverDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "drivers"
+        ]
+      },
+      "post": {
+        "operationId": "DriversController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateDriverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/drivers/{id}": {
+      "patch": {
+        "operationId": "DriversController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateDriverDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DriverDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "drivers"
+        ]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/NotificationDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/unread-count": {
+      "get": {
+        "operationId": "NotificationsController_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "post": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/notifications/read-all": {
+      "post": {
+        "operationId": "NotificationsController_markAllRead",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/v1/requests": {
+      "get": {
+        "operationId": "RequestsController_list",
+        "parameters": [
+          {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "description": "mine: my requests · approvals: departments I head · all: managers only",
+            "schema": {
+              "$ref": "#/components/schemas/RequestScope"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RequestStatus"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/RequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      },
+      "post": {
+        "operationId": "RequestsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}": {
+      "get": {
+        "operationId": "RequestsController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      },
+      "patch": {
+        "operationId": "RequestsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/submit": {
+      "post": {
+        "operationId": "RequestsController_submit",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/cancel": {
+      "post": {
+        "operationId": "RequestsController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/approve": {
+      "post": {
+        "operationId": "RequestsController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/reject": {
+      "post": {
+        "operationId": "RequestsController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "requests"
+        ]
+      }
+    },
+    "/api/v1/availability": {
+      "get": {
+        "operationId": "AssignmentsController_availability",
+        "parameters": [
+          {
+            "name": "from",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "to",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "format": "date-time",
+              "type": "string"
+            }
+          },
+          {
+            "name": "passengers",
+            "required": false,
+            "in": "query",
+            "description": "Marks vehicles with too few seats",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AvailabilityDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "assignments"
+        ]
+      }
+    },
+    "/api/v1/requests/{id}/assign": {
+      "post": {
+        "operationId": "AssignmentsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "assignments"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/reassign": {
+      "post": {
+        "operationId": "AssignmentsController_reassign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReassignDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "assignments"
+        ]
+      }
+    },
+    "/api/v1/gps/webhook": {
+      "post": {
+        "operationId": "GpsWebhookController_ingest",
+        "parameters": [
+          {
+            "name": "X-GPS-Secret",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GpsBatchDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GpsIngestResultDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "gps"
+        ]
+      }
+    },
+    "/api/v1/live/vehicles": {
+      "get": {
+        "operationId": "LiveController_vehicles",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/LiveVehicleDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "live"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/track": {
+      "get": {
+        "operationId": "LiveController_track",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TripTrackDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "live"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/start": {
+      "post": {
+        "operationId": "LiveController_start",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "live"
+        ]
+      }
+    },
+    "/api/v1/trips/{id}/end": {
+      "post": {
+        "operationId": "LiveController_end",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "live"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "PrismGo API",
+    "description": "Fleet request, approval, assignment and live tracking",
+    "version": "0.1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "RequestOtpDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "9812345678",
+            "description": "Indian mobile, any common format"
+          }
+        },
+        "required": [
+          "phone"
+        ]
+      },
+      "RequestOtpResponseDto": {
+        "type": "object",
+        "properties": {
+          "sent": {
+            "type": "boolean",
+            "example": true
+          },
+          "devCode": {
+            "type": "string",
+            "description": "Only in development with the console sender"
+          }
+        },
+        "required": [
+          "sent"
+        ]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "phone": {
+            "type": "string",
+            "example": "9812345678"
+          },
+          "code": {
+            "type": "string",
+            "example": "123456"
+          }
+        },
+        "required": [
+          "phone",
+          "code"
+        ]
+      },
+      "Role": {
+        "type": "string",
+        "enum": [
+          "requester",
+          "hod",
+          "transport_manager",
+          "super_admin"
+        ]
+      },
+      "MeDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "MeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+919812345678"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "department": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/MeDepartmentDto"
+              }
+            ]
+          },
+          "orgId": {
+            "type": "string"
+          },
+          "orgName": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "roles",
+          "orgId",
+          "orgName"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Omitted for web clients (sent as an httpOnly cookie)"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Access token lifetime in seconds"
+          },
+          "user": {
+            "$ref": "#/components/schemas/MeDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "expiresIn",
+          "user"
+        ]
+      },
+      "RefreshDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Mobile sends it here; web uses the httpOnly cookie"
+          }
+        }
+      },
+      "HealthDto": {
+        "type": "object",
+        "properties": {}
+      },
+      "DepartmentHodDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone"
+        ]
+      },
+      "DepartmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "costCentre": {
+            "type": "string",
+            "nullable": true
+          },
+          "hod": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DepartmentHodDto"
+              }
+            ]
+          },
+          "memberCount": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "memberCount"
+        ]
+      },
+      "CreateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Operations"
+          },
+          "costCentre": {
+            "type": "string",
+            "example": "CC-104"
+          },
+          "hodUserId": {
+            "type": "string",
+            "nullable": true,
+            "description": "User id of the HOD; the user must hold the hod role"
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Operations"
+          },
+          "costCentre": {
+            "type": "string",
+            "example": "CC-104"
+          },
+          "hodUserId": {
+            "type": "string",
+            "nullable": true,
+            "description": "User id of the HOD; the user must hold the hod role"
+          }
+        }
+      },
+      "UserStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "inactive"
+        ]
+      },
+      "UserDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "UserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+919812345678"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserStatus"
+              }
+            ]
+          },
+          "department": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserDepartmentDto"
+              }
+            ]
+          },
+          "lastLoginAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "roles",
+          "status"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Rahul Verma"
+          },
+          "phone": {
+            "type": "string",
+            "example": "9812345678",
+            "description": "Indian mobile; stored as +91XXXXXXXXXX"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "example": "rahul@example.com"
+          },
+          "roles": {
+            "type": "array",
+            "example": [
+              "requester"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "departmentId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "roles"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Rahul Verma"
+          },
+          "phone": {
+            "type": "string",
+            "example": "9812345678",
+            "description": "Indian mobile; stored as +91XXXXXXXXXX"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true,
+            "example": "rahul@example.com"
+          },
+          "roles": {
+            "type": "array",
+            "example": [
+              "requester"
+            ],
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "departmentId": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserStatus"
+              }
+            ]
+          }
+        }
+      },
+      "VehicleStatus": {
+        "type": "string",
+        "enum": [
+          "available",
+          "on_trip",
+          "maintenance",
+          "inactive"
+        ]
+      },
+      "VehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "regNo": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "make": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "seats": {
+            "type": "number"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VehicleStatus"
+              }
+            ]
+          },
+          "gpsDeviceId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "regNo",
+          "type",
+          "seats",
+          "status"
+        ]
+      },
+      "CreateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "regNo": {
+            "type": "string",
+            "example": "KA01AB1234",
+            "description": "Stored uppercase without spaces"
+          },
+          "type": {
+            "type": "string",
+            "example": "Sedan"
+          },
+          "make": {
+            "type": "string",
+            "nullable": true,
+            "example": "Maruti"
+          },
+          "model": {
+            "type": "string",
+            "nullable": true,
+            "example": "Dzire"
+          },
+          "seats": {
+            "type": "number",
+            "example": 4
+          },
+          "gpsDeviceId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tracker's device id in the GPS vendor system"
+          }
+        },
+        "required": [
+          "regNo",
+          "type",
+          "seats"
+        ]
+      },
+      "UpdateVehicleDto": {
+        "type": "object",
+        "properties": {
+          "regNo": {
+            "type": "string",
+            "example": "KA01AB1234",
+            "description": "Stored uppercase without spaces"
+          },
+          "type": {
+            "type": "string",
+            "example": "Sedan"
+          },
+          "make": {
+            "type": "string",
+            "nullable": true,
+            "example": "Maruti"
+          },
+          "model": {
+            "type": "string",
+            "nullable": true,
+            "example": "Dzire"
+          },
+          "seats": {
+            "type": "number",
+            "example": 4
+          },
+          "gpsDeviceId": {
+            "type": "string",
+            "nullable": true,
+            "description": "The tracker's device id in the GPS vendor system"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VehicleStatus"
+              }
+            ]
+          }
+        }
+      },
+      "DriverStatus": {
+        "type": "string",
+        "enum": [
+          "active",
+          "on_leave",
+          "inactive"
+        ]
+      },
+      "DriverVehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "regNo": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "regNo"
+        ]
+      },
+      "DriverDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "licenceNo": {
+            "type": "string"
+          },
+          "licenceExpiry": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DriverStatus"
+              }
+            ]
+          },
+          "defaultVehicle": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DriverVehicleDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "licenceNo",
+          "status"
+        ]
+      },
+      "CreateDriverDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Suresh Kumar"
+          },
+          "phone": {
+            "type": "string",
+            "example": "9812345678"
+          },
+          "licenceNo": {
+            "type": "string",
+            "example": "KA0120190012345"
+          },
+          "licenceExpiry": {
+            "type": "string",
+            "nullable": true,
+            "example": "2030-03-31",
+            "format": "date"
+          },
+          "defaultVehicleId": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "licenceNo"
+        ]
+      },
+      "UpdateDriverDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Suresh Kumar"
+          },
+          "phone": {
+            "type": "string",
+            "example": "9812345678"
+          },
+          "licenceNo": {
+            "type": "string",
+            "example": "KA0120190012345"
+          },
+          "licenceExpiry": {
+            "type": "string",
+            "nullable": true,
+            "example": "2030-03-31",
+            "format": "date"
+          },
+          "defaultVehicleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/DriverStatus"
+              }
+            ]
+          }
+        }
+      },
+      "NotificationDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "template": {
+            "type": "string",
+            "example": "request_approved"
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string",
+            "nullable": true
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "template",
+          "title",
+          "body",
+          "createdAt"
+        ]
+      },
+      "UnreadCountDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "RequestScope": {
+        "type": "string",
+        "enum": [
+          "mine",
+          "approvals",
+          "all"
+        ]
+      },
+      "RequestStatus": {
+        "type": "string",
+        "enum": [
+          "draft",
+          "pending_approval",
+          "approved",
+          "rejected",
+          "assigned",
+          "in_progress",
+          "completed",
+          "cancelled"
+        ]
+      },
+      "PersonDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone"
+        ]
+      },
+      "NamedDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "LocationDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Terminal 1, Kempegowda International Airport, Bengaluru"
+          },
+          "lat": {
+            "type": "number",
+            "example": 13.1989
+          },
+          "lng": {
+            "type": "number",
+            "example": 77.7068
+          }
+        },
+        "required": [
+          "address",
+          "lat",
+          "lng"
+        ]
+      },
+      "TripStatus": {
+        "type": "string",
+        "enum": [
+          "scheduled",
+          "in_progress",
+          "completed",
+          "cancelled"
+        ]
+      },
+      "TripVehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "regNo": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "seats": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "regNo",
+          "type",
+          "seats"
+        ]
+      },
+      "TripSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TripStatus"
+              }
+            ]
+          },
+          "vehicle": {
+            "$ref": "#/components/schemas/TripVehicleDto"
+          },
+          "driver": {
+            "$ref": "#/components/schemas/PersonDto"
+          },
+          "scheduledStart": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "scheduledEnd": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "vehicle",
+          "driver",
+          "scheduledStart",
+          "scheduledEnd"
+        ]
+      },
+      "TimelineType": {
+        "type": "string",
+        "enum": [
+          "created",
+          "submitted",
+          "auto_approved",
+          "approved",
+          "rejected",
+          "assigned",
+          "reassigned",
+          "started",
+          "picked_up",
+          "dropped",
+          "ended",
+          "gps_lost",
+          "cancelled"
+        ]
+      },
+      "TimelineEntryDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TimelineType"
+              }
+            ]
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "actorName": {
+            "type": "string",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "type",
+          "at"
+        ]
+      },
+      "RequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "PG-1042"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/RequestStatus"
+              }
+            ]
+          },
+          "requester": {
+            "$ref": "#/components/schemas/PersonDto"
+          },
+          "department": {
+            "$ref": "#/components/schemas/NamedDto"
+          },
+          "pickup": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "drop": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "startAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "returnAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "passengers": {
+            "type": "number"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "cancelReason": {
+            "type": "string",
+            "nullable": true
+          },
+          "trip": {
+            "nullable": true,
+            "description": "Current (non-cancelled) trip",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TripSummaryDto"
+              }
+            ]
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntryDto"
+            }
+          },
+          "actions": {
+            "description": "What the signed-in user may do now",
+            "example": [
+              "cancel"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "status",
+          "requester",
+          "department",
+          "pickup",
+          "drop",
+          "startAt",
+          "passengers",
+          "purpose",
+          "timeline",
+          "actions",
+          "createdAt"
+        ]
+      },
+      "CreateRequestDto": {
+        "type": "object",
+        "properties": {
+          "pickup": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "drop": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-20T09:30:00+05:30"
+          },
+          "returnAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "description": "Return trip time, if any"
+          },
+          "passengers": {
+            "type": "number",
+            "example": 2
+          },
+          "purpose": {
+            "type": "string",
+            "example": "Client meeting at airport hotel"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          },
+          "submit": {
+            "type": "boolean",
+            "description": "Defaults to true; false saves a draft"
+          }
+        },
+        "required": [
+          "pickup",
+          "drop",
+          "startAt",
+          "passengers",
+          "purpose"
+        ]
+      },
+      "UpdateRequestDto": {
+        "type": "object",
+        "properties": {
+          "pickup": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "drop": {
+            "$ref": "#/components/schemas/LocationDto"
+          },
+          "startAt": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2026-10-20T09:30:00+05:30"
+          },
+          "returnAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "description": "Return trip time, if any"
+          },
+          "passengers": {
+            "type": "number",
+            "example": 2
+          },
+          "purpose": {
+            "type": "string",
+            "example": "Client meeting at airport hotel"
+          },
+          "notes": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "CancelDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string"
+          }
+        }
+      },
+      "ApproveDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string"
+          }
+        }
+      },
+      "RejectDto": {
+        "type": "object",
+        "properties": {
+          "comment": {
+            "type": "string",
+            "example": "Please use the shuttle for this route"
+          }
+        },
+        "required": [
+          "comment"
+        ]
+      },
+      "ConflictDto": {
+        "type": "object",
+        "properties": {
+          "requestCode": {
+            "type": "string",
+            "example": "PG-1041"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "from": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "to": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "requestCode",
+          "requestId",
+          "from",
+          "to"
+        ]
+      },
+      "AvailableVehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "regNo": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "seats": {
+            "type": "number"
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "fits": {
+            "type": "boolean",
+            "description": "Seats >= passengers"
+          },
+          "conflict": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ConflictDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "regNo",
+          "type",
+          "seats",
+          "available",
+          "fits"
+        ]
+      },
+      "AvailableDriverDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          },
+          "defaultVehicleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "available": {
+            "type": "boolean"
+          },
+          "conflict": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/ConflictDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "available"
+        ]
+      },
+      "AvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "vehicles": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailableVehicleDto"
+            }
+          },
+          "drivers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AvailableDriverDto"
+            }
+          }
+        },
+        "required": [
+          "vehicles",
+          "drivers"
+        ]
+      },
+      "AssignDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string"
+          },
+          "driverId": {
+            "type": "string"
+          },
+          "scheduledEnd": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time",
+            "description": "When the vehicle is free again. Defaults to the return time, else pickup + 2 hours."
+          }
+        },
+        "required": [
+          "vehicleId",
+          "driverId"
+        ]
+      },
+      "ReassignDto": {
+        "type": "object",
+        "properties": {
+          "vehicleId": {
+            "type": "string"
+          },
+          "driverId": {
+            "type": "string"
+          }
+        }
+      },
+      "GpsPointDto": {
+        "type": "object",
+        "properties": {
+          "deviceId": {
+            "type": "string",
+            "example": "SIM-001",
+            "description": "Tracker id in the vendor's system"
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lat": {
+            "type": "number",
+            "example": 12.9756
+          },
+          "lng": {
+            "type": "number",
+            "example": 77.6066
+          },
+          "speedKmh": {
+            "type": "number",
+            "example": 32.5
+          },
+          "heading": {
+            "type": "number",
+            "example": 45
+          },
+          "ignition": {
+            "type": "boolean"
+          },
+          "odometerKm": {
+            "type": "number",
+            "example": 18342.7
+          }
+        },
+        "required": [
+          "deviceId",
+          "recordedAt",
+          "lat",
+          "lng"
+        ]
+      },
+      "GpsBatchDto": {
+        "type": "object",
+        "properties": {
+          "points": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GpsPointDto"
+            }
+          }
+        },
+        "required": [
+          "points"
+        ]
+      },
+      "GpsIngestResultDto": {
+        "type": "object",
+        "properties": {
+          "accepted": {
+            "type": "number"
+          },
+          "duplicates": {
+            "type": "number",
+            "description": "Already stored (same vehicle and time)"
+          },
+          "rejected": {
+            "type": "number",
+            "description": "Too old, in the future, or for an unknown device"
+          },
+          "unknownDevices": {
+            "description": "Device ids not linked to any vehicle",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "accepted",
+          "duplicates",
+          "rejected",
+          "unknownDevices"
+        ]
+      },
+      "PositionDto": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          },
+          "speedKmh": {
+            "type": "number",
+            "nullable": true
+          },
+          "heading": {
+            "type": "number",
+            "nullable": true
+          },
+          "recordedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "lat",
+          "lng",
+          "recordedAt"
+        ]
+      },
+      "LiveTripStatus": {
+        "type": "string",
+        "enum": [
+          "scheduled",
+          "in_progress"
+        ]
+      },
+      "EtaTarget": {
+        "type": "string",
+        "enum": [
+          "pickup",
+          "drop"
+        ]
+      },
+      "LiveTripDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string",
+            "example": "PG-1001"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LiveTripStatus"
+              }
+            ]
+          },
+          "requesterName": {
+            "type": "string"
+          },
+          "pickupAddress": {
+            "type": "string"
+          },
+          "dropAddress": {
+            "type": "string"
+          },
+          "scheduledStart": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "etaMinutes": {
+            "type": "number",
+            "nullable": true,
+            "description": "Straight-line estimate until Google Directions is configured"
+          },
+          "etaTo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtaTarget"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "requestId",
+          "code",
+          "status",
+          "requesterName",
+          "pickupAddress",
+          "dropAddress",
+          "scheduledStart",
+          "etaTo"
+        ]
+      },
+      "LiveVehicleDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "regNo": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/VehicleStatus"
+              }
+            ]
+          },
+          "gpsDeviceId": {
+            "type": "string",
+            "nullable": true
+          },
+          "position": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PositionDto"
+              }
+            ]
+          },
+          "stale": {
+            "type": "boolean",
+            "description": "No position in the last 5 minutes"
+          },
+          "trip": {
+            "nullable": true,
+            "description": "In progress, or the next one within an hour",
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/LiveTripDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "regNo",
+          "type",
+          "status",
+          "stale"
+        ]
+      },
+      "TrackPointDto": {
+        "type": "object",
+        "properties": {
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lat",
+          "lng",
+          "at"
+        ]
+      },
+      "TripTrackDto": {
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "type": "string"
+          },
+          "requestId": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TripStatus"
+              }
+            ]
+          },
+          "vehicleRegNo": {
+            "type": "string"
+          },
+          "pickup": {
+            "$ref": "#/components/schemas/TrackPointDto"
+          },
+          "drop": {
+            "$ref": "#/components/schemas/TrackPointDto"
+          },
+          "points": {
+            "description": "Driven path (at most 2000 points)",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TrackPointDto"
+            }
+          },
+          "position": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PositionDto"
+              }
+            ]
+          },
+          "etaMinutes": {
+            "type": "number",
+            "nullable": true
+          },
+          "etaTo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/EtaTarget"
+              }
+            ]
+          }
+        },
+        "required": [
+          "tripId",
+          "requestId",
+          "status",
+          "vehicleRegNo",
+          "pickup",
+          "drop",
+          "points",
+          "etaTo"
+        ]
+      }
+    }
+  }
+}

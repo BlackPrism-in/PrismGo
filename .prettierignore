@@ -1,0 +1,9 @@
+pnpm-lock.yaml
+dist
+build
+coverage
+apps/mobile
+**/migrations/**
+apps/api/src/generated
+apps/api/openapi.json
+apps/web/src/lib/api-schema.d.ts
