@@ -3,8 +3,11 @@
  * - Access token lives only in memory.
  * - Refresh token is an httpOnly cookie set by the API (we send `X-Client: web`).
  * - A 401 triggers one shared refresh, then the request is retried once.
+ * - Same origin by default; VITE_API_ORIGIN points at an API on another host
+ *   (e.g. web on Vercel, API on Render). Both must share a site for the cookie.
  */
-export const API_BASE = '/api/v1';
+export const API_ORIGIN = (import.meta.env['VITE_API_ORIGIN'] as string | undefined) ?? '';
+export const API_BASE = `${API_ORIGIN}/api/v1`;
 
 export class ApiError extends Error {
   readonly status: number;

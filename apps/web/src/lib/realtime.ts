@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { getAccessToken, refreshSession } from './api';
+import { API_ORIGIN, getAccessToken, refreshSession } from './api';
 import { applyToTrack, applyToVehicles, type VehiclePosition } from './live';
 import { keys } from './queries';
 import type { LiveVehicle, TripTrack } from './types';
@@ -15,7 +15,7 @@ export function useRealtime(enabled: boolean): void {
 
   useEffect(() => {
     if (!enabled) return;
-    const socket = io({
+    const socket = io(API_ORIGIN || undefined, {
       path: '/api/v1/socket.io',
       transports: ['websocket'],
       // Read the token at every (re)connect so a refreshed token is used.

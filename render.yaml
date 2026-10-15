@@ -26,6 +26,9 @@ services:
         value: staging
       - key: TRUST_PROXY
         value: 'true'
+      # Web app on Vercel (prismgo.blackprism.in) calls this API on api.prismgo.blackprism.in.
+      - key: WEB_ORIGIN
+        value: https://prismgo.blackprism.in,https://prismgo.onrender.com
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET

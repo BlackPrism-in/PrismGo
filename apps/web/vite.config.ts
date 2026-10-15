@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
-    // Same-origin API calls in dev; production serves both behind Nginx.
+    // Same-origin API calls in dev. Production: Caddy serves both, or VITE_API_ORIGIN.
     proxy: {
       '/api': { target: 'http://localhost:4000', ws: true },
     },
