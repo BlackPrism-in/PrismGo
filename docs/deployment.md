@@ -165,3 +165,13 @@ For a demo or UAT before the client's server is ready, [render.yaml](../render.y
 4. Keep it awake: an uptime check (e.g. UptimeRobot) on `/api/v1/health` every 5 minutes. A free service sleeps after 15 minutes without traffic, and GPS polling stops while it sleeps.
 
 Limits: the free database is deleted 30 days after creation, Key Value is in memory only, no shell (hence the bootstrap settings), login codes are shown on screen (`OTP_EXPOSE_CODE=true`): demo data only.
+
+### Current demo setup
+
+| Part                 | Where                                                                                                            | Address                                                                                                        |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Web app              | Vercel project `prismgo` (BlackPrism team), root `apps/web`, `VITE_API_ORIGIN=https://api.prismgo.blackprism.in` | https://prismgo.blackprism.in                                                                                  |
+| API, database, Redis | Render Blueprint `prismgo-demo` (Singapore, free)                                                                | https://api.prismgo.blackprism.in (also https://prismgo.onrender.com)                                          |
+| DNS                  | Namecheap, `blackprism.in`                                                                                       | CNAME `prismgo` → Vercel, CNAME `api.prismgo` → `prismgo.onrender.com`, TXT `_vercel` (Vercel ownership check) |
+
+Both deploy on every push to `main`. The web app and API share the site `blackprism.in`, so the login cookie works across them. Mobile builds use `--dart-define=API_ORIGIN=https://api.prismgo.blackprism.in`.
