@@ -211,6 +211,8 @@ Mobile
 
 Tests: API e2e 32 (tracking: webhook auth, duplicates, auto start/end, round trip, manual override, live/track, socket push, GPS-lost), web 23, mobile 18.
 
+Vendor API (16 Oct): the client's vendor (Trakzee) offers a token-based **pull** API, not a webhook. Built a poller (`GPS_PULL_PROVIDER=trakzee`, every 15 s, one replica at a time) that maps their rows into the same pipeline; tested with a fake vendor. `gps:check` script to verify the real connection and IMEI matching. Waiting on: a real run against the vendor, token lifetime, odometer unit, HTTPS endpoint.
+
 **Done when:** with real (or simulated) tracker data, a trip starts and ends automatically and the map updates within 3 s. ✅ Simulated end to end on the dev server: PG-1003 and PG-1004 started on leaving pickup and completed at the drop, with the web live map following the vehicle.
 
 ---

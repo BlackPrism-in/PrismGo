@@ -4,7 +4,9 @@ import type { AddressInfo } from 'node:net';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { PrismaClient } from '../src/generated/prisma/client';
+import { GpsPullProcessor } from '../src/tracking/gps-pull.processor';
 import { GpsWatchdogProcessor } from '../src/tracking/gps-watchdog.processor';
+import { TrakzeeClient } from '../src/tracking/vendor/trakzee';
 import { createApp, login, PHONES, resetOtps, resetWorkflow, testPrisma } from './helpers';
 
 const office: LatLng = { lat: 12.9756, lng: 77.6066 };
@@ -280,5 +282,62 @@ describe('GPS tracking', () => {
         where: { userId: mgr.id, template: 'gps_lost', channel: 'in_app' },
       }),
     ).toBe(1);
+  });
+
+  it('polls the GPS vendor and feeds new fixes into tracking', async () => {
+    // Vendor time is IST without a zone: "DD-MM-YYYY HH:mm:ss".
+    const ist = (ms: number) => {
+      const d = new Date(ms + 330 * 60_000).toISOString();
+      return `${d.slice(8, 10)}-${d.slice(5, 7)}-${d.slice(0, 4)} ${d.slice(11, 19)}`;
+    };
+    // Newer than anything earlier tests sent for this vehicle (up to 2 min ahead is accepted).
+    const fixAt = Math.floor((Date.now() + 60_000) / 1000) * 1000;
+    const rows = [
+      {
+        Imeino: 'SIM-002',
+        Latitude: '12.9800',
+        Longitude: '77.6100',
+        GPSActualTime: ist(fixAt),
+        Speed: '18',
+        IGN: 'ON',
+      },
+      // Another vehicle on the vendor account: ignored.
+      { Imeino: 'OTHER-999', Latitude: '23.04', Longitude: '72.53', GPSActualTime: ist(fixAt) },
+    ];
+    const fetchFn = (async (url: string) =>
+      new Response(
+        JSON.stringify(
+          url.includes('generateAccessToken')
+            ? { token: 'test-token-1234567890' }
+            : { root: { VehicleData: rows } },
+        ),
+      )) as typeof fetch;
+    const poller = app.get(GpsPullProcessor);
+    Object.assign(poller, {
+      client: new TrakzeeClient(
+        {
+          baseUrl: 'http://vendor.test/webservice',
+          username: 'u',
+          password: 'p',
+          projectId: '37',
+          company: 'Test',
+          timeZone: '+05:30',
+        },
+        fetchFn,
+      ),
+    });
+
+    expect(await poller.process()).toEqual({ rows: 2, sent: 1 });
+    const live = await http().get('/api/v1/live/vehicles').set(as('manager')).expect(200);
+    const innovaLive = live.body.find((v: { id: string }) => v.id === innova);
+    expect(innovaLive.position).toMatchObject({
+      lat: 12.98,
+      lng: 77.61,
+      speedKmh: 18,
+      recordedAt: new Date(fixAt).toISOString(),
+    });
+
+    // Unchanged fix on the next poll: nothing new to process.
+    expect(await poller.process()).toEqual({ rows: 2, sent: 0 });
   });
 });

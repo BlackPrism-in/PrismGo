@@ -6,6 +6,17 @@ export function validateEnv(config: Record<string, unknown>): Record<string, unk
   if (missing.length > 0) {
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
+  if (config['GPS_PULL_PROVIDER'] === 'trakzee') {
+    const vendor = [
+      'GPS_VENDOR_BASE_URL',
+      'GPS_VENDOR_USERNAME',
+      'GPS_VENDOR_PASSWORD',
+      'GPS_VENDOR_PROJECT_ID',
+    ].filter((key) => !config[key]);
+    if (vendor.length > 0) {
+      throw new Error(`GPS_PULL_PROVIDER=trakzee needs: ${vendor.join(', ')}`);
+    }
+  }
   if (config['NODE_ENV'] === 'production') {
     if (config['THROTTLE_DISABLED'] === 'true') {
       throw new Error('THROTTLE_DISABLED must not be set in production');

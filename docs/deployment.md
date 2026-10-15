@@ -79,12 +79,15 @@ The import checks every row before writing anything and can be re-run safely.
 
 ## 5. GPS vendor
 
-Give the vendor (see [gps-integration.md](gps-integration.md)):
+The vendor (Trakzee) offers a pull API, which PrismGo polls every 15 seconds (see [gps-integration.md](gps-integration.md)). In `infra/.env.prod` set `GPS_PULL_PROVIDER=trakzee` and the `GPS_VENDOR_*` username, password, project id and company name.
 
-- Webhook URL: `https://<domain>/api/v1/gps/webhook`
-- Header `X-GPS-Secret: <GPS_WEBHOOK_SECRET>`
+Each vehicle's **GPS device id** in the admin screen must be its tracker's IMEI, as the vendor lists it. Check the connection and matching from the server:
 
-Each vehicle's `GPS device id` in the admin screen must match the vendor's device id. Points from unknown devices are listed in the webhook response (`unknownDevices`).
+```bash
+prod exec api npx tsx scripts/gps-check.ts
+```
+
+Vehicles that show `—` under "in PrismGo" have an IMEI that matches no vehicle: fix the GPS device id on the Vehicles page. The webhook (`https://<domain>/api/v1/gps/webhook` with header `X-GPS-Secret`) stays available for the simulator or a vendor that pushes.
 
 ## 6. Mobile app
 
@@ -137,15 +140,17 @@ Rollback: `git checkout <previous tag> && prod up -d --build`. Migrations are ad
 
 ## Settings reference
 
-| Variable                                            | Purpose                                                                         |
-| --------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `DOMAIN`                                            | Public domain; HTTPS certificate and allowed web origin                         |
-| `APP_ENV`                                           | `production`, or `staging` for UAT (allows console senders)                     |
-| `POSTGRES_PASSWORD`, `REDIS_PASSWORD`               | Internal service passwords                                                      |
-| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`           | Sign login sessions; changing them logs everyone out                            |
-| `GPS_WEBHOOK_SECRET`                                | Shared with the GPS vendor                                                      |
-| `OTP_CHANNELS`                                      | `whatsapp` (`console` in staging)                                               |
-| `OTP_EXPOSE_CODE`                                   | Staging UAT only: show the login code on screen                                 |
-| `MESSAGING_PROVIDER`                                | `whatsapp` (`console` in staging)                                               |
-| `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN` | WhatsApp Cloud API; templates in [whatsapp-templates.md](whatsapp-templates.md) |
-| `VITE_GOOGLE_MAPS_API_KEY`                          | Browser key restricted to the domain; applied at build (`--build`)              |
+| Variable                                                                                                           | Purpose                                                                         |
+| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| `DOMAIN`                                                                                                           | Public domain; HTTPS certificate and allowed web origin                         |
+| `APP_ENV`                                                                                                          | `production`, or `staging` for UAT (allows console senders)                     |
+| `POSTGRES_PASSWORD`, `REDIS_PASSWORD`                                                                              | Internal service passwords                                                      |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                                                          | Sign login sessions; changing them logs everyone out                            |
+| `GPS_WEBHOOK_SECRET`                                                                                               | Webhook secret (simulator, or a vendor that pushes)                             |
+| `GPS_PULL_PROVIDER`, `GPS_PULL_INTERVAL_S`                                                                         | `trakzee` to poll the vendor; seconds between polls (15)                        |
+| `GPS_VENDOR_BASE_URL`, `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD`, `GPS_VENDOR_PROJECT_ID`, `GPS_VENDOR_COMPANY` | Vendor API access                                                               |
+| `OTP_CHANNELS`                                                                                                     | `whatsapp` (`console` in staging)                                               |
+| `OTP_EXPOSE_CODE`                                                                                                  | Staging UAT only: show the login code on screen                                 |
+| `MESSAGING_PROVIDER`                                                                                               | `whatsapp` (`console` in staging)                                               |
+| `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`                                                                | WhatsApp Cloud API; templates in [whatsapp-templates.md](whatsapp-templates.md) |
+| `VITE_GOOGLE_MAPS_API_KEY`                                                                                         | Browser key restricted to the domain; applied at build (`--build`)              |

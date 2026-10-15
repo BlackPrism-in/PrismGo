@@ -19,7 +19,8 @@ RUN pnpm --filter @prismgo/shared build && pnpm --filter @prismgo/api build
 # Self-contained production install of the API and its workspace deps.
 RUN pnpm --filter @prismgo/api deploy --prod --legacy /out \
   && cp -r apps/api/dist apps/api/prisma apps/api/prisma.config.ts apps/api/scripts /out/ \
-  && mkdir -p /out/src && cp -r apps/api/src/generated /out/src/ \
+  && mkdir -p /out/src/tracking && cp -r apps/api/src/generated /out/src/ \
+  && cp -r apps/api/src/tracking/vendor /out/src/tracking/ \
   && cp apps/api/docker-entrypoint.sh /out/
 
 FROM base AS runtime
