@@ -10,8 +10,10 @@ export const API_PREFIX = 'api/v1';
 export function setupApp(app: INestApplication): void {
   const config = app.get(ConfigService);
   app.setGlobalPrefix(API_PREFIX);
+  // Render sets RENDER_EXTERNAL_URL to the service's own address.
+  const origins = config.get<string>('WEB_ORIGIN') ?? config.get<string>('RENDER_EXTERNAL_URL');
   app.enableCors({
-    origin: config.get<string>('WEB_ORIGIN')?.split(',') ?? true,
+    origin: origins?.split(',') ?? true,
     credentials: true,
   });
   app.use(cookieParser());

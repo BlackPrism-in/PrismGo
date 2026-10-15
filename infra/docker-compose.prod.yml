@@ -7,6 +7,8 @@ x-api-env: &api-env
   NODE_ENV: production
   APP_ENV: ${APP_ENV:-production}
   PORT: 4000
+  # Caddy is one proxy hop in front of the API.
+  TRUST_PROXY: 1
   DATABASE_URL: postgresql://prismgo:${POSTGRES_PASSWORD}@postgres:5432/prismgo?schema=public
   REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
   JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
