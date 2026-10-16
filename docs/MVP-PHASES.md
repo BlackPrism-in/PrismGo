@@ -4,12 +4,67 @@ Go-live: **Wed 21 Oct 2026**. Plan starts Wed 14 Oct 2026.
 
 Full system design: [PrismGo — Fleet Request & Tracking: System Design](https://claude.ai/code/artifact/27358f3e-0cd3-4647-b93e-587d24a4bf5d)
 
+## Status at a glance (16 Oct 2026)
+
+Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our credentials), **Dev** (engineering).
+
+### Done
+
+- [x] **Dev** API, web app and Android app for the full flow: phone + OTP login, roles, master data, request → HOD approval → vehicle and driver assignment, live map, automatic trip start and end, notifications
+- [x] **Dev** Tests green: API e2e 38, API unit 15, web 23, shared 19, mobile 18; CI on every push
+- [x] **Dev** Demo / UAT live: web https://prismgo.blackprism.in (Vercel), API https://api.prismgo.blackprism.in (Render); deploys on every push to `main`
+- [x] **Dev** GPS: Uffizio (Trakzee) pull API poller built; push webhook live; [Push API spec](PrismGo-GPS-Push-API.pdf) sent to Uffizio
+- [x] **Dev** Mobile push: Firebase project `prismgo-34a61` with the Android app registered; push sending (API) and device registration (app) built
+- [x] **BlackPrism** WhatsApp: Meta business verification submitted; WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render; 12 templates submitted
+- [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
+- [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
+- [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
+
+### In review / waiting on others
+
+- [ ] **Meta** Business verification (submitted 16 Oct)
+- [ ] **Meta** 12 WhatsApp templates (submitted 16 Oct; usually minutes to a day)
+- [ ] **Uffizio** IMEI and registration number for every vehicle; a test push batch; odometer unit, token lifetime, HTTPS address for the pull API
+- [ ] **Client** Master data: departments, HODs, employees (name, phone), vehicles, drivers
+- [ ] **Client** Logo (placeholder in use)
+- [ ] **Client** UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
+
+### To do
+
+BlackPrism (needs our accounts or credentials)
+
+- [ ] Fix the "invalid payment info" warning on Render
+- [ ] Uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min (keeps the free API awake so GPS polling runs)
+- [ ] Phone Uffizio with the webhook secret (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
+- [ ] Firebase: OK to download `google-services.json`; generate the service-account key and add it to Render as `FCM_SERVICE_ACCOUNT_JSON`
+- [ ] Accept the Android SDK licences (`flutter doctor --android-licenses`)
+- [ ] Create the Android upload signing key (keystore); Play Console app + internal testing track
+- [ ] Google Maps API key with billing (OpenStreetMap and straight-line ETA until then)
+- [ ] Production server before the free Render database expires (about 15 Nov)
+- [ ] Book the UAT session for 20 Oct
+
+Dev
+
+- [ ] Real GPS run once vehicles with IMEIs are entered; check Uffizio's test push, run push and pull side by side for a day, then turn pull off
+- [ ] Switch login codes and alerts to WhatsApp once the templates are approved (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false`); test with a real number
+- [ ] Add `google-services.json`, build the signed release APK, test push on a phone, upload to Play internal testing
+- [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
+- [ ] Go-live on 21 Oct: tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
+- [ ] Google Places search, Google map tiles and Directions ETA once the Maps key arrives
+- [ ] Move production to our server; test a restore there
+
+Later (after the demo is approved)
+
+- [ ] iOS: Apple Developer account, APNs key in Firebase, TestFlight
+- [ ] Sentry error tracking on api, web and mobile
+- [ ] Phase 2 backlog (end of this document)
+
 ## Scope recap
 
 | App        | Users                                                 | Stack                                                               |
 | ---------- | ----------------------------------------------------- | ------------------------------------------------------------------- |
 | Web app    | Transport Manager, Super Admin (all roles can use it) | React + Vite + TypeScript, Tailwind, TanStack Query, Google Maps JS |
-| Mobile app | Requester, HOD                                        | Flutter (Dart), Riverpod, Dio, go_router, google_maps_flutter, FCM  |
+| Mobile app | Requester, HOD                                        | Flutter (Dart), Riverpod, Dio, go_router, flutter_map, FCM          |
 | API        | —                                                     | NestJS, PostgreSQL + PostGIS, Prisma, Redis + BullMQ, Socket.IO     |
 
 Decisions already made:
@@ -19,7 +74,8 @@ Decisions already made:
 - Drivers have no login. Trips start and end automatically from GPS tracker data; the Transport Manager can override.
 - Location comes from the GPS trackers already fitted, through the vendor's API.
 - Notifications on WhatsApp (plus push on mobile, in-app on web).
-- Google Maps. Hosted on our server.
+- Google Maps (OpenStreetMap until the key arrives). Production on our server; demo and UAT on Render + Vercel.
+- Android first; iOS after the client approves the demo.
 - Fleet at launch: minimum 2 vehicles.
 
 ## Repository layout
@@ -32,7 +88,7 @@ PrismGo/
 │   └── mobile/     Flutter app (requester, HOD)
 ├── packages/
 │   └── shared/     TS types, zod schemas, constants shared by api + web
-├── infra/          docker-compose, nginx, backup scripts
+├── infra/          docker-compose, Caddy, backup scripts, Render image
 └── docs/           design notes, this plan
 ```
 
@@ -87,8 +143,9 @@ Our setup (BlackPrism accounts, status 16 Oct)
 - [x] Hosting for demo and UAT: Render (API, database, Redis) + Vercel (web) on `prismgo.blackprism.in`
 - [ ] Production server, before the free Render database expires (about 15 Nov)
 - [ ] Google Cloud project with billing; Maps JS, Places, Directions, Android/iOS Maps SDK keys (OpenStreetMap and a straight-line ETA until then)
-- [ ] Firebase project (FCM) for mobile push
-- [ ] Apple Developer and Google Play organisation accounts (until then: Android APK sideload; iPhone users use the web app)
+- [x] Firebase project `prismgo-34a61` (FCM) with the Android app registered; config file and server key pending
+- [x] Google Play developer account
+- [ ] Apple Developer account, after the demo is approved (iPhone users use the web app until then)
 
 **Done when:** `docker compose up` + `pnpm dev` runs api and web; `flutter run` opens the mobile shell; DB migrates and seeds. ✅ Engineering done 14 Oct; inputs tracked above.
 
@@ -146,8 +203,8 @@ API
 - [x] Notifications: in-app rows + socket push; WhatsApp through a BullMQ outbox with retries (console in dev). Templates listed in [whatsapp-templates.md](whatsapp-templates.md)
 - [x] Socket.IO at `/api/v1/socket.io` with JWT auth; rooms `user:{id}` and `org:{id}:managers`; Redis adapter for multiple API instances
 - [x] `GET /notifications`, `/unread-count`, `POST /notifications/:id/read`, `/read-all`
-- [ ] FCM push to mobile → moved to Phase 3 (needs the Firebase project)
-- [ ] "Trip started / completed" messages → Phase 4 (trip detector)
+- [x] FCM push to mobile: built 16 Oct (see Phase 3)
+- [x] "Trip started / completed" messages (Phase 4, trip detector)
 
 Web
 
@@ -176,9 +233,9 @@ Tests: API e2e 25 (workflow, permissions, double-booking, race, sockets), web 20
 - [x] App icon in the brand palette (`tool/make_icon.py`, placeholder until the client's logo), app name "PrismGo"
 - [x] Android release APK builds (`flutter build apk --release --dart-define=API_ORIGIN=…`)
 - [ ] Google Places autocomplete → when the Maps key arrives
-- [ ] Live vehicle on a map + ETA → Phase 4 (needs GPS data and the Maps key)
-- [ ] Push notifications (FCM / APNs) → needs our Firebase project; device tokens table is ready
-- [ ] Release signing: Android upload keystore (currently debug-signed); iOS TestFlight needs the Apple Developer account
+- [x] Live vehicle on a map + ETA (Phase 4; OpenStreetMap until the Maps key)
+- [x] Push notifications (FCM, Android): device registered after login, removed on logout; tap opens the request; foreground messages refresh the bell. Needs `google-services.json` in the build and `FCM_SERVICE_ACCOUNT_JSON` on the API; iOS (APNs) after the demo
+- [ ] Release signing: Android upload keystore (currently debug-signed) for Play internal testing; iOS TestFlight after the demo
 
 Tests: 17 widget/unit tests (login, roles/tabs, approvals, decline reason, detail actions, form validation, alerts, auth interceptor).
 
@@ -202,7 +259,7 @@ API
 - [x] GPS-lost watchdog every minute: one alert to transport when a running trip is quiet for 5 min
 - [x] Notifications: trip started (requester), trip completed (requester + transport), GPS lost (transport); WhatsApp templates added
 - [x] Simulator `pnpm --filter @prismgo/api sim demo | PG-xxxx` drives vehicles through the real webhook
-- [ ] Vendor adapter (push mapping or polling worker) → when the vendor shares API access and docs
+- [x] Vendor adapter: Trakzee pull poller (16 Oct); push from Uffizio arrives on the existing webhook
 - [ ] Road route + ETA from Google Directions → when the Maps key arrives (now: straight line × 1.3 at ≥ 22 km/h)
 
 Web
@@ -260,7 +317,7 @@ Notes from Phase 5
 ## Phase 6 — Go-live (Wed 21 Oct)
 
 - [ ] Final deploy from `main` with a tagged release (`v0.1.0`)
-- [ ] APK shared and TestFlight invites sent to requesters and HODs
+- [ ] Android app to requesters and HODs via Play internal testing (or APK); iOS after the demo
 - [ ] 30-minute walkthrough for the Transport Manager and HODs
 - [ ] Handover note: URLs, admin accounts, support contact, known limits
 
@@ -281,5 +338,5 @@ Notes from Phase 5
 | ------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------- |
 | WhatsApp verification / template approval is slow | 15 Oct    | Submitted 16 Oct. Until approved: on-screen codes (supervised UAT) and in-app notifications |
 | GPS vendor access late                            | 15 Oct    | Pull API access received 16 Oct; simulator for UAT if the real feed isn't flowing           |
-| Google Maps key with billing                      | 15 Oct    | None good — blocks address search and maps                                                  |
+| Google Maps key with billing                      | 15 Oct    | OpenStreetMap maps, straight-line ETA, addresses with coordinates and recent places         |
 | Server, domain, HTTPS                             | 19 Oct    | Demo on Render + Vercel since 16 Oct; production server needed by about 15 Nov              |
