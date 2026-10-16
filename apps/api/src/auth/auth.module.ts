@@ -14,8 +14,8 @@ import { RolesGuard } from './roles.guard';
 import { TokensService } from './tokens.service';
 
 /**
- * OTP_CHANNELS sets delivery order, e.g. "whatsapp,console". An SMS sender joins
- * the list once the SMS gateway account and DLT template are registered.
+ * OTP_CHANNELS sets delivery order, e.g. "whatsapp,console" (console: dev and
+ * staging only). Login codes go by WhatsApp; there is no SMS channel.
  */
 function buildSenders(config: ConfigService): OtpSender[] {
   const channels = (config.get<string>('OTP_CHANNELS') ?? 'console')

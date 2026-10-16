@@ -14,7 +14,7 @@ Full system design: [PrismGo — Fleet Request & Tracking: System Design](https:
 
 Decisions already made:
 
-- Login by phone number + OTP (WhatsApp, SMS fallback). No passwords.
+- Login by phone number + OTP over WhatsApp (no SMS fallback). No passwords.
 - Approval is HOD only (one level).
 - Drivers have no login. Trips start and end automatically from GPS tracker data; the Transport Manager can override.
 - Location comes from the GPS trackers already fitted, through the vendor's API.
@@ -89,7 +89,6 @@ Our setup (BlackPrism accounts, status 16 Oct)
 - [ ] Google Cloud project with billing; Maps JS, Places, Directions, Android/iOS Maps SDK keys (OpenStreetMap and a straight-line ETA until then)
 - [ ] Firebase project (FCM) for mobile push
 - [ ] Apple Developer and Google Play organisation accounts (until then: Android APK sideload; iPhone users use the web app)
-- [ ] SMS gateway + DLT sender ID and OTP template, only if an SMS fallback for login codes is wanted
 
 **Done when:** `docker compose up` + `pnpm dev` runs api and web; `flutter run` opens the mobile shell; DB migrates and seeds. ✅ Engineering done 14 Oct; inputs tracked above.
 
@@ -103,7 +102,7 @@ API
 
 - [x] `POST /auth/otp/request`, `/otp/verify`, `/refresh`, `/logout`, `GET /auth/me`; 6-digit code stored as HMAC, 5-min expiry, 5 attempts, 3 codes per number per 10 min, plus per-IP rate limits
 - [x] Unknown numbers get the same "sent" answer (no way to probe who is registered)
-- [x] OTP delivery chain set by `OTP_CHANNELS`: WhatsApp Cloud API sender, console sender for dev (refused in production). SMS sender added when the gateway account and DLT template exist
+- [x] OTP delivery chain set by `OTP_CHANNELS`: WhatsApp Cloud API sender, console sender for dev (refused in production). No SMS fallback (decided 16 Oct): WhatsApp carries login codes, push and in-app cover alerts
 - [x] JWT access (15 min) + rotating refresh tokens (30 days); reusing an old refresh token revokes all of that user's sessions
 - [x] Web gets the refresh token as an httpOnly cookie (`X-Client: web`); mobile keeps it in secure storage
 - [x] RBAC guard (requester, hod, transport_manager, super_admin) + org scoping on every query
@@ -283,5 +282,4 @@ Notes from Phase 5
 | WhatsApp verification / template approval is slow | 15 Oct    | Submitted 16 Oct. Until approved: on-screen codes (supervised UAT) and in-app notifications |
 | GPS vendor access late                            | 15 Oct    | Pull API access received 16 Oct; simulator for UAT if the real feed isn't flowing           |
 | Google Maps key with billing                      | 15 Oct    | None good — blocks address search and maps                                                  |
-| SMS DLT registration slow                         | 15 Oct    | OTP over WhatsApp only                                                                      |
 | Server, domain, HTTPS                             | 19 Oct    | Demo on Render + Vercel since 16 Oct; production server needed by about 15 Nov              |
