@@ -46,6 +46,11 @@ services:
         value: console
       - key: OTP_TTL_SECONDS
         value: '300'
+      # WhatsApp Cloud API (BlackPrism, +91 70014 41439). WHATSAPP_ACCESS_TOKEN is set in
+      # the Render dashboard, never here. Switch OTP_CHANNELS / MESSAGING_PROVIDER to
+      # whatsapp (and OTP_EXPOSE_CODE to false) once the templates are approved.
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        value: '1267308809792402'
       # GPS vendor (Trakzee pull API)
       - key: GPS_PULL_PROVIDER
         value: trakzee
