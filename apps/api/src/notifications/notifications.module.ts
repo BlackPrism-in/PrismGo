@@ -3,9 +3,18 @@ import { Global, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { isLiveProduction } from '../config/env';
 import { ConsoleMessenger, MESSENGER, WhatsAppMessenger, type Messenger } from './messenger';
+import { DevicesController } from './devices.controller';
 import { NotificationsController } from './notifications.controller';
 import { NotificationsService, OUTBOX_QUEUE } from './notifications.service';
 import { OutboxProcessor } from './outbox.processor';
+import {
+  FcmPushSender,
+  LogPushSender,
+  parseServiceAccount,
+  PUSH_SENDER,
+  type PushSender,
+} from './push';
+import { PUSH_QUEUE, PushProcessor } from './push.processor';
 
 /** MESSAGING_PROVIDER: "console" (dev, default) or "whatsapp". */
 function buildMessenger(config: ConfigService): Messenger {
@@ -27,6 +36,12 @@ function buildMessenger(config: ConfigService): Messenger {
   throw new Error(`Unknown MESSAGING_PROVIDER "${provider}"`);
 }
 
+/** Push via FCM when FCM_SERVICE_ACCOUNT_JSON is set; otherwise push is skipped. */
+function buildPushSender(config: ConfigService): PushSender {
+  const raw = config.get<string>('FCM_SERVICE_ACCOUNT_JSON')?.trim();
+  return raw ? new FcmPushSender(parseServiceAccount(raw)) : new LogPushSender();
+}
+
 @Global()
 @Module({
   imports: [
@@ -39,12 +54,14 @@ function buildMessenger(config: ConfigService): Messenger {
         prefix: `prismgo:${new URL(config.getOrThrow<string>('DATABASE_URL')).pathname.slice(1)}`,
       }),
     }),
-    BullModule.registerQueue({ name: OUTBOX_QUEUE }),
+    BullModule.registerQueue({ name: OUTBOX_QUEUE }, { name: PUSH_QUEUE }),
   ],
-  controllers: [NotificationsController],
+  controllers: [NotificationsController, DevicesController],
   providers: [
     NotificationsService,
     OutboxProcessor,
+    PushProcessor,
+    { provide: PUSH_SENDER, inject: [ConfigService], useFactory: buildPushSender },
     { provide: MESSENGER, inject: [ConfigService], useFactory: buildMessenger },
   ],
   exports: [NotificationsService],

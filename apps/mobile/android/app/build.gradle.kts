@@ -5,6 +5,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Push notifications need app/google-services.json (Firebase project prismgo-34a61).
+// Without it the app still builds and runs, with push turned off.
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
+
 android {
     namespace = "in.blackprism.prismgo"
     compileSdk = flutter.compileSdkVersion

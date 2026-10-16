@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prismgo_api/prismgo_api.dart';
 
+import '../core/push.dart';
 import '../core/realtime.dart';
 import '../features/auth/session_controller.dart';
 import '../features/notifications/notifications_providers.dart';
@@ -18,7 +19,7 @@ class _Tab {
 }
 
 /// Bottom navigation for signed-in users. Tabs depend on role; the shell also
-/// keeps the realtime connection open.
+/// keeps the realtime connection open and the device registered for push.
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.location, required this.child});
 
@@ -28,6 +29,7 @@ class AppShell extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(realtimeProvider);
+    ref.watch(pushProvider(GoRouter.of(context)));
     final me = ref.watch(sessionControllerProvider).value;
     final isHod = me?.roles.contains(Role.hod) ?? false;
     final canRequest = isHod || (me?.roles.contains(Role.requester) ?? false);

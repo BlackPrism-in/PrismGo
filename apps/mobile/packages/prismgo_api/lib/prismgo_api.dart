@@ -54,6 +54,7 @@ export 'package:prismgo_api/src/model/person_dto.dart';
 export 'package:prismgo_api/src/model/position_dto.dart';
 export 'package:prismgo_api/src/model/reassign_dto.dart';
 export 'package:prismgo_api/src/model/refresh_dto.dart';
+export 'package:prismgo_api/src/model/register_device_dto.dart';
 export 'package:prismgo_api/src/model/reject_dto.dart';
 export 'package:prismgo_api/src/model/request_dto.dart';
 export 'package:prismgo_api/src/model/request_otp_dto.dart';

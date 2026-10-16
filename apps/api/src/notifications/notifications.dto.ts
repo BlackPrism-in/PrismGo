@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsIn, IsString, Length } from 'class-validator';
 
 export class NotificationDto {
   @ApiProperty() id: string;
@@ -12,4 +13,15 @@ export class NotificationDto {
 
 export class UnreadCountDto {
   @ApiProperty() count: number;
+}
+
+export class RegisterDeviceDto {
+  @ApiProperty({ description: 'FCM registration token' })
+  @IsString()
+  @Length(20, 4096)
+  token: string;
+
+  @ApiProperty({ enum: ['android', 'ios'] })
+  @IsIn(['android', 'ios'])
+  platform: 'android' | 'ios';
 }

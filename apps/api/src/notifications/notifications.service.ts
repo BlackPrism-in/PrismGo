@@ -4,6 +4,7 @@ import type { Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service';
 import { RealtimeGateway, rooms } from '../realtime/realtime.gateway';
 import type { Message } from './messages';
+import { PUSH_QUEUE, type PushJob } from './push.processor';
 
 export const OUTBOX_QUEUE = 'outbox';
 
@@ -21,8 +22,8 @@ export interface Recipient {
 }
 
 /**
- * Fan-out for every workflow event: in-app row + socket push, then WhatsApp via a
- * queued job so a slow or failing provider never blocks or fails the request.
+ * Fan-out for every workflow event: in-app row + socket event + mobile push, then
+ * WhatsApp; push and WhatsApp go through queued jobs so a slow or failing provider never blocks or fails the request.
  * Call after the database transaction commits.
  */
 @Injectable()
@@ -33,6 +34,7 @@ export class NotificationsService {
     private readonly prisma: PrismaService,
     private readonly realtime: RealtimeGateway,
     @InjectQueue(OUTBOX_QUEUE) private readonly outbox: Queue<OutboxJob>,
+    @InjectQueue(PUSH_QUEUE) private readonly push: Queue<PushJob>,
   ) {}
 
   async notify(
@@ -90,6 +92,31 @@ export class NotificationsService {
         readAt: null,
         createdAt: row.createdAt,
       });
+
+      // Push to each of the user's phones (mobile app); one job per device.
+      const devices = await this.prisma.deviceToken.findMany({ where: { userId: r.userId } });
+      for (const d of devices) {
+        await this.push.add(
+          message.template,
+          {
+            token: d.token,
+            message: {
+              title: message.title,
+              body: message.body,
+              data: {
+                template: message.template,
+                ...(context.requestId ? { requestId: context.requestId } : {}),
+              },
+            },
+          },
+          {
+            attempts: 3,
+            backoff: { type: 'exponential', delay: 5_000 },
+            removeOnComplete: 1000,
+            removeOnFail: 1000,
+          },
+        );
+      }
     }
 
     if (phone) {

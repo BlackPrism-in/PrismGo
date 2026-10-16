@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:prismgo_api/prismgo_api.dart';
 
 import '../../core/api.dart';
+import '../../core/push.dart';
 
 /// The signed-in user, or null when logged out. Loading while restoring at launch.
 class SessionController extends AsyncNotifier<MeDto?> {
@@ -51,6 +52,9 @@ class SessionController extends AsyncNotifier<MeDto?> {
   Future<void> logout() async {
     final tokens = ref.read(tokenStorageProvider);
     final refresh = await tokens.refreshToken;
+    if (ref.read(pushAvailableProvider)) {
+      await unregisterPush(ref.read(apiProvider));
+    }
     try {
       await ref
           .read(apiProvider)

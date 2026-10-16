@@ -7,6 +7,16 @@ void main() {
   final instance = PrismgoApi().getNotificationsApi();
 
   group(NotificationsApi, () {
+    //Future devicesControllerRegister(RegisterDeviceDto registerDeviceDto) async
+    test('test devicesControllerRegister', () async {
+      // TODO
+    });
+
+    //Future devicesControllerUnregister(String token) async
+    test('test devicesControllerUnregister', () async {
+      // TODO
+    });
+
     //Future<List<NotificationDto>> notificationsControllerList() async
     test('test notificationsControllerList', () async {
       // TODO

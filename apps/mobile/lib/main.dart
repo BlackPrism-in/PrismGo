@@ -3,9 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'app/router.dart';
 import 'app/theme.dart';
+import 'core/push.dart';
 
-void main() {
-  runApp(const ProviderScope(child: PrismGoApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final push = await initPush();
+  runApp(
+    ProviderScope(
+      overrides: [pushAvailableProvider.overrideWithValue(push)],
+      child: const PrismGoApp(),
+    ),
+  );
 }
 
 class PrismGoApp extends ConsumerWidget {

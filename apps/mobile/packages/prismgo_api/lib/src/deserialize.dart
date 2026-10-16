@@ -29,6 +29,7 @@ import 'package:prismgo_api/src/model/person_dto.dart';
 import 'package:prismgo_api/src/model/position_dto.dart';
 import 'package:prismgo_api/src/model/reassign_dto.dart';
 import 'package:prismgo_api/src/model/refresh_dto.dart';
+import 'package:prismgo_api/src/model/register_device_dto.dart';
 import 'package:prismgo_api/src/model/reject_dto.dart';
 import 'package:prismgo_api/src/model/request_dto.dart';
 import 'package:prismgo_api/src/model/request_otp_dto.dart';
@@ -152,6 +153,9 @@ ReturnType deserialize<ReturnType, BaseType>(
       return ReassignDto.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'RefreshDto':
       return RefreshDto.fromJson(value as Map<String, dynamic>) as ReturnType;
+    case 'RegisterDeviceDto':
+      return RegisterDeviceDto.fromJson(value as Map<String, dynamic>)
+          as ReturnType;
     case 'RejectDto':
       return RejectDto.fromJson(value as Map<String, dynamic>) as ReturnType;
     case 'RequestDto':

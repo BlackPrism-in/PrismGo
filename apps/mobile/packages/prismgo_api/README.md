@@ -87,6 +87,8 @@ Class | Method | HTTP request | Description
 [*LiveApi*](doc/LiveApi.md) | [**liveControllerStart**](doc/LiveApi.md#livecontrollerstart) | **POST** /api/v1/trips/{id}/start | 
 [*LiveApi*](doc/LiveApi.md) | [**liveControllerTrack**](doc/LiveApi.md#livecontrollertrack) | **GET** /api/v1/trips/{id}/track | 
 [*LiveApi*](doc/LiveApi.md) | [**liveControllerVehicles**](doc/LiveApi.md#livecontrollervehicles) | **GET** /api/v1/live/vehicles | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**devicesControllerRegister**](doc/NotificationsApi.md#devicescontrollerregister) | **POST** /api/v1/devices | 
+[*NotificationsApi*](doc/NotificationsApi.md) | [**devicesControllerUnregister**](doc/NotificationsApi.md#devicescontrollerunregister) | **DELETE** /api/v1/devices/{token} | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**notificationsControllerList**](doc/NotificationsApi.md#notificationscontrollerlist) | **GET** /api/v1/notifications | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**notificationsControllerMarkAllRead**](doc/NotificationsApi.md#notificationscontrollermarkallread) | **POST** /api/v1/notifications/read-all | 
 [*NotificationsApi*](doc/NotificationsApi.md) | [**notificationsControllerMarkRead**](doc/NotificationsApi.md#notificationscontrollermarkread) | **POST** /api/v1/notifications/{id}/read | 
@@ -144,6 +146,7 @@ Class | Method | HTTP request | Description
  - [PositionDto](doc/PositionDto.md)
  - [ReassignDto](doc/ReassignDto.md)
  - [RefreshDto](doc/RefreshDto.md)
+ - [RegisterDeviceDto](doc/RegisterDeviceDto.md)
  - [RejectDto](doc/RejectDto.md)
  - [RequestDto](doc/RequestDto.md)
  - [RequestOtpDto](doc/RequestOtpDto.md)
