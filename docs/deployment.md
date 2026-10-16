@@ -175,3 +175,28 @@ Limits: the free database is deleted 30 days after creation, Key Value is in mem
 | DNS                  | Namecheap, `blackprism.in`                                                                                       | CNAME `prismgo` → Vercel, CNAME `api.prismgo` → `prismgo.onrender.com`, TXT `_vercel` (Vercel ownership check) |
 
 Both deploy on every push to `main`. The web app and API share the site `blackprism.in`, so the login cookie works across them. Mobile builds use `--dart-define=API_ORIGIN=https://api.prismgo.blackprism.in`.
+
+## WhatsApp (Meta)
+
+Set up 16 Oct 2026 under the business portfolio **BlackPrism Private Limited**:
+
+| Item                      | Value                                                                                                                                                           |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| WhatsApp Business Account | BlackPrism                                                                                                                                                      |
+| Sender                    | +91 70014 41439, display name BlackPrism, phone number ID `1267308809792402` (in `render.yaml`)                                                                 |
+| Meta app                  | `PrismGo` (ID `1636757444476716`), use case "Connect with customers through WhatsApp"                                                                           |
+| System user               | `prismgo-api` (Employee), full control of the PrismGo app and the BlackPrism WhatsApp account                                                                   |
+| Token                     | Permanent system-user token with `whatsapp_business_messaging` and `whatsapp_business_management`, stored only as `WHATSAPP_ACCESS_TOKEN` in Render's dashboard |
+| Templates                 | 12, English (`en`), wording in [whatsapp-templates.md](whatsapp-templates.md); submitted 16 Oct                                                                 |
+
+The sender number is shared with PrismChat (its own app and system user). Sending from both is fine; replies to PrismGo messages go to whichever app receives the number's incoming-message webhook (PrismChat).
+
+Do not re-register the number from the PrismGo app's "Production setup": the number is already connected, and re-registering could disconnect PrismChat.
+
+### Switching to WhatsApp once templates are approved
+
+1. In WhatsApp Manager → Message templates, all 12 show **Active**.
+2. In `render.yaml` set `OTP_CHANNELS: whatsapp`, `MESSAGING_PROVIDER: whatsapp`, `OTP_EXPOSE_CODE: 'false'`, and later `APP_ENV: production`. Push to `main`; the Blueprint syncs (edit these in the file, not the dashboard: Blueprint syncs overwrite dashboard edits to keys the file sets).
+3. Test: log in with a real number (code arrives on WhatsApp), then run a request through approve and assign and check each message.
+
+Rotating the token: generate a new one for `prismgo-api`, replace `WHATSAPP_ACCESS_TOKEN` in Render, then revoke the old one in Business Settings.

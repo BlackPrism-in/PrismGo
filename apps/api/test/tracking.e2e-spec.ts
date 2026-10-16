@@ -109,6 +109,8 @@ describe('GPS tracking', () => {
   });
 
   it('checks the shared secret and reports unknown devices', async () => {
+    const get = await http().get('/api/v1/gps/webhook').expect(405);
+    expect(get.headers['allow']).toBe('POST');
     await http()
       .post('/api/v1/gps/webhook')
       .set('X-GPS-Secret', 'wrong')

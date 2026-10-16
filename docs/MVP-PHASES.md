@@ -213,11 +213,13 @@ Tests: API e2e 32 (tracking: webhook auth, duplicates, auto start/end, round tri
 
 Vendor API (16 Oct): the client's vendor (Trakzee) offers a token-based **pull** API, not a webhook. Built a poller (`GPS_PULL_PROVIDER=trakzee`, every 15 s, one replica at a time) that maps their rows into the same pipeline; tested with a fake vendor. `gps:check` script to verify the real connection and IMEI matching. Waiting on: a real run against the vendor, token lifetime, odometer unit, HTTPS endpoint.
 
+Push API (16 Oct): Uffizio also supports push. Sent them the [PrismGo GPS Push API](PrismGo-GPS-Push-API.pdf) spec (endpoint `https://api.prismgo.blackprism.in/api/v1/gps/webhook`, `X-GPS-Secret` header, shared by phone). Plan: pull now, push once they send a test batch, run both for a day, then turn pull off.
+
 **Done when:** with real (or simulated) tracker data, a trip starts and ends automatically and the map updates within 3 s. ✅ Simulated end to end on the dev server: PG-1003 and PG-1004 started on leaving pickup and completed at the drop, with the web live map following the vehicle.
 
 ---
 
-## Phase 5 — Deploy and UAT (Tue 20 Oct) — stack ready 15 Oct; waiting on the server
+## Phase 5 — Deploy and UAT (Tue 20 Oct) — demo live 16 Oct on Render + Vercel
 
 **Goal:** the client tests the real system on our server.
 
@@ -228,8 +230,11 @@ Vendor API (16 Oct): the client's vendor (Trakzee) offers a token-based **pull**
 - [x] Health endpoint for the uptime check; restarting api replicas causes no failed requests (Caddy retries)
 - [x] Bootstrap and master-data import run inside the container
 - [x] [Deployment guide](deployment.md) and [UAT script](uat-script.md); the GPS simulator can drive trips on the UAT server until the vendor feed is live
-- [ ] Server, SSH access and domain (DNS A record) from the client / us
-- [ ] Deploy, load client master data, test restore on the server, uptime check
+- [x] Demo / UAT deployment (16 Oct): web app on Vercel at https://prismgo.blackprism.in, API + PostgreSQL + Redis on Render (free, Singapore) at https://api.prismgo.blackprism.in; DNS at Namecheap; both deploy on push to `main`. See [deployment.md](deployment.md#demo-on-render-free-plan)
+- [ ] Uptime check on the API health URL (keeps the free Render service awake, so GPS polling runs)
+- [ ] Load client master data (departments, users, vehicles with tracker IMEIs, drivers)
+- [ ] WhatsApp live: Meta business verification submitted; app `PrismGo`, system user `prismgo-api` and token set up; 12 templates submitted 16 Oct, in review. When approved: switch `OTP_CHANNELS` / `MESSAGING_PROVIDER` to `whatsapp`, `OTP_EXPOSE_CODE=false`
+- [ ] Production on the client's server before the free Render database expires (about 15 Nov): server, SSH access and domain; deploy with Compose; test restore
 - [ ] Sentry on api, web and mobile (deferred; logs + uptime check for the MVP)
 - [ ] UAT script run with the client: login, request, approve, assign, live trip, auto close, notifications
 - [ ] Fix list from UAT triaged: blockers fixed same day
@@ -238,6 +243,8 @@ Notes from Phase 5
 
 - Verified locally with the production stack (plain HTTP on port 8080): login with on-screen code, refresh cookie, live socket through Caddy, GPS webhook, a full simulated trip (booked → approved → assigned → auto start → auto complete) with every WhatsApp message sent from the queue, backup → restore, and replica restarts under load.
 - Images: api about 1.5 GB (Prisma engines + tsx for the admin scripts), web 81 MB.
+- Render demo: one Docker service where the API also serves the web app (`infra/render.Dockerfile`, `render.yaml`); the web app on Vercel calls it cross-origin (`VITE_API_ORIGIN`). Both hosts share `blackprism.in`, so the refresh cookie works. Behind proxies the API reads the client IP from `X-Forwarded-For` (`TRUST_PROXY`), so rate limits are per user.
+- WhatsApp templates were reworded for Meta's rules (no variable at the start or end, enough words per variable); variable order unchanged, so no code change. Sender +91 70014 41439 is shared with PrismChat; replies to PrismGo messages reach PrismChat's webhook.
 
 **Done when:** the client signs off the UAT script.
 
@@ -263,10 +270,10 @@ Notes from Phase 5
 
 ## Risks to the date
 
-| Risk                                              | Needed by | Fallback                                                      |
-| ------------------------------------------------- | --------- | ------------------------------------------------------------- |
-| WhatsApp verification / template approval is slow | 15 Oct    | OTP by SMS, notifications in-app and push until approved      |
-| GPS vendor access late                            | 15 Oct    | Launch live map on simulated data; switch when access arrives |
-| Google Maps key with billing                      | 15 Oct    | None good — blocks address search and maps                    |
-| SMS DLT registration slow                         | 15 Oct    | OTP over WhatsApp only                                        |
-| Server, domain, HTTPS                             | 19 Oct    | Deploy to a temporary VM                                      |
+| Risk                                              | Needed by | Fallback                                                                                    |
+| ------------------------------------------------- | --------- | ------------------------------------------------------------------------------------------- |
+| WhatsApp verification / template approval is slow | 15 Oct    | Submitted 16 Oct. Until approved: on-screen codes (supervised UAT) and in-app notifications |
+| GPS vendor access late                            | 15 Oct    | Pull API access received 16 Oct; simulator for UAT if the real feed isn't flowing           |
+| Google Maps key with billing                      | 15 Oct    | None good — blocks address search and maps                                                  |
+| SMS DLT registration slow                         | 15 Oct    | OTP over WhatsApp only                                                                      |
+| Server, domain, HTTPS                             | 19 Oct    | Demo on Render + Vercel since 16 Oct; production server needed by about 15 Nov              |

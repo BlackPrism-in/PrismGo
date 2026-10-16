@@ -2,15 +2,17 @@
 
 Fleet request and live tracking: employees request vehicles, HODs approve, the transport manager assigns a vehicle and driver and tracks every trip live.
 
-| Path              | What                                                     |
-| ----------------- | -------------------------------------------------------- |
-| `apps/api`        | NestJS API, Prisma + PostgreSQL/PostGIS, Redis           |
-| `apps/web`        | React web app (transport manager, admin, all roles)      |
-| `apps/mobile`     | Flutter app (requester, HOD)                             |
-| `packages/shared` | Roles, statuses and request workflow shared by api + web |
-| `infra`           | Docker Compose for local Postgres and Redis              |
+| Path              | What                                                                |
+| ----------------- | ------------------------------------------------------------------- |
+| `apps/api`        | NestJS API, Prisma + PostgreSQL/PostGIS, Redis                      |
+| `apps/web`        | React web app (transport manager, admin, all roles)                 |
+| `apps/mobile`     | Flutter app (requester, HOD)                                        |
+| `packages/shared` | Roles, statuses and request workflow shared by api + web            |
+| `infra`           | Docker Compose (local and production), Caddy, backups, Render image |
 
 MVP plan: [docs/MVP-PHASES.md](docs/MVP-PHASES.md) — go-live 21 Oct 2026.
+
+Demo / UAT: web https://prismgo.blackprism.in · API https://api.prismgo.blackprism.in (see [docs/deployment.md](docs/deployment.md)).
 
 ## Prerequisites
 
