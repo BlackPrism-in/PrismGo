@@ -73,17 +73,25 @@ Notes from Phase 0
 - NestJS 12 is ESM-only, so API tests run on Vitest + SWC rather than Jest.
 - Prisma is pinned to 7.10.0 (npm `latest` currently points at an 8.0 release candidate).
 
-Client inputs (request today, needed by 15 Oct)
+Inputs from the client (status 16 Oct)
 
-- [ ] GPS vendor: API docs, credentials, device IDs for each vehicle
-- [ ] Meta Business verification + WhatsApp Business number; draft templates submitted
-- [ ] Google Cloud project with billing; Maps JS, Places, Directions, Android/iOS Maps SDK keys
-- [ ] SMS gateway account + DLT sender ID and OTP template registration
-- [ ] Apple Developer and Google Play **organisation** accounts
-- [ ] Firebase project (FCM) for push
+- [x] GPS vendor contact and pull API access (Uffizio, Trakzee platform)
+- [ ] Vehicle list with tracker IMEI and registration number for each vehicle (asked Uffizio)
 - [ ] Master data: departments, HOD per department, employees (name, phone), vehicles, drivers
+- [ ] Logo for the app icon and web app (placeholder until then)
+- [ ] UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
 
-**Done when:** `docker compose up` + `pnpm dev` runs api and web; `flutter run` opens the mobile shell; DB migrates and seeds. ✅ Engineering done 14 Oct; client inputs pending.
+Our setup (BlackPrism accounts, status 16 Oct)
+
+- [x] WhatsApp: Meta business verification submitted; WhatsApp account BlackPrism, sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, token in Render; 12 templates submitted, in review
+- [x] Hosting for demo and UAT: Render (API, database, Redis) + Vercel (web) on `prismgo.blackprism.in`
+- [ ] Production server, before the free Render database expires (about 15 Nov)
+- [ ] Google Cloud project with billing; Maps JS, Places, Directions, Android/iOS Maps SDK keys (OpenStreetMap and a straight-line ETA until then)
+- [ ] Firebase project (FCM) for mobile push
+- [ ] Apple Developer and Google Play organisation accounts (until then: Android APK sideload; iPhone users use the web app)
+- [ ] SMS gateway + DLT sender ID and OTP template, only if an SMS fallback for login codes is wanted
+
+**Done when:** `docker compose up` + `pnpm dev` runs api and web; `flutter run` opens the mobile shell; DB migrates and seeds. ✅ Engineering done 14 Oct; inputs tracked above.
 
 ---
 
@@ -170,7 +178,7 @@ Tests: API e2e 25 (workflow, permissions, double-booking, race, sockets), web 20
 - [x] Android release APK builds (`flutter build apk --release --dart-define=API_ORIGIN=…`)
 - [ ] Google Places autocomplete → when the Maps key arrives
 - [ ] Live vehicle on a map + ETA → Phase 4 (needs GPS data and the Maps key)
-- [ ] Push notifications (FCM / APNs) → needs the client's Firebase project; device tokens table is ready
+- [ ] Push notifications (FCM / APNs) → needs our Firebase project; device tokens table is ready
 - [ ] Release signing: Android upload keystore (currently debug-signed); iOS TestFlight needs the Apple Developer account
 
 Tests: 17 widget/unit tests (login, roles/tabs, approvals, decline reason, detail actions, form validation, alerts, auth interceptor).
@@ -234,7 +242,7 @@ Push API (16 Oct): Uffizio also supports push. Sent them the [PrismGo GPS Push A
 - [ ] Uptime check on the API health URL (keeps the free Render service awake, so GPS polling runs)
 - [ ] Load client master data (departments, users, vehicles with tracker IMEIs, drivers)
 - [ ] WhatsApp live: Meta business verification submitted; app `PrismGo`, system user `prismgo-api` and token set up; 12 templates submitted 16 Oct, in review. When approved: switch `OTP_CHANNELS` / `MESSAGING_PROVIDER` to `whatsapp`, `OTP_EXPOSE_CODE=false`
-- [ ] Production on the client's server before the free Render database expires (about 15 Nov): server, SSH access and domain; deploy with Compose; test restore
+- [ ] Production on our server before the free Render database expires (about 15 Nov): server, SSH access and domain; deploy with Compose; test restore
 - [ ] Sentry on api, web and mobile (deferred; logs + uptime check for the MVP)
 - [ ] UAT script run with the client: login, request, approve, assign, live trip, auto close, notifications
 - [ ] Fix list from UAT triaged: blockers fixed same day
