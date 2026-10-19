@@ -15,7 +15,9 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 - [x] **Dev** Demo / UAT live: web https://prismgo.blackprism.in (Vercel), API https://api.prismgo.blackprism.in (Render); deploys on every push to `main`
 - [x] **Uffizio** Reviewed the Push API spec (19 Oct)
 - [x] **Dev** GPS: Uffizio (Trakzee) pull API poller built; trackers link to vehicles by registration number, unmatched ones listed on the Vehicles page; push webhook live; [Push API spec](PrismGo-GPS-Push-API.pdf) sent to Uffizio
-- [x] **Dev** Mobile push: Firebase project `prismgo-34a61` with the Android app registered; push sending (API) and device registration (app) built
+- [x] **Dev** Mobile push: Firebase project `prismgo-34a61` with the Android app registered; push sending (API) and device registration (app) built; `google-services.json` in the app build; service-account key in Render (19 Oct; key creation was allowed for PrismGo only, then the organisation's block was restored)
+- [x] **BlackPrism** Android SDK licences accepted
+- [x] **Dev** UAT Android build: release APK against the live API (19 Oct; debug-signed for sideloading until the upload key exists)
 - [x] **BlackPrism** WhatsApp: WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render
 - [x] **Meta** All 12 WhatsApp templates approved (Active, checked 19 Oct)
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
@@ -37,8 +39,6 @@ BlackPrism (needs our accounts or credentials)
 - [ ] Fix the "invalid payment info" warning on Render
 - [ ] **Today, before UAT:** uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min. Not set up yet: the API restarted 8 times in the last 24 h after sleeping, and GPS polling stops while it sleeps
 - [ ] **Today:** send the reply to Uffizio (username `deep@cital.co` + cURL); then give them the webhook secret by phone (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
-- [ ] Firebase: OK to download `google-services.json`; generate the service-account key and add it to Render as `FCM_SERVICE_ACCOUNT_JSON` (not in Render yet on 19 Oct)
-- [ ] Accept the Android SDK licences (`flutter doctor --android-licenses`)
 - [ ] Create the Android upload signing key (keystore); Play Console app + internal testing track
 - [ ] Google Maps API key with billing (OpenStreetMap and straight-line ETA until then)
 - [ ] Production server before the free Render database expires (about 15 Nov)
@@ -48,7 +48,7 @@ Dev
 
 - [ ] Real GPS run once vehicles are entered (trackers link by registration number); check Uffizio's test push, run push and pull side by side for a day, then turn pull off
 - [ ] **Ready now (templates approved):** switch login codes and alerts to WhatsApp (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false` in `render.yaml`); test with a real number first, keeping on-screen codes as a fallback for UAT if a message doesn't arrive
-- [ ] Add `google-services.json`, build the signed release APK, test push on a phone, upload to Play internal testing
+- [ ] Test push on a phone with the UAT APK; then sign with the upload key and upload to Play internal testing
 - [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
 - [ ] Go-live on 21 Oct: tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
 - [ ] Google Places search, Google map tiles and Directions ETA once the Maps key arrives
