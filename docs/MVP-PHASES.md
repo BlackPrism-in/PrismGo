@@ -4,7 +4,7 @@ Go-live: **Wed 21 Oct 2026**. Plan starts Wed 14 Oct 2026.
 
 Full system design: [PrismGo — Fleet Request & Tracking: System Design](https://claude.ai/code/artifact/27358f3e-0cd3-4647-b93e-587d24a4bf5d)
 
-## Status at a glance (16 Oct 2026)
+## Status at a glance (checked 19 Oct 2026)
 
 Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our credentials), **Dev** (engineering).
 
@@ -13,19 +13,20 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 - [x] **Dev** API, web app and Android app for the full flow: phone + OTP login, roles, master data, request → HOD approval → vehicle and driver assignment, live map, automatic trip start and end, notifications
 - [x] **Dev** Tests green: API e2e 39, API unit 15, web 23, shared 19, mobile 18; CI on every push
 - [x] **Dev** Demo / UAT live: web https://prismgo.blackprism.in (Vercel), API https://api.prismgo.blackprism.in (Render); deploys on every push to `main`
+- [x] **Uffizio** Reviewed the Push API spec (19 Oct)
 - [x] **Dev** GPS: Uffizio (Trakzee) pull API poller built; trackers link to vehicles by registration number, unmatched ones listed on the Vehicles page; push webhook live; [Push API spec](PrismGo-GPS-Push-API.pdf) sent to Uffizio
 - [x] **Dev** Mobile push: Firebase project `prismgo-34a61` with the Android app registered; push sending (API) and device registration (app) built
-- [x] **BlackPrism** WhatsApp: Meta business verification submitted; WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render; 12 templates submitted
+- [x] **BlackPrism** WhatsApp: WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render
+- [x] **Meta** All 12 WhatsApp templates approved (Active, checked 19 Oct)
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
 - [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
 - [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
 
 ### In review / waiting on others
 
-- [ ] **Meta** Business verification (submitted 16 Oct)
-- [ ] **Meta** 12 WhatsApp templates (submitted 16 Oct; usually minutes to a day)
-- [ ] **Uffizio** A test push batch; odometer unit, token lifetime, HTTPS address for the pull API (IMEIs come from their feed; no list needed)
-- [ ] **Client** Master data: departments, HODs, employees (name, phone), vehicles, drivers
+- [ ] **Meta** Business verification: still "In review" on 19 Oct (Meta says about 2 business days). Messaging works meanwhile, with Meta's lower daily limit
+- [ ] **Uffizio** Asked (19 Oct) for the username to integrate and a sample cURL before setting up push; **our reply is not sent yet** (draft ready). Then: their test push batch, odometer unit, token lifetime, HTTPS address for the pull API
+- [ ] **Client** Master data: departments, HODs, employees (name, phone), vehicles by registration number, drivers. Not entered yet on 19 Oct (the GPS poller finds no vehicles to ask about)
 - [ ] **Client** Logo (placeholder in use)
 - [ ] **Client** UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
 
@@ -34,19 +35,19 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 BlackPrism (needs our accounts or credentials)
 
 - [ ] Fix the "invalid payment info" warning on Render
-- [ ] Uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min (keeps the free API awake so GPS polling runs)
-- [ ] Phone Uffizio with the webhook secret (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
-- [ ] Firebase: OK to download `google-services.json`; generate the service-account key and add it to Render as `FCM_SERVICE_ACCOUNT_JSON`
+- [ ] **Today, before UAT:** uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min. Not set up yet: the API restarted 8 times in the last 24 h after sleeping, and GPS polling stops while it sleeps
+- [ ] **Today:** send the reply to Uffizio (username `deep@cital.co` + cURL); then give them the webhook secret by phone (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
+- [ ] Firebase: OK to download `google-services.json`; generate the service-account key and add it to Render as `FCM_SERVICE_ACCOUNT_JSON` (not in Render yet on 19 Oct)
 - [ ] Accept the Android SDK licences (`flutter doctor --android-licenses`)
 - [ ] Create the Android upload signing key (keystore); Play Console app + internal testing track
 - [ ] Google Maps API key with billing (OpenStreetMap and straight-line ETA until then)
 - [ ] Production server before the free Render database expires (about 15 Nov)
-- [ ] Book the UAT session for 20 Oct
+- [ ] **Today:** confirm the UAT session for 20 Oct and get the client's master data entered (or the CSVs to import)
 
 Dev
 
 - [ ] Real GPS run once vehicles are entered (trackers link by registration number); check Uffizio's test push, run push and pull side by side for a day, then turn pull off
-- [ ] Switch login codes and alerts to WhatsApp once the templates are approved (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false`); test with a real number
+- [ ] **Ready now (templates approved):** switch login codes and alerts to WhatsApp (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false` in `render.yaml`); test with a real number first, keeping on-screen codes as a fallback for UAT if a message doesn't arrive
 - [ ] Add `google-services.json`, build the signed release APK, test push on a phone, upload to Play internal testing
 - [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
 - [ ] Go-live on 21 Oct: tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
