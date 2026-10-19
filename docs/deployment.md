@@ -199,6 +199,8 @@ Done 19 Oct (templates approved): `render.yaml` has `OTP_CHANNELS: whatsapp,cons
 
 - Login codes go by WhatsApp. Only if Meta refuses a send does the console sender take over, and then the code shows on screen (UAT safety net). A code that Meta accepts but can't deliver (e.g. the number isn't on WhatsApp) does not fall back.
 - Alerts go by WhatsApp with retries; in-app and push alerts don't depend on it.
+- The WhatsApp account needs a **payment method** (WhatsApp Manager → Overview, or Billing & payments → WhatsApp Business accounts → BlackPrism). Without one, Meta accepts template sends but never delivers them, so the fallback can't help. Added 20 Oct.
+- The system user `prismgo-api` needs both the **WhatsApp account** and the **Messaging account** BlackPrism (full control); without the Messaging account Meta answers `(#10) Viewer cannot access the provided Paid Message Account`.
 - Test after each change: log in with a real number (code arrives on WhatsApp, no code on screen), then run a request through approve and assign and check each message. Failures show in the API log as `OTP via whatsapp failed` or `Outbox … attempt`.
 
 At go-live: `OTP_CHANNELS: whatsapp`, `OTP_EXPOSE_CODE: 'false'`, `APP_ENV: production` (production refuses the console sender). Edit these in `render.yaml` and push; Blueprint syncs overwrite dashboard edits to keys the file sets.
