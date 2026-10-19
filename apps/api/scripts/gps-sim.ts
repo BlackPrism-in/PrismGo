@@ -6,7 +6,7 @@
  *   pnpm --filter @prismgo/api sim PG-1001           # drive the vehicle assigned to an existing request
  *   options: --step 250  metres per tick   --every 2  seconds between ticks
  *
- * Logs in with the on-screen code (dev, or staging with OTP_EXPOSE_CODE=true).
+ * Logs in with the on-screen code (dev), or asks for the WhatsApp code in the terminal.
  * Against a UAT server: SIM_API_URL=https://<domain>/api/v1 GPS_WEBHOOK_SECRET=… \
  *   SIM_MANAGER_PHONE=<transport manager> pnpm --filter @prismgo/api sim PG-1001
  * (demo mode there also needs SIM_REQUESTER_PHONE and SIM_HOD_PHONE: the requester's HOD).
@@ -14,6 +14,7 @@
 import 'dotenv/config';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { createInterface } from 'node:readline/promises';
 import { distanceM, interpolate, bearing, type LatLng } from '@prismgo/shared';
 
 const API = process.env['SIM_API_URL'] ?? `http://localhost:${process.env['PORT'] ?? 4000}/api/v1`;
@@ -48,6 +49,15 @@ async function call<T>(method: string, path: string, token?: string, body?: unkn
   return data;
 }
 
+async function askCode(phone: string): Promise<string> {
+  const rl = createInterface({ input: process.stdin, output: process.stdout });
+  try {
+    return (await rl.question(`Enter the login code sent to ${phone} on WhatsApp: `)).trim();
+  } finally {
+    rl.close();
+  }
+}
+
 /** Refresh tokens per server and phone, so repeated runs don't use up login codes (3 per 10 min). */
 const TOKEN_CACHE = resolve(__dirname, '..', '.sim-tokens.json');
 const cache: Record<string, string> = existsSync(TOKEN_CACHE)
@@ -77,17 +87,16 @@ async function login(phone: string): Promise<string> {
   const { devCode } = await call<{ devCode?: string }>('POST', '/auth/otp/request', undefined, {
     phone,
   });
-  if (!devCode)
-    throw new Error(
-      'No code returned. Needs OTP_CHANNELS=console (dev) or OTP_EXPOSE_CODE=true (staging).',
-    );
+  // The code went by WhatsApp: ask for it (only needed once per phone; the refresh
+  // token is cached afterwards).
+  const code = devCode ?? (await askCode(phone));
   const pair = await call<{ accessToken: string; refreshToken: string }>(
     'POST',
     '/auth/otp/verify',
     undefined,
     {
       phone,
-      code: devCode,
+      code,
     },
   );
   cache[key] = pair.refreshToken;

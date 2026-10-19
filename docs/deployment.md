@@ -193,10 +193,14 @@ The sender number is shared with PrismChat (its own app and system user). Sendin
 
 Do not re-register the number from the PrismGo app's "Production setup": the number is already connected, and re-registering could disconnect PrismChat.
 
-### Switching to WhatsApp once templates are approved
+### WhatsApp switch-over
 
-1. In WhatsApp Manager → Message templates, all 12 show **Active**.
-2. In `render.yaml` set `OTP_CHANNELS: whatsapp`, `MESSAGING_PROVIDER: whatsapp`, `OTP_EXPOSE_CODE: 'false'`, and later `APP_ENV: production`. Push to `main`; the Blueprint syncs (edit these in the file, not the dashboard: Blueprint syncs overwrite dashboard edits to keys the file sets).
-3. Test: log in with a real number (code arrives on WhatsApp), then run a request through approve and assign and check each message.
+Done 19 Oct (templates approved): `render.yaml` has `OTP_CHANNELS: whatsapp,console`, `MESSAGING_PROVIDER: whatsapp`, `OTP_EXPOSE_CODE: 'true'`, `APP_ENV: staging`.
+
+- Login codes go by WhatsApp. Only if Meta refuses a send does the console sender take over, and then the code shows on screen (UAT safety net). A code that Meta accepts but can't deliver (e.g. the number isn't on WhatsApp) does not fall back.
+- Alerts go by WhatsApp with retries; in-app and push alerts don't depend on it.
+- Test after each change: log in with a real number (code arrives on WhatsApp, no code on screen), then run a request through approve and assign and check each message. Failures show in the API log as `OTP via whatsapp failed` or `Outbox … attempt`.
+
+At go-live: `OTP_CHANNELS: whatsapp`, `OTP_EXPOSE_CODE: 'false'`, `APP_ENV: production` (production refuses the console sender). Edit these in `render.yaml` and push; Blueprint syncs overwrite dashboard edits to keys the file sets.
 
 Rotating the token: generate a new one for `prismgo-api`, replace `WHATSAPP_ACCESS_TOKEN` in Render, then revoke the old one in Business Settings.

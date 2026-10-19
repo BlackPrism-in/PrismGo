@@ -35,20 +35,20 @@ services:
         generateValue: true
       - key: GPS_WEBHOOK_SECRET
         generateValue: true
-      # Until WhatsApp templates are approved: codes and messages are logged, and the
-      # login code is shown on screen. Anyone with the link can then log in as any
-      # registered number: demo data only.
+      # Login codes and alerts go by WhatsApp (templates approved 19 Oct). During UAT the
+      # console sender stays second in line: only if WhatsApp refuses a code is it logged
+      # and, with OTP_EXPOSE_CODE, shown on screen. At go-live: OTP_CHANNELS=whatsapp,
+      # OTP_EXPOSE_CODE=false, APP_ENV=production (production refuses the console sender).
       - key: OTP_CHANNELS
-        value: console
+        value: whatsapp,console
       - key: OTP_EXPOSE_CODE
         value: 'true'
       - key: MESSAGING_PROVIDER
-        value: console
+        value: whatsapp
       - key: OTP_TTL_SECONDS
         value: '300'
       # WhatsApp Cloud API (BlackPrism, +91 70014 41439). WHATSAPP_ACCESS_TOKEN is set in
-      # the Render dashboard, never here. Switch OTP_CHANNELS / MESSAGING_PROVIDER to
-      # whatsapp (and OTP_EXPOSE_CODE to false) once the templates are approved.
+      # the Render dashboard, never here.
       - key: WHATSAPP_PHONE_NUMBER_ID
         value: '1267308809792402'
       # GPS vendor (Trakzee pull API)

@@ -6,7 +6,7 @@ Run with the client on the UAT server, each person on their own device. Mark eac
 
 ## Before the session
 
-- [ ] Server deployed per [deployment.md](deployment.md) with `APP_ENV=staging`. Until WhatsApp is approved: `OTP_CHANNELS=console`, `MESSAGING_PROVIDER=console`, `OTP_EXPOSE_CODE=true` (login code shown on screen).
+- [ ] Server deployed per [deployment.md](deployment.md) with `APP_ENV=staging`, `OTP_CHANNELS=whatsapp,console`, `MESSAGING_PROVIDER=whatsapp`, `OTP_EXPOSE_CODE=true`: login codes and alerts arrive on WhatsApp; only if WhatsApp refuses a code does it show on screen instead.
 - [ ] Client master data imported. Vehicle GPS device ids match the vendor's.
 - [ ] APK installed on the requester's and HOD's Android phones (iPhone: TestFlight or web).
 - [ ] People and phones for the session:
@@ -84,7 +84,7 @@ Use this instead of section 5 until the vendor's GPS feed is connected. On a lap
 SIM_API_URL=https://<domain>/api/v1 GPS_WEBHOOK_SECRET=<secret> SIM_MANAGER_PHONE=<TM phone> pnpm --filter @prismgo/api sim PG-xxxx
 ```
 
-It drives the assigned vehicle from near the pickup to the drop. Steps 5.1–5.5 then apply as written. Run it only with `OTP_EXPOSE_CODE=true`, because it logs in as the TM with the on-screen code.
+It drives the assigned vehicle from near the pickup to the drop. Steps 5.1–5.5 then apply as written. The first run asks for the TM's login code in the terminal (sent to the TM on WhatsApp); later runs reuse the saved session.
 
 ## 7. Notifications
 
@@ -111,4 +111,4 @@ Fix list: blockers (★ fails) fixed and re-tested the same day; the rest schedu
 
 **Client sign-off:** name ____________ signature ____________ date ____________
 
-After sign-off, for go-live: set `OTP_EXPOSE_CODE=false`. Switch to `APP_ENV=production` with WhatsApp keys once templates are approved.
+After sign-off, for go-live: `OTP_CHANNELS=whatsapp`, `OTP_EXPOSE_CODE=false`, `APP_ENV=production`.

@@ -5,7 +5,7 @@ PrismGo sends these through the WhatsApp Cloud API. **Each template must be crea
 - Language: create each template as **English** (code `en`, not English (US)).
 - Names and the order of the `{{n}}` variables must match exactly; the code fills them in that order (`apps/api/src/notifications/messages.ts`).
 - Meta rejects a body that starts or ends with a variable, or has too many variables for its length, so every body starts and ends with fixed words and variables appear in order.
-- Status (16 Oct 2026): all 12 submitted in WhatsApp Manager (BlackPrism account, sender +91 70014 41439, phone number ID `1267308809792402`), in review.
+- Status: all 12 **approved (Active)** on 19 Oct 2026 (BlackPrism account, sender +91 70014 41439, phone number ID `1267308809792402`). PrismGo sends login codes and alerts with them since 19 Oct.
 - Until a template is approved, set `MESSAGING_PROVIDER=console` (messages are only logged) and people still get in-app notifications.
 
 | Template name             | Category       | Sent to                                                 | Body                                                                                                                                                                                                                   |

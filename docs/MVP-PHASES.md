@@ -20,6 +20,7 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 - [x] **Dev** UAT Android build: release APK against the live API (19 Oct; debug-signed for sideloading until the upload key exists)
 - [x] **BlackPrism** WhatsApp: WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render
 - [x] **Meta** All 12 WhatsApp templates approved (Active, checked 19 Oct)
+- [x] **Dev** Switched to WhatsApp (19 Oct): login codes and alerts go by WhatsApp; for UAT the on-screen code appears only if WhatsApp refuses a code (`OTP_CHANNELS=whatsapp,console`)
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
 - [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
 - [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
@@ -47,7 +48,8 @@ BlackPrism (needs our accounts or credentials)
 Dev
 
 - [ ] Real GPS run once vehicles are entered (trackers link by registration number); check Uffizio's test push, run push and pull side by side for a day, then turn pull off
-- [ ] **Ready now (templates approved):** switch login codes and alerts to WhatsApp (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false` in `render.yaml`); test with a real number first, keeping on-screen codes as a fallback for UAT if a message doesn't arrive
+- [ ] Test the WhatsApp switch with a real number: login code on WhatsApp, then each alert through approve and assign
+- [ ] At go-live: `OTP_CHANNELS=whatsapp`, `OTP_EXPOSE_CODE=false`, `APP_ENV=production`
 - [ ] Test push on a phone with the UAT APK; then sign with the upload key and upload to Play internal testing
 - [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
 - [ ] Go-live on 21 Oct: tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
@@ -298,7 +300,7 @@ Push API (16 Oct): Uffizio also supports push. Sent them the [PrismGo GPS Push A
 - [x] Demo / UAT deployment (16 Oct): web app on Vercel at https://prismgo.blackprism.in, API + PostgreSQL + Redis on Render (free, Singapore) at https://api.prismgo.blackprism.in; DNS at Namecheap; both deploy on push to `main`. See [deployment.md](deployment.md#demo-on-render-free-plan)
 - [ ] Uptime check on the API health URL (keeps the free Render service awake, so GPS polling runs)
 - [ ] Load client master data (departments, users, vehicles by registration number, drivers)
-- [ ] WhatsApp live: Meta business verification submitted; app `PrismGo`, system user `prismgo-api` and token set up; 12 templates submitted 16 Oct, in review. When approved: switch `OTP_CHANNELS` / `MESSAGING_PROVIDER` to `whatsapp`, `OTP_EXPOSE_CODE=false`
+- [x] WhatsApp live (19 Oct): templates approved; codes and alerts on WhatsApp with an on-screen fallback for UAT. Business verification still in review
 - [ ] Production on our server before the free Render database expires (about 15 Nov): server, SSH access and domain; deploy with Compose; test restore
 - [ ] Sentry on api, web and mobile (deferred; logs + uptime check for the MVP)
 - [ ] UAT script run with the client: login, request, approve, assign, live trip, auto close, notifications
