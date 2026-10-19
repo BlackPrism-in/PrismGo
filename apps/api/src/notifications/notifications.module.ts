@@ -1,5 +1,5 @@
 import { BullModule } from '@nestjs/bullmq';
-import { Global, Module } from '@nestjs/common';
+import { Global, Logger, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { isLiveProduction } from '../config/env';
 import { ConsoleMessenger, MESSENGER, WhatsAppMessenger, type Messenger } from './messenger';
@@ -36,10 +36,20 @@ function buildMessenger(config: ConfigService): Messenger {
   throw new Error(`Unknown MESSAGING_PROVIDER "${provider}"`);
 }
 
-/** Push via FCM when FCM_SERVICE_ACCOUNT_JSON is set; otherwise push is skipped. */
+/**
+ * Push via FCM when FCM_SERVICE_ACCOUNT_JSON is set; otherwise push is skipped.
+ * A bad key turns push off with an error in the log instead of stopping the API:
+ * login, requests, WhatsApp and in-app alerts don't depend on it.
+ */
 function buildPushSender(config: ConfigService): PushSender {
   const raw = config.get<string>('FCM_SERVICE_ACCOUNT_JSON')?.trim();
-  return raw ? new FcmPushSender(parseServiceAccount(raw)) : new LogPushSender();
+  if (!raw) return new LogPushSender();
+  try {
+    return new FcmPushSender(parseServiceAccount(raw));
+  } catch (err) {
+    new Logger('Push').error(`Push disabled: ${(err as Error).message}`);
+    return new LogPushSender();
+  }
 }
 
 @Global()

@@ -40,7 +40,18 @@ interface ServiceAccount {
 /** Accepts the service-account JSON as-is or base64-encoded (easier in some dashboards). */
 export function parseServiceAccount(raw: string): ServiceAccount {
   const text = raw.trim().startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf8');
-  const sa = JSON.parse(text) as Partial<ServiceAccount>;
+  let sa: Partial<ServiceAccount> & { type?: string; project_info?: unknown };
+  try {
+    sa = JSON.parse(text) as typeof sa;
+  } catch {
+    // JSON.parse messages quote the input, which here holds a private key.
+    throw new Error('FCM_SERVICE_ACCOUNT_JSON is not valid JSON (or base64 of JSON)');
+  }
+  if (sa.project_info) {
+    throw new Error(
+      'FCM_SERVICE_ACCOUNT_JSON holds google-services.json (the app config). Use the service-account key: Firebase → Project settings → Service accounts → Generate new private key',
+    );
+  }
   if (!sa.project_id || !sa.client_email || !sa.private_key) {
     throw new Error('FCM_SERVICE_ACCOUNT_JSON is missing project_id, client_email or private_key');
   }

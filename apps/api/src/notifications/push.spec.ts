@@ -77,5 +77,17 @@ describe('FCM push sender', () => {
       account.client_email,
     );
     expect(() => parseServiceAccount('{"project_id":"x"}')).toThrow('missing');
+    expect(() => parseServiceAccount('{"project_info":{"project_id":"x"},"client":[]}')).toThrow(
+      'google-services.json',
+    );
+    // A parse error must not echo the input (it holds a private key).
+    expect(() => parseServiceAccount('{"private_key":"-----BEGIN SECRET')).toThrow(
+      /^FCM_SERVICE_ACCOUNT_JSON is not valid JSON/,
+    );
+    try {
+      parseServiceAccount('{"private_key":"-----BEGIN SECRET');
+    } catch (e) {
+      expect((e as Error).message).not.toContain('SECRET');
+    }
   });
 });
