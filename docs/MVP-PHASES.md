@@ -20,7 +20,7 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 - [x] **Dev** UAT Android build: release APK against the live API (19 Oct; debug-signed for sideloading until the upload key exists)
 - [x] **BlackPrism** WhatsApp: WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render
 - [x] **Meta** All 12 WhatsApp templates approved (Active, checked 19 Oct)
-- [x] **Dev** Switched to WhatsApp (19 Oct): login codes and alerts go by WhatsApp; for UAT the on-screen code appears only if WhatsApp refuses a code (`OTP_CHANNELS=whatsapp,console`)
+- [x] **Dev** WhatsApp sending works (19 Oct, after giving `prismgo-api` the Messaging account). **Paused 20 Oct:** Meta drops every message until the WhatsApp account has a payment method, so login codes are back on screen (`OTP_CHANNELS=console`)
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
 - [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
 - [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
@@ -37,6 +37,7 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 
 BlackPrism (needs our accounts or credentials)
 
+- [ ] **Add a payment method to the WhatsApp account** (WhatsApp Manager → Overview → Add payment method); then switch login codes and alerts back to WhatsApp
 - [ ] Fix the "invalid payment info" warning on Render
 - [ ] **Today, before UAT:** uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min. Not set up yet: the API restarted 8 times in the last 24 h after sleeping, and GPS polling stops while it sleeps
 - [ ] **Today:** send the reply to Uffizio (username `deep@cital.co` + cURL); then give them the webhook secret by phone (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
