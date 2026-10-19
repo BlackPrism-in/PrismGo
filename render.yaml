@@ -39,12 +39,15 @@ services:
       # console sender stays second in line: only if WhatsApp refuses a code is it logged
       # and, with OTP_EXPOSE_CODE, shown on screen. At go-live: OTP_CHANNELS=whatsapp,
       # OTP_EXPOSE_CODE=false, APP_ENV=production (production refuses the console sender).
+      # 20 Oct: back on console until the WhatsApp account has a payment method (Meta
+      # accepts template sends without one but never delivers them, so the fallback
+      # can't kick in). Switch back to whatsapp,console / whatsapp once it's added.
       - key: OTP_CHANNELS
-        value: whatsapp,console
+        value: console
       - key: OTP_EXPOSE_CODE
         value: 'true'
       - key: MESSAGING_PROVIDER
-        value: whatsapp
+        value: console
       - key: OTP_TTL_SECONDS
         value: '300'
       # WhatsApp Cloud API (BlackPrism, +91 70014 41439). WHATSAPP_ACCESS_TOKEN is set in
