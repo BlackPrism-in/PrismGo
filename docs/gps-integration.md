@@ -19,10 +19,11 @@ From the vendor's "Token Based Pull API" document:
 
 How PrismGo uses it:
 
-- A BullMQ job runs every `GPS_PULL_INTERVAL_S` seconds (default 15) on one API replica at a time. It asks for every active vehicle that has a GPS device id.
+- A BullMQ job runs every `GPS_PULL_INTERVAL_S` seconds (default 15) on one API replica at a time. It asks for every active vehicle: by IMEI where known, by registration number otherwise.
 - The token is kept in memory and requested again whenever the vendor rejects it.
-- Row mapping: `Imeino` → device id (must equal the vehicle's GPS device id in PrismGo); `Latitude`/`Longitude`; `GPSActualTime` (else `Datetime`) as `DD-MM-YYYY HH:mm:ss` in IST; `Speed` → km/h; `Angle` → heading; `IGN` ON/OFF → ignition. `--` means missing. Rows without a usable fix are skipped.
-- Only fixes newer than the last one seen per device go into the pipeline. Rows for vehicles not in PrismGo are ignored.
+- **Trackers link themselves:** a row whose IMEI is new and whose `Vehicle_No` matches a vehicle with no GPS device id (ignoring spaces, dashes and case) sets that vehicle's GPS device id to the IMEI. Rows matching no vehicle are kept for a day and listed for admins on the Vehicles page (`GET /api/v1/gps/trackers/unlinked`).
+- Row mapping: `Imeino` → device id; `Latitude`/`Longitude`; `GPSActualTime` (else `Datetime`) as `DD-MM-YYYY HH:mm:ss` in IST; `Speed` → km/h; `Angle` → heading; `IGN` ON/OFF → ignition. `--` means missing. Rows without a usable fix are skipped.
+- Only fixes newer than the last one seen per device go into the pipeline. Rows for vehicles not in PrismGo are not stored.
 - `Odometer` is not used until the vendor confirms its unit. Trip distance comes from the GPS path.
 - If the vendor is unreachable, the error is logged once per outage. Running trips raise the usual "GPS signal lost" alert after 5 minutes.
 

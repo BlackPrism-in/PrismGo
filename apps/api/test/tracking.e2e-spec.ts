@@ -4,6 +4,7 @@ import type { AddressInfo } from 'node:net';
 import { io } from 'socket.io-client';
 import request from 'supertest';
 import type { PrismaClient } from '../src/generated/prisma/client';
+import { RedisService } from '../src/redis/redis.service';
 import { GpsPullProcessor } from '../src/tracking/gps-pull.processor';
 import { GpsWatchdogProcessor } from '../src/tracking/gps-watchdog.processor';
 import { TrakzeeClient } from '../src/tracking/vendor/trakzee';
@@ -96,6 +97,12 @@ describe('GPS tracking', () => {
     await prisma.vehicle.updateMany({ data: { status: 'available' } });
     app = await createApp();
     await app.listen(0);
+    // Live state (latest positions, poller memory) from earlier runs would make
+    // fresh points look old; start clean.
+    const redis = app.get(RedisService);
+    if (redis.status === 'wait') await redis.connect();
+    const stale = await redis.keys('live:prismgo_test:*');
+    if (stale.length) await redis.del(...stale);
     for (const [k, phone] of Object.entries(PHONES)) t[k] = (await login(app, phone)).accessToken;
     dzire = (await prisma.vehicle.findFirstOrThrow({ where: { gpsDeviceId: 'SIM-001' } })).id;
     innova = (await prisma.vehicle.findFirstOrThrow({ where: { gpsDeviceId: 'SIM-002' } })).id;
@@ -329,7 +336,7 @@ describe('GPS tracking', () => {
       ),
     });
 
-    expect(await poller.process()).toEqual({ rows: 2, sent: 1 });
+    expect(await poller.process()).toEqual({ rows: 2, sent: 1, linked: 0 });
     const live = await http().get('/api/v1/live/vehicles').set(as('manager')).expect(200);
     const innovaLive = live.body.find((v: { id: string }) => v.id === innova);
     expect(innovaLive.position).toMatchObject({
@@ -340,6 +347,85 @@ describe('GPS tracking', () => {
     });
 
     // Unchanged fix on the next poll: nothing new to process.
-    expect(await poller.process()).toEqual({ rows: 2, sent: 0 });
+    expect(await poller.process()).toEqual({ rows: 2, sent: 0, linked: 0 });
+  });
+
+  it('links a tracker to its vehicle by registration number and lists the rest', async () => {
+    const org = await prisma.organisation.findFirstOrThrow();
+    const cleanup = async () => {
+      await prisma.locationPoint.deleteMany({ where: { vehicle: { regNo: 'KA05MN4321' } } });
+      await prisma.vehicle.deleteMany({ where: { regNo: 'KA05MN4321' } });
+    };
+    await cleanup();
+    const tempo = await prisma.vehicle.create({
+      data: { orgId: org.id, regNo: 'KA05MN4321', type: 'Tempo Traveller', seats: 12 },
+    });
+    const ist = (ms: number) => {
+      const d = new Date(ms + 330 * 60_000).toISOString();
+      return `${d.slice(8, 10)}-${d.slice(5, 7)}-${d.slice(0, 4)} ${d.slice(11, 19)}`;
+    };
+    const fixAt = Math.floor((Date.now() + 60_000) / 1000) * 1000;
+    const rows = [
+      // Fitted to the vehicle above; the vendor writes the number with spaces.
+      {
+        Vehicle_No: 'KA 05 MN 4321',
+        Imeino: '861111111111111',
+        Latitude: '12.95',
+        Longitude: '77.60',
+        GPSActualTime: ist(fixAt),
+      },
+      // A tracker on the account whose vehicle isn't in PrismGo.
+      {
+        Vehicle_No: 'GJ01KT0057',
+        Imeino: '862222222222222',
+        Latitude: '23.04',
+        Longitude: '72.53',
+        GPSActualTime: ist(fixAt),
+      },
+    ];
+    const fetchFn = (async (url: string) =>
+      new Response(
+        JSON.stringify(
+          url.includes('generateAccessToken')
+            ? { token: 'test-token-1234567890' }
+            : { root: { VehicleData: rows } },
+        ),
+      )) as typeof fetch;
+    const poller = app.get(GpsPullProcessor);
+    Object.assign(poller, {
+      client: new TrakzeeClient(
+        {
+          baseUrl: 'http://vendor.test/webservice',
+          username: 'u',
+          password: 'p',
+          projectId: '37',
+          company: 'Test',
+          timeZone: '+05:30',
+        },
+        fetchFn,
+      ),
+    });
+
+    expect(await poller.process()).toMatchObject({ rows: 2, sent: 1, linked: 1 });
+    const linked = await prisma.vehicle.findUniqueOrThrow({ where: { id: tempo.id } });
+    expect(linked.gpsDeviceId).toBe('861111111111111');
+    const live = await http().get('/api/v1/live/vehicles').set(as('manager')).expect(200);
+    expect(live.body.find((v: { id: string }) => v.id === tempo.id).position).toMatchObject({
+      lat: 12.95,
+    });
+
+    const unlinked = await http()
+      .get('/api/v1/gps/trackers/unlinked')
+      .set(as('manager'))
+      .expect(200);
+    expect(unlinked.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ imei: '862222222222222', vehicleNo: 'GJ01KT0057' }),
+      ]),
+    );
+    expect(unlinked.body.some((t: { imei: string }) => t.imei === '861111111111111')).toBe(false);
+    await http().get('/api/v1/gps/trackers/unlinked').set(as('requester')).expect(403);
+
+    await cleanup();
   });
 });

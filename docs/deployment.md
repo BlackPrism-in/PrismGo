@@ -81,13 +81,13 @@ The import checks every row before writing anything and can be re-run safely.
 
 The vendor (Trakzee) offers a pull API, which PrismGo polls every 15 seconds (see [gps-integration.md](gps-integration.md)). In `infra/.env.prod` set `GPS_PULL_PROVIDER=trakzee` and the `GPS_VENDOR_*` username, password, project id and company name.
 
-Each vehicle's **GPS device id** in the admin screen must be its tracker's IMEI, as the vendor lists it. Check the connection and matching from the server:
+Trackers link themselves: the vendor's feed reports each tracker's IMEI with the registration number of its vehicle, and PrismGo fills in the vehicle's **GPS device id** from the first matching row. Enter vehicles with their registration number only. Trackers whose number matches no vehicle are listed on the **Vehicles** page. To check the connection from the server:
 
 ```bash
 prod exec api npx tsx scripts/gps-check.ts
 ```
 
-Vehicles that show `—` under "in PrismGo" have an IMEI that matches no vehicle: fix the GPS device id on the Vehicles page. The webhook (`https://<domain>/api/v1/gps/webhook` with header `X-GPS-Secret`) stays available for the simulator or a vendor that pushes.
+Rows that show `—` under "in PrismGo" match no vehicle yet: add the vehicle, or correct its registration number. The webhook (`https://<domain>/api/v1/gps/webhook` with header `X-GPS-Secret`) stays available for the simulator or a vendor that pushes.
 
 ## 6. Mobile app
 

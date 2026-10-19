@@ -169,7 +169,11 @@ export class TrakzeeClient {
       {
         company_names: this.config.company,
         vehicle_nos: vehicles.map((v) => vendorRegNo(v.regNo)).join(','),
-        imei_nos: vehicles.map((v) => v.imei).join(','),
+        // Vehicles not yet linked have no IMEI; the vendor matches them by number.
+        imei_nos: vehicles
+          .map((v) => v.imei)
+          .filter(Boolean)
+          .join(','),
         format: 'json',
       },
       { 'auth-code': token },

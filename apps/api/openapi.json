@@ -1396,6 +1396,35 @@
         ]
       }
     },
+    "/api/v1/gps/trackers/unlinked": {
+      "get": {
+        "operationId": "LiveController_unlinkedTrackers",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UnlinkedTrackerDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "live"
+        ]
+      }
+    },
     "/api/v1/live/vehicles": {
       "get": {
         "operationId": "LiveController_vehicles",
@@ -2915,6 +2944,30 @@
           "duplicates",
           "rejected",
           "unknownDevices"
+        ]
+      },
+      "UnlinkedTrackerDto": {
+        "type": "object",
+        "properties": {
+          "imei": {
+            "type": "string",
+            "example": "358480082479488",
+            "description": "Tracker IMEI on the GPS vendor account"
+          },
+          "vehicleNo": {
+            "type": "string",
+            "example": "GJ01KT0057",
+            "description": "Vehicle number the vendor reports for it"
+          },
+          "lastSeen": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "imei",
+          "vehicleNo",
+          "lastSeen"
         ]
       },
       "PositionDto": {

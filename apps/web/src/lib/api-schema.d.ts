@@ -4,1997 +4,2067 @@
  */
 
 export interface paths {
-    "/api/v1/auth/otp/request": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_requestOtp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/api/v1/auth/otp/request': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/auth/otp/verify": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_verifyOtp"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_requestOtp'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/otp/verify': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/auth/refresh": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_refresh"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_verifyOtp'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/refresh': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/auth/logout": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AuthController_logout"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_refresh'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/logout': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/auth/me": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AuthController_me"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AuthController_logout'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/auth/me': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/health": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["HealthController_check"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['AuthController_me'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/health': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/departments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["DepartmentsController_list"];
-        put?: never;
-        post: operations["DepartmentsController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['HealthController_check'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/departments': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/departments/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["DepartmentsController_update"];
-        trace?: never;
+    get: operations['DepartmentsController_list'];
+    put?: never;
+    post: operations['DepartmentsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/departments/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/users": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["UsersController_list"];
-        put?: never;
-        post: operations["UsersController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['DepartmentsController_update'];
+    trace?: never;
+  };
+  '/api/v1/users': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/users/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["UsersController_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["UsersController_update"];
-        trace?: never;
+    get: operations['UsersController_list'];
+    put?: never;
+    post: operations['UsersController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/users/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/vehicles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["VehiclesController_list"];
-        put?: never;
-        post: operations["VehiclesController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['UsersController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['UsersController_update'];
+    trace?: never;
+  };
+  '/api/v1/vehicles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/vehicles/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["VehiclesController_update"];
-        trace?: never;
+    get: operations['VehiclesController_list'];
+    put?: never;
+    post: operations['VehiclesController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/vehicles/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/drivers": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["DriversController_list"];
-        put?: never;
-        post: operations["DriversController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['VehiclesController_update'];
+    trace?: never;
+  };
+  '/api/v1/drivers': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/drivers/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["DriversController_update"];
-        trace?: never;
+    get: operations['DriversController_list'];
+    put?: never;
+    post: operations['DriversController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/drivers/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/notifications": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["NotificationsController_list"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['DriversController_update'];
+    trace?: never;
+  };
+  '/api/v1/notifications': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/notifications/unread-count": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["NotificationsController_unreadCount"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['NotificationsController_list'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/notifications/unread-count': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/notifications/{id}/read": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["NotificationsController_markRead"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['NotificationsController_unreadCount'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/notifications/{id}/read': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/notifications/read-all": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["NotificationsController_markAllRead"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['NotificationsController_markRead'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/notifications/read-all': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/devices": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["DevicesController_register"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['NotificationsController_markAllRead'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/devices': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/devices/{token}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        delete: operations["DevicesController_unregister"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['DevicesController_register'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/devices/{token}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["RequestsController_list"];
-        put?: never;
-        post: operations["RequestsController_create"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post?: never;
+    delete: operations['DevicesController_unregister'];
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["RequestsController_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch: operations["RequestsController_update"];
-        trace?: never;
+    get: operations['RequestsController_list'];
+    put?: never;
+    post: operations['RequestsController_create'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests/{id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}/submit": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["RequestsController_submit"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['RequestsController_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch: operations['RequestsController_update'];
+    trace?: never;
+  };
+  '/api/v1/requests/{id}/submit': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}/cancel": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["RequestsController_cancel"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['RequestsController_submit'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests/{id}/cancel': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["RequestsController_approve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['RequestsController_cancel'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests/{id}/approve': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["RequestsController_reject"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['RequestsController_approve'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests/{id}/reject': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/availability": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AssignmentsController_availability"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['RequestsController_reject'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/availability': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/requests/{id}/assign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AssignmentsController_assign"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['AssignmentsController_availability'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/requests/{id}/assign': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/trips/{id}/reassign": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AssignmentsController_reassign"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AssignmentsController_assign'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/trips/{id}/reassign': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/gps/webhook": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["GpsWebhookController_ingest"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['AssignmentsController_reassign'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/gps/webhook': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/live/vehicles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["LiveController_vehicles"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    post: operations['GpsWebhookController_ingest'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/gps/trackers/unlinked': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/trips/{id}/track": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["LiveController_track"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['LiveController_unlinkedTrackers'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/live/vehicles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/trips/{id}/start": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["LiveController_start"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['LiveController_vehicles'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/trips/{id}/track': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/api/v1/trips/{id}/end": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["LiveController_end"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get: operations['LiveController_track'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/trips/{id}/start': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    get?: never;
+    put?: never;
+    post: operations['LiveController_start'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/api/v1/trips/{id}/end': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post: operations['LiveController_end'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        RequestOtpDto: {
-            /**
-             * @description Indian mobile, any common format
-             * @example 9812345678
-             */
-            phone: string;
-        };
-        RequestOtpResponseDto: {
-            /** @example true */
-            sent: boolean;
-            /** @description Only in development with the console sender */
-            devCode?: string;
-        };
-        VerifyOtpDto: {
-            /** @example 9812345678 */
-            phone: string;
-            /** @example 123456 */
-            code: string;
-        };
-        /** @enum {string} */
-        Role: "requester" | "hod" | "transport_manager" | "super_admin";
-        MeDepartmentDto: {
-            id: string;
-            name: string;
-        };
-        MeDto: {
-            id: string;
-            name: string;
-            /** @example +919812345678 */
-            phone: string;
-            email?: string | null;
-            roles: components["schemas"]["Role"][];
-            department?: components["schemas"]["MeDepartmentDto"] | null;
-            orgId: string;
-            orgName: string;
-        };
-        AuthResponseDto: {
-            accessToken: string;
-            /** @description Omitted for web clients (sent as an httpOnly cookie) */
-            refreshToken?: string;
-            /** @description Access token lifetime in seconds */
-            expiresIn: number;
-            user: components["schemas"]["MeDto"];
-        };
-        RefreshDto: {
-            /** @description Mobile sends it here; web uses the httpOnly cookie */
-            refreshToken?: string;
-        };
-        HealthDto: Record<string, never>;
-        DepartmentHodDto: {
-            id: string;
-            name: string;
-            phone: string;
-        };
-        DepartmentDto: {
-            id: string;
-            name: string;
-            costCentre?: string | null;
-            hod?: components["schemas"]["DepartmentHodDto"] | null;
-            memberCount: number;
-        };
-        CreateDepartmentDto: {
-            /** @example Operations */
-            name: string;
-            /** @example CC-104 */
-            costCentre?: string;
-            /** @description User id of the HOD; the user must hold the hod role */
-            hodUserId?: string | null;
-        };
-        UpdateDepartmentDto: {
-            /** @example Operations */
-            name?: string;
-            /** @example CC-104 */
-            costCentre?: string;
-            /** @description User id of the HOD; the user must hold the hod role */
-            hodUserId?: string | null;
-        };
-        /** @enum {string} */
-        UserStatus: "active" | "inactive";
-        UserDepartmentDto: {
-            id: string;
-            name: string;
-        };
-        UserDto: {
-            id: string;
-            name: string;
-            /** @example +919812345678 */
-            phone: string;
-            email?: string | null;
-            roles: components["schemas"]["Role"][];
-            status: components["schemas"]["UserStatus"];
-            department?: components["schemas"]["UserDepartmentDto"] | null;
-            /** Format: date-time */
-            lastLoginAt?: string | null;
-        };
-        CreateUserDto: {
-            /** @example Rahul Verma */
-            name: string;
-            /**
-             * @description Indian mobile; stored as +91XXXXXXXXXX
-             * @example 9812345678
-             */
-            phone: string;
-            /** @example rahul@example.com */
-            email?: string | null;
-            /**
-             * @example [
-             *       "requester"
-             *     ]
-             */
-            roles: components["schemas"]["Role"][];
-            departmentId?: string | null;
-        };
-        UpdateUserDto: {
-            /** @example Rahul Verma */
-            name?: string;
-            /**
-             * @description Indian mobile; stored as +91XXXXXXXXXX
-             * @example 9812345678
-             */
-            phone?: string;
-            /** @example rahul@example.com */
-            email?: string | null;
-            /**
-             * @example [
-             *       "requester"
-             *     ]
-             */
-            roles?: components["schemas"]["Role"][];
-            departmentId?: string | null;
-            status?: components["schemas"]["UserStatus"];
-        };
-        /** @enum {string} */
-        VehicleStatus: "available" | "on_trip" | "maintenance" | "inactive";
-        VehicleDto: {
-            id: string;
-            regNo: string;
-            type: string;
-            make?: string | null;
-            model?: string | null;
-            seats: number;
-            status: components["schemas"]["VehicleStatus"];
-            gpsDeviceId?: string | null;
-        };
-        CreateVehicleDto: {
-            /**
-             * @description Stored uppercase without spaces
-             * @example KA01AB1234
-             */
-            regNo: string;
-            /** @example Sedan */
-            type: string;
-            /** @example Maruti */
-            make?: string | null;
-            /** @example Dzire */
-            model?: string | null;
-            /** @example 4 */
-            seats: number;
-            /** @description The tracker's device id in the GPS vendor system */
-            gpsDeviceId?: string | null;
-        };
-        UpdateVehicleDto: {
-            /**
-             * @description Stored uppercase without spaces
-             * @example KA01AB1234
-             */
-            regNo?: string;
-            /** @example Sedan */
-            type?: string;
-            /** @example Maruti */
-            make?: string | null;
-            /** @example Dzire */
-            model?: string | null;
-            /** @example 4 */
-            seats?: number;
-            /** @description The tracker's device id in the GPS vendor system */
-            gpsDeviceId?: string | null;
-            status?: components["schemas"]["VehicleStatus"];
-        };
-        /** @enum {string} */
-        DriverStatus: "active" | "on_leave" | "inactive";
-        DriverVehicleDto: {
-            id: string;
-            regNo: string;
-        };
-        DriverDto: {
-            id: string;
-            name: string;
-            phone: string;
-            licenceNo: string;
-            /** Format: date */
-            licenceExpiry?: string | null;
-            status: components["schemas"]["DriverStatus"];
-            defaultVehicle?: components["schemas"]["DriverVehicleDto"] | null;
-        };
-        CreateDriverDto: {
-            /** @example Suresh Kumar */
-            name: string;
-            /** @example 9812345678 */
-            phone: string;
-            /** @example KA0120190012345 */
-            licenceNo: string;
-            /**
-             * Format: date
-             * @example 2030-03-31
-             */
-            licenceExpiry?: string | null;
-            defaultVehicleId?: string | null;
-        };
-        UpdateDriverDto: {
-            /** @example Suresh Kumar */
-            name?: string;
-            /** @example 9812345678 */
-            phone?: string;
-            /** @example KA0120190012345 */
-            licenceNo?: string;
-            /**
-             * Format: date
-             * @example 2030-03-31
-             */
-            licenceExpiry?: string | null;
-            defaultVehicleId?: string | null;
-            status?: components["schemas"]["DriverStatus"];
-        };
-        NotificationDto: {
-            id: string;
-            /** @example request_approved */
-            template: string;
-            title: string;
-            body: string;
-            requestId?: string | null;
-            /** Format: date-time */
-            readAt?: string | null;
-            /** Format: date-time */
-            createdAt: string;
-        };
-        UnreadCountDto: {
-            count: number;
-        };
-        RegisterDeviceDto: {
-            /** @description FCM registration token */
-            token: string;
-            /** @enum {string} */
-            platform: "android" | "ios";
-        };
-        /** @enum {string} */
-        RequestScope: "mine" | "approvals" | "all";
-        /** @enum {string} */
-        RequestStatus: "draft" | "pending_approval" | "approved" | "rejected" | "assigned" | "in_progress" | "completed" | "cancelled";
-        PersonDto: {
-            id: string;
-            name: string;
-            phone: string;
-        };
-        NamedDto: {
-            id: string;
-            name: string;
-        };
-        LocationDto: {
-            /** @example Terminal 1, Kempegowda International Airport, Bengaluru */
-            address: string;
-            /** @example 13.1989 */
-            lat: number;
-            /** @example 77.7068 */
-            lng: number;
-        };
-        /** @enum {string} */
-        TripStatus: "scheduled" | "in_progress" | "completed" | "cancelled";
-        TripVehicleDto: {
-            id: string;
-            regNo: string;
-            type: string;
-            seats: number;
-        };
-        TripSummaryDto: {
-            id: string;
-            status: components["schemas"]["TripStatus"];
-            vehicle: components["schemas"]["TripVehicleDto"];
-            driver: components["schemas"]["PersonDto"];
-            /** Format: date-time */
-            scheduledStart: string;
-            /** Format: date-time */
-            scheduledEnd: string;
-        };
-        /** @enum {string} */
-        TimelineType: "created" | "submitted" | "auto_approved" | "approved" | "rejected" | "assigned" | "reassigned" | "started" | "picked_up" | "dropped" | "ended" | "gps_lost" | "cancelled";
-        TimelineEntryDto: {
-            type: components["schemas"]["TimelineType"];
-            /** Format: date-time */
-            at: string;
-            actorName?: string | null;
-            note?: string | null;
-        };
-        RequestDto: {
-            id: string;
-            /** @example PG-1042 */
-            code: string;
-            status: components["schemas"]["RequestStatus"];
-            requester: components["schemas"]["PersonDto"];
-            department: components["schemas"]["NamedDto"];
-            pickup: components["schemas"]["LocationDto"];
-            drop: components["schemas"]["LocationDto"];
-            /** Format: date-time */
-            startAt: string;
-            /** Format: date-time */
-            returnAt?: string | null;
-            passengers: number;
-            purpose: string;
-            notes?: string | null;
-            cancelReason?: string | null;
-            /** @description Current (non-cancelled) trip */
-            trip?: components["schemas"]["TripSummaryDto"] | null;
-            timeline: components["schemas"]["TimelineEntryDto"][];
-            /**
-             * @description What the signed-in user may do now
-             * @example [
-             *       "cancel"
-             *     ]
-             */
-            actions: string[];
-            /** Format: date-time */
-            createdAt: string;
-        };
-        CreateRequestDto: {
-            pickup: components["schemas"]["LocationDto"];
-            drop: components["schemas"]["LocationDto"];
-            /**
-             * Format: date-time
-             * @example 2026-10-20T09:30:00+05:30
-             */
-            startAt: string;
-            /**
-             * Format: date-time
-             * @description Return trip time, if any
-             */
-            returnAt?: string | null;
-            /** @example 2 */
-            passengers: number;
-            /** @example Client meeting at airport hotel */
-            purpose: string;
-            notes?: string | null;
-            /** @description Defaults to true; false saves a draft */
-            submit?: boolean;
-        };
-        UpdateRequestDto: {
-            pickup?: components["schemas"]["LocationDto"];
-            drop?: components["schemas"]["LocationDto"];
-            /**
-             * Format: date-time
-             * @example 2026-10-20T09:30:00+05:30
-             */
-            startAt?: string;
-            /**
-             * Format: date-time
-             * @description Return trip time, if any
-             */
-            returnAt?: string | null;
-            /** @example 2 */
-            passengers?: number;
-            /** @example Client meeting at airport hotel */
-            purpose?: string;
-            notes?: string | null;
-        };
-        CancelDto: {
-            reason?: string;
-        };
-        ApproveDto: {
-            comment?: string;
-        };
-        RejectDto: {
-            /** @example Please use the shuttle for this route */
-            comment: string;
-        };
-        ConflictDto: {
-            /** @example PG-1041 */
-            requestCode: string;
-            requestId: string;
-            /** Format: date-time */
-            from: string;
-            /** Format: date-time */
-            to: string;
-        };
-        AvailableVehicleDto: {
-            id: string;
-            regNo: string;
-            type: string;
-            seats: number;
-            available: boolean;
-            /** @description Seats >= passengers */
-            fits: boolean;
-            conflict?: components["schemas"]["ConflictDto"] | null;
-        };
-        AvailableDriverDto: {
-            id: string;
-            name: string;
-            phone: string;
-            defaultVehicleId?: string | null;
-            available: boolean;
-            conflict?: components["schemas"]["ConflictDto"] | null;
-        };
-        AvailabilityDto: {
-            vehicles: components["schemas"]["AvailableVehicleDto"][];
-            drivers: components["schemas"]["AvailableDriverDto"][];
-        };
-        AssignDto: {
-            vehicleId: string;
-            driverId: string;
-            /**
-             * Format: date-time
-             * @description When the vehicle is free again. Defaults to the return time, else pickup + 2 hours.
-             */
-            scheduledEnd?: string | null;
-        };
-        ReassignDto: {
-            vehicleId?: string;
-            driverId?: string;
-        };
-        GpsPointDto: {
-            /**
-             * @description Tracker id in the vendor's system
-             * @example SIM-001
-             */
-            deviceId: string;
-            /** Format: date-time */
-            recordedAt: string;
-            /** @example 12.9756 */
-            lat: number;
-            /** @example 77.6066 */
-            lng: number;
-            /** @example 32.5 */
-            speedKmh?: number;
-            /** @example 45 */
-            heading?: number;
-            ignition?: boolean;
-            /** @example 18342.7 */
-            odometerKm?: number;
-        };
-        GpsBatchDto: {
-            points: components["schemas"]["GpsPointDto"][];
-        };
-        GpsIngestResultDto: {
-            accepted: number;
-            /** @description Already stored (same vehicle and time) */
-            duplicates: number;
-            /** @description Too old, in the future, or for an unknown device */
-            rejected: number;
-            /** @description Device ids not linked to any vehicle */
-            unknownDevices: string[];
-        };
-        PositionDto: {
-            lat: number;
-            lng: number;
-            speedKmh?: number | null;
-            heading?: number | null;
-            /** Format: date-time */
-            recordedAt: string;
-        };
-        /** @enum {string} */
-        LiveTripStatus: "scheduled" | "in_progress";
-        /** @enum {string} */
-        EtaTarget: "pickup" | "drop";
-        LiveTripDto: {
-            id: string;
-            requestId: string;
-            /** @example PG-1001 */
-            code: string;
-            status: components["schemas"]["LiveTripStatus"];
-            requesterName: string;
-            pickupAddress: string;
-            dropAddress: string;
-            /** Format: date-time */
-            scheduledStart: string;
-            /** @description Straight-line estimate until Google Directions is configured */
-            etaMinutes?: number | null;
-            etaTo: components["schemas"]["EtaTarget"];
-        };
-        LiveVehicleDto: {
-            id: string;
-            regNo: string;
-            type: string;
-            status: components["schemas"]["VehicleStatus"];
-            gpsDeviceId?: string | null;
-            position?: components["schemas"]["PositionDto"] | null;
-            /** @description No position in the last 5 minutes */
-            stale: boolean;
-            /** @description In progress, or the next one within an hour */
-            trip?: components["schemas"]["LiveTripDto"] | null;
-        };
-        TrackPointDto: {
-            lat: number;
-            lng: number;
-            /** Format: date-time */
-            at: string;
-        };
-        TripTrackDto: {
-            tripId: string;
-            requestId: string;
-            status: components["schemas"]["TripStatus"];
-            vehicleRegNo: string;
-            pickup: components["schemas"]["TrackPointDto"];
-            drop: components["schemas"]["TrackPointDto"];
-            /** @description Driven path (at most 2000 points) */
-            points: components["schemas"]["TrackPointDto"][];
-            position?: components["schemas"]["PositionDto"] | null;
-            etaMinutes?: number | null;
-            etaTo: components["schemas"]["EtaTarget"];
-        };
+  schemas: {
+    RequestOtpDto: {
+      /**
+       * @description Indian mobile, any common format
+       * @example 9812345678
+       */
+      phone: string;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    RequestOtpResponseDto: {
+      /** @example true */
+      sent: boolean;
+      /** @description Only in development with the console sender */
+      devCode?: string;
+    };
+    VerifyOtpDto: {
+      /** @example 9812345678 */
+      phone: string;
+      /** @example 123456 */
+      code: string;
+    };
+    /** @enum {string} */
+    Role: 'requester' | 'hod' | 'transport_manager' | 'super_admin';
+    MeDepartmentDto: {
+      id: string;
+      name: string;
+    };
+    MeDto: {
+      id: string;
+      name: string;
+      /** @example +919812345678 */
+      phone: string;
+      email?: string | null;
+      roles: components['schemas']['Role'][];
+      department?: components['schemas']['MeDepartmentDto'] | null;
+      orgId: string;
+      orgName: string;
+    };
+    AuthResponseDto: {
+      accessToken: string;
+      /** @description Omitted for web clients (sent as an httpOnly cookie) */
+      refreshToken?: string;
+      /** @description Access token lifetime in seconds */
+      expiresIn: number;
+      user: components['schemas']['MeDto'];
+    };
+    RefreshDto: {
+      /** @description Mobile sends it here; web uses the httpOnly cookie */
+      refreshToken?: string;
+    };
+    HealthDto: Record<string, never>;
+    DepartmentHodDto: {
+      id: string;
+      name: string;
+      phone: string;
+    };
+    DepartmentDto: {
+      id: string;
+      name: string;
+      costCentre?: string | null;
+      hod?: components['schemas']['DepartmentHodDto'] | null;
+      memberCount: number;
+    };
+    CreateDepartmentDto: {
+      /** @example Operations */
+      name: string;
+      /** @example CC-104 */
+      costCentre?: string;
+      /** @description User id of the HOD; the user must hold the hod role */
+      hodUserId?: string | null;
+    };
+    UpdateDepartmentDto: {
+      /** @example Operations */
+      name?: string;
+      /** @example CC-104 */
+      costCentre?: string;
+      /** @description User id of the HOD; the user must hold the hod role */
+      hodUserId?: string | null;
+    };
+    /** @enum {string} */
+    UserStatus: 'active' | 'inactive';
+    UserDepartmentDto: {
+      id: string;
+      name: string;
+    };
+    UserDto: {
+      id: string;
+      name: string;
+      /** @example +919812345678 */
+      phone: string;
+      email?: string | null;
+      roles: components['schemas']['Role'][];
+      status: components['schemas']['UserStatus'];
+      department?: components['schemas']['UserDepartmentDto'] | null;
+      /** Format: date-time */
+      lastLoginAt?: string | null;
+    };
+    CreateUserDto: {
+      /** @example Rahul Verma */
+      name: string;
+      /**
+       * @description Indian mobile; stored as +91XXXXXXXXXX
+       * @example 9812345678
+       */
+      phone: string;
+      /** @example rahul@example.com */
+      email?: string | null;
+      /**
+       * @example [
+       *       "requester"
+       *     ]
+       */
+      roles: components['schemas']['Role'][];
+      departmentId?: string | null;
+    };
+    UpdateUserDto: {
+      /** @example Rahul Verma */
+      name?: string;
+      /**
+       * @description Indian mobile; stored as +91XXXXXXXXXX
+       * @example 9812345678
+       */
+      phone?: string;
+      /** @example rahul@example.com */
+      email?: string | null;
+      /**
+       * @example [
+       *       "requester"
+       *     ]
+       */
+      roles?: components['schemas']['Role'][];
+      departmentId?: string | null;
+      status?: components['schemas']['UserStatus'];
+    };
+    /** @enum {string} */
+    VehicleStatus: 'available' | 'on_trip' | 'maintenance' | 'inactive';
+    VehicleDto: {
+      id: string;
+      regNo: string;
+      type: string;
+      make?: string | null;
+      model?: string | null;
+      seats: number;
+      status: components['schemas']['VehicleStatus'];
+      gpsDeviceId?: string | null;
+    };
+    CreateVehicleDto: {
+      /**
+       * @description Stored uppercase without spaces
+       * @example KA01AB1234
+       */
+      regNo: string;
+      /** @example Sedan */
+      type: string;
+      /** @example Maruti */
+      make?: string | null;
+      /** @example Dzire */
+      model?: string | null;
+      /** @example 4 */
+      seats: number;
+      /** @description The tracker's device id in the GPS vendor system */
+      gpsDeviceId?: string | null;
+    };
+    UpdateVehicleDto: {
+      /**
+       * @description Stored uppercase without spaces
+       * @example KA01AB1234
+       */
+      regNo?: string;
+      /** @example Sedan */
+      type?: string;
+      /** @example Maruti */
+      make?: string | null;
+      /** @example Dzire */
+      model?: string | null;
+      /** @example 4 */
+      seats?: number;
+      /** @description The tracker's device id in the GPS vendor system */
+      gpsDeviceId?: string | null;
+      status?: components['schemas']['VehicleStatus'];
+    };
+    /** @enum {string} */
+    DriverStatus: 'active' | 'on_leave' | 'inactive';
+    DriverVehicleDto: {
+      id: string;
+      regNo: string;
+    };
+    DriverDto: {
+      id: string;
+      name: string;
+      phone: string;
+      licenceNo: string;
+      /** Format: date */
+      licenceExpiry?: string | null;
+      status: components['schemas']['DriverStatus'];
+      defaultVehicle?: components['schemas']['DriverVehicleDto'] | null;
+    };
+    CreateDriverDto: {
+      /** @example Suresh Kumar */
+      name: string;
+      /** @example 9812345678 */
+      phone: string;
+      /** @example KA0120190012345 */
+      licenceNo: string;
+      /**
+       * Format: date
+       * @example 2030-03-31
+       */
+      licenceExpiry?: string | null;
+      defaultVehicleId?: string | null;
+    };
+    UpdateDriverDto: {
+      /** @example Suresh Kumar */
+      name?: string;
+      /** @example 9812345678 */
+      phone?: string;
+      /** @example KA0120190012345 */
+      licenceNo?: string;
+      /**
+       * Format: date
+       * @example 2030-03-31
+       */
+      licenceExpiry?: string | null;
+      defaultVehicleId?: string | null;
+      status?: components['schemas']['DriverStatus'];
+    };
+    NotificationDto: {
+      id: string;
+      /** @example request_approved */
+      template: string;
+      title: string;
+      body: string;
+      requestId?: string | null;
+      /** Format: date-time */
+      readAt?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+    };
+    UnreadCountDto: {
+      count: number;
+    };
+    RegisterDeviceDto: {
+      /** @description FCM registration token */
+      token: string;
+      /** @enum {string} */
+      platform: 'android' | 'ios';
+    };
+    /** @enum {string} */
+    RequestScope: 'mine' | 'approvals' | 'all';
+    /** @enum {string} */
+    RequestStatus:
+      | 'draft'
+      | 'pending_approval'
+      | 'approved'
+      | 'rejected'
+      | 'assigned'
+      | 'in_progress'
+      | 'completed'
+      | 'cancelled';
+    PersonDto: {
+      id: string;
+      name: string;
+      phone: string;
+    };
+    NamedDto: {
+      id: string;
+      name: string;
+    };
+    LocationDto: {
+      /** @example Terminal 1, Kempegowda International Airport, Bengaluru */
+      address: string;
+      /** @example 13.1989 */
+      lat: number;
+      /** @example 77.7068 */
+      lng: number;
+    };
+    /** @enum {string} */
+    TripStatus: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+    TripVehicleDto: {
+      id: string;
+      regNo: string;
+      type: string;
+      seats: number;
+    };
+    TripSummaryDto: {
+      id: string;
+      status: components['schemas']['TripStatus'];
+      vehicle: components['schemas']['TripVehicleDto'];
+      driver: components['schemas']['PersonDto'];
+      /** Format: date-time */
+      scheduledStart: string;
+      /** Format: date-time */
+      scheduledEnd: string;
+    };
+    /** @enum {string} */
+    TimelineType:
+      | 'created'
+      | 'submitted'
+      | 'auto_approved'
+      | 'approved'
+      | 'rejected'
+      | 'assigned'
+      | 'reassigned'
+      | 'started'
+      | 'picked_up'
+      | 'dropped'
+      | 'ended'
+      | 'gps_lost'
+      | 'cancelled';
+    TimelineEntryDto: {
+      type: components['schemas']['TimelineType'];
+      /** Format: date-time */
+      at: string;
+      actorName?: string | null;
+      note?: string | null;
+    };
+    RequestDto: {
+      id: string;
+      /** @example PG-1042 */
+      code: string;
+      status: components['schemas']['RequestStatus'];
+      requester: components['schemas']['PersonDto'];
+      department: components['schemas']['NamedDto'];
+      pickup: components['schemas']['LocationDto'];
+      drop: components['schemas']['LocationDto'];
+      /** Format: date-time */
+      startAt: string;
+      /** Format: date-time */
+      returnAt?: string | null;
+      passengers: number;
+      purpose: string;
+      notes?: string | null;
+      cancelReason?: string | null;
+      /** @description Current (non-cancelled) trip */
+      trip?: components['schemas']['TripSummaryDto'] | null;
+      timeline: components['schemas']['TimelineEntryDto'][];
+      /**
+       * @description What the signed-in user may do now
+       * @example [
+       *       "cancel"
+       *     ]
+       */
+      actions: string[];
+      /** Format: date-time */
+      createdAt: string;
+    };
+    CreateRequestDto: {
+      pickup: components['schemas']['LocationDto'];
+      drop: components['schemas']['LocationDto'];
+      /**
+       * Format: date-time
+       * @example 2026-10-20T09:30:00+05:30
+       */
+      startAt: string;
+      /**
+       * Format: date-time
+       * @description Return trip time, if any
+       */
+      returnAt?: string | null;
+      /** @example 2 */
+      passengers: number;
+      /** @example Client meeting at airport hotel */
+      purpose: string;
+      notes?: string | null;
+      /** @description Defaults to true; false saves a draft */
+      submit?: boolean;
+    };
+    UpdateRequestDto: {
+      pickup?: components['schemas']['LocationDto'];
+      drop?: components['schemas']['LocationDto'];
+      /**
+       * Format: date-time
+       * @example 2026-10-20T09:30:00+05:30
+       */
+      startAt?: string;
+      /**
+       * Format: date-time
+       * @description Return trip time, if any
+       */
+      returnAt?: string | null;
+      /** @example 2 */
+      passengers?: number;
+      /** @example Client meeting at airport hotel */
+      purpose?: string;
+      notes?: string | null;
+    };
+    CancelDto: {
+      reason?: string;
+    };
+    ApproveDto: {
+      comment?: string;
+    };
+    RejectDto: {
+      /** @example Please use the shuttle for this route */
+      comment: string;
+    };
+    ConflictDto: {
+      /** @example PG-1041 */
+      requestCode: string;
+      requestId: string;
+      /** Format: date-time */
+      from: string;
+      /** Format: date-time */
+      to: string;
+    };
+    AvailableVehicleDto: {
+      id: string;
+      regNo: string;
+      type: string;
+      seats: number;
+      available: boolean;
+      /** @description Seats >= passengers */
+      fits: boolean;
+      conflict?: components['schemas']['ConflictDto'] | null;
+    };
+    AvailableDriverDto: {
+      id: string;
+      name: string;
+      phone: string;
+      defaultVehicleId?: string | null;
+      available: boolean;
+      conflict?: components['schemas']['ConflictDto'] | null;
+    };
+    AvailabilityDto: {
+      vehicles: components['schemas']['AvailableVehicleDto'][];
+      drivers: components['schemas']['AvailableDriverDto'][];
+    };
+    AssignDto: {
+      vehicleId: string;
+      driverId: string;
+      /**
+       * Format: date-time
+       * @description When the vehicle is free again. Defaults to the return time, else pickup + 2 hours.
+       */
+      scheduledEnd?: string | null;
+    };
+    ReassignDto: {
+      vehicleId?: string;
+      driverId?: string;
+    };
+    GpsPointDto: {
+      /**
+       * @description Tracker id in the vendor's system
+       * @example SIM-001
+       */
+      deviceId: string;
+      /** Format: date-time */
+      recordedAt: string;
+      /** @example 12.9756 */
+      lat: number;
+      /** @example 77.6066 */
+      lng: number;
+      /** @example 32.5 */
+      speedKmh?: number;
+      /** @example 45 */
+      heading?: number;
+      ignition?: boolean;
+      /** @example 18342.7 */
+      odometerKm?: number;
+    };
+    GpsBatchDto: {
+      points: components['schemas']['GpsPointDto'][];
+    };
+    GpsIngestResultDto: {
+      accepted: number;
+      /** @description Already stored (same vehicle and time) */
+      duplicates: number;
+      /** @description Too old, in the future, or for an unknown device */
+      rejected: number;
+      /** @description Device ids not linked to any vehicle */
+      unknownDevices: string[];
+    };
+    UnlinkedTrackerDto: {
+      /**
+       * @description Tracker IMEI on the GPS vendor account
+       * @example 358480082479488
+       */
+      imei: string;
+      /**
+       * @description Vehicle number the vendor reports for it
+       * @example GJ01KT0057
+       */
+      vehicleNo: string;
+      /** Format: date-time */
+      lastSeen: string;
+    };
+    PositionDto: {
+      lat: number;
+      lng: number;
+      speedKmh?: number | null;
+      heading?: number | null;
+      /** Format: date-time */
+      recordedAt: string;
+    };
+    /** @enum {string} */
+    LiveTripStatus: 'scheduled' | 'in_progress';
+    /** @enum {string} */
+    EtaTarget: 'pickup' | 'drop';
+    LiveTripDto: {
+      id: string;
+      requestId: string;
+      /** @example PG-1001 */
+      code: string;
+      status: components['schemas']['LiveTripStatus'];
+      requesterName: string;
+      pickupAddress: string;
+      dropAddress: string;
+      /** Format: date-time */
+      scheduledStart: string;
+      /** @description Straight-line estimate until Google Directions is configured */
+      etaMinutes?: number | null;
+      etaTo: components['schemas']['EtaTarget'];
+    };
+    LiveVehicleDto: {
+      id: string;
+      regNo: string;
+      type: string;
+      status: components['schemas']['VehicleStatus'];
+      gpsDeviceId?: string | null;
+      position?: components['schemas']['PositionDto'] | null;
+      /** @description No position in the last 5 minutes */
+      stale: boolean;
+      /** @description In progress, or the next one within an hour */
+      trip?: components['schemas']['LiveTripDto'] | null;
+    };
+    TrackPointDto: {
+      lat: number;
+      lng: number;
+      /** Format: date-time */
+      at: string;
+    };
+    TripTrackDto: {
+      tripId: string;
+      requestId: string;
+      status: components['schemas']['TripStatus'];
+      vehicleRegNo: string;
+      pickup: components['schemas']['TrackPointDto'];
+      drop: components['schemas']['TrackPointDto'];
+      /** @description Driven path (at most 2000 points) */
+      points: components['schemas']['TrackPointDto'][];
+      position?: components['schemas']['PositionDto'] | null;
+      etaMinutes?: number | null;
+      etaTo: components['schemas']['EtaTarget'];
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    AuthController_requestOtp: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description "web" for browser sessions */
-                "X-Client"?: string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RequestOtpDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestOtpResponseDto"];
-                };
-            };
-        };
+  AuthController_requestOtp: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description "web" for browser sessions */
+        'X-Client'?: string;
+      };
+      path?: never;
+      cookie?: never;
     };
-    AuthController_verifyOtp: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description "web" for browser sessions */
-                "X-Client"?: string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["VerifyOtpDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuthResponseDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RequestOtpDto'];
+      };
     };
-    AuthController_refresh: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description "web" for browser sessions */
-                "X-Client"?: string;
-            };
-            path?: never;
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RefreshDto"];
-            };
+        content: {
+          'application/json': components['schemas']['RequestOtpResponseDto'];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AuthResponseDto"];
-                };
-            };
-        };
+      };
     };
-    AuthController_logout: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description "web" for browser sessions */
-                "X-Client"?: string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RefreshDto"];
-            };
-        };
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  AuthController_verifyOtp: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description "web" for browser sessions */
+        'X-Client'?: string;
+      };
+      path?: never;
+      cookie?: never;
     };
-    AuthController_me: {
-        parameters: {
-            query?: never;
-            header?: {
-                /** @description "web" for browser sessions */
-                "X-Client"?: string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["MeDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['VerifyOtpDto'];
+      };
     };
-    HealthController_check: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HealthDto"];
-                };
-            };
-            503: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HealthDto"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['AuthResponseDto'];
         };
+      };
     };
-    DepartmentsController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DepartmentDto"][];
-                };
-            };
-        };
+  };
+  AuthController_refresh: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description "web" for browser sessions */
+        'X-Client'?: string;
+      };
+      path?: never;
+      cookie?: never;
     };
-    DepartmentsController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateDepartmentDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DepartmentDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RefreshDto'];
+      };
     };
-    DepartmentsController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateDepartmentDto"];
-            };
+        content: {
+          'application/json': components['schemas']['AuthResponseDto'];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DepartmentDto"];
-                };
-            };
-        };
+      };
     };
-    UsersController_list: {
-        parameters: {
-            query?: {
-                role?: components["schemas"]["Role"];
-                departmentId?: string;
-                status?: components["schemas"]["UserStatus"];
-                /** @description Matches name or phone */
-                q?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserDto"][];
-                };
-            };
-        };
+  };
+  AuthController_logout: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description "web" for browser sessions */
+        'X-Client'?: string;
+      };
+      path?: never;
+      cookie?: never;
     };
-    UsersController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateUserDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RefreshDto'];
+      };
     };
-    UsersController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserDto"];
-                };
-            };
-        };
+        content?: never;
+      };
     };
-    UsersController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateUserDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UserDto"];
-                };
-            };
-        };
+  };
+  AuthController_me: {
+    parameters: {
+      query?: never;
+      header?: {
+        /** @description "web" for browser sessions */
+        'X-Client'?: string;
+      };
+      path?: never;
+      cookie?: never;
     };
-    VehiclesController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VehicleDto"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['MeDto'];
         };
+      };
     };
-    VehiclesController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateVehicleDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VehicleDto"];
-                };
-            };
-        };
+  };
+  HealthController_check: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    VehiclesController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateVehicleDto"];
-            };
+        content: {
+          'application/json': components['schemas']['HealthDto'];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["VehicleDto"];
-                };
-            };
+      };
+      503: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          'application/json': components['schemas']['HealthDto'];
+        };
+      };
     };
-    DriversController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DriverDto"][];
-                };
-            };
-        };
+  };
+  DepartmentsController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    DriversController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateDriverDto"];
-            };
+        content: {
+          'application/json': components['schemas']['DepartmentDto'][];
         };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DriverDto"];
-                };
-            };
-        };
+      };
     };
-    DriversController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateDriverDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DriverDto"];
-                };
-            };
-        };
+  };
+  DepartmentsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    NotificationsController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["NotificationDto"][];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateDepartmentDto'];
+      };
     };
-    NotificationsController_unreadCount: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UnreadCountDto"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['DepartmentDto'];
         };
+      };
     };
-    NotificationsController_markRead: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  DepartmentsController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    NotificationsController_markAllRead: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateDepartmentDto'];
+      };
     };
-    DevicesController_register: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RegisterDeviceDto"];
-            };
+        content: {
+          'application/json': components['schemas']['DepartmentDto'];
         };
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+      };
     };
-    DevicesController_unregister: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                token: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
+  };
+  UsersController_list: {
+    parameters: {
+      query?: {
+        role?: components['schemas']['Role'];
+        departmentId?: string;
+        status?: components['schemas']['UserStatus'];
+        /** @description Matches name or phone */
+        q?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    RequestsController_list: {
-        parameters: {
-            query?: {
-                /** @description mine: my requests · approvals: departments I head · all: managers only */
-                scope?: components["schemas"]["RequestScope"];
-                status?: components["schemas"]["RequestStatus"];
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"][];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['UserDto'][];
         };
+      };
     };
-    RequestsController_create: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateRequestDto"];
-            };
-        };
-        responses: {
-            201: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+  };
+  UsersController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    RequestsController_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateUserDto'];
+      };
     };
-    RequestsController_update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["UpdateRequestDto"];
-            };
+        content: {
+          'application/json': components['schemas']['UserDto'];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+      };
     };
-    RequestsController_submit: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+  };
+  UsersController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    RequestsController_cancel: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CancelDto"];
-            };
+        content: {
+          'application/json': components['schemas']['UserDto'];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+      };
     };
-    RequestsController_approve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ApproveDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+  };
+  UsersController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    RequestsController_reject: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["RejectDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateUserDto'];
+      };
     };
-    AssignmentsController_availability: {
-        parameters: {
-            query: {
-                from: string;
-                to: string;
-                /** @description Marks vehicles with too few seats */
-                passengers?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AvailabilityDto"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['UserDto'];
         };
+      };
     };
-    AssignmentsController_assign: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AssignDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+  };
+  VehiclesController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    AssignmentsController_reassign: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["ReassignDto"];
-            };
+        content: {
+          'application/json': components['schemas']['VehicleDto'][];
         };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+      };
     };
-    GpsWebhookController_ingest: {
-        parameters: {
-            query?: never;
-            header: {
-                "X-GPS-Secret": string;
-            };
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["GpsBatchDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GpsIngestResultDto"];
-                };
-            };
-        };
+  };
+  VehiclesController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    LiveController_vehicles: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["LiveVehicleDto"][];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateVehicleDto'];
+      };
     };
-    LiveController_track: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TripTrackDto"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['VehicleDto'];
         };
+      };
     };
-    LiveController_start: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+  };
+  VehiclesController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
     };
-    LiveController_end: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RequestDto"];
-                };
-            };
-        };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateVehicleDto'];
+      };
     };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['VehicleDto'];
+        };
+      };
+    };
+  };
+  DriversController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverDto'][];
+        };
+      };
+    };
+  };
+  DriversController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateDriverDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverDto'];
+        };
+      };
+    };
+  };
+  DriversController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateDriverDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DriverDto'];
+        };
+      };
+    };
+  };
+  NotificationsController_list: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['NotificationDto'][];
+        };
+      };
+    };
+  };
+  NotificationsController_unreadCount: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UnreadCountDto'];
+        };
+      };
+    };
+  };
+  NotificationsController_markRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  NotificationsController_markAllRead: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  DevicesController_register: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RegisterDeviceDto'];
+      };
+    };
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  DevicesController_unregister: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        token: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      204: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content?: never;
+      };
+    };
+  };
+  RequestsController_list: {
+    parameters: {
+      query?: {
+        /** @description mine: my requests · approvals: departments I head · all: managers only */
+        scope?: components['schemas']['RequestScope'];
+        status?: components['schemas']['RequestStatus'];
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'][];
+        };
+      };
+    };
+  };
+  RequestsController_create: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateRequestDto'];
+      };
+    };
+    responses: {
+      201: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_update: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['UpdateRequestDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_submit: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_cancel: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CancelDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_approve: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ApproveDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  RequestsController_reject: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RejectDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  AssignmentsController_availability: {
+    parameters: {
+      query: {
+        from: string;
+        to: string;
+        /** @description Marks vehicles with too few seats */
+        passengers?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['AvailabilityDto'];
+        };
+      };
+    };
+  };
+  AssignmentsController_assign: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['AssignDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  AssignmentsController_reassign: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['ReassignDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  GpsWebhookController_ingest: {
+    parameters: {
+      query?: never;
+      header: {
+        'X-GPS-Secret': string;
+      };
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['GpsBatchDto'];
+      };
+    };
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['GpsIngestResultDto'];
+        };
+      };
+    };
+  };
+  LiveController_unlinkedTrackers: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['UnlinkedTrackerDto'][];
+        };
+      };
+    };
+  };
+  LiveController_vehicles: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['LiveVehicleDto'][];
+        };
+      };
+    };
+  };
+  LiveController_track: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TripTrackDto'];
+        };
+      };
+    };
+  };
+  LiveController_start: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
+  LiveController_end: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RequestDto'];
+        };
+      };
+    };
+  };
 }

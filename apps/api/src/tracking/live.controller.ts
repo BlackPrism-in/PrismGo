@@ -13,8 +13,9 @@ import { CurrentUser, Roles } from '../auth/decorators';
 import { PrismaService } from '../prisma/prisma.service';
 import { RequestDto } from '../requests/requests.dto';
 import { RequestsService } from '../requests/requests.service';
+import { GpsPullProcessor } from './gps-pull.processor';
 import { LiveService } from './live.service';
-import { LiveVehicleDto, TripTrackDto } from './tracking.dto';
+import { LiveVehicleDto, TripTrackDto, UnlinkedTrackerDto } from './tracking.dto';
 import { TripLifecycleService } from './trip-lifecycle.service';
 
 @ApiTags('live')
@@ -26,7 +27,16 @@ export class LiveController {
     private readonly lifecycle: TripLifecycleService,
     private readonly requests: RequestsService,
     private readonly prisma: PrismaService,
+    private readonly gpsPull: GpsPullProcessor,
   ) {}
+
+  /** Trackers on the GPS vendor account whose vehicle number matches no PrismGo vehicle. */
+  @Get('gps/trackers/unlinked')
+  @Roles('transport_manager', 'super_admin')
+  @ApiOkResponse({ type: UnlinkedTrackerDto, isArray: true })
+  unlinkedTrackers(): Promise<UnlinkedTrackerDto[]> {
+    return this.gpsPull.unlinked();
+  }
 
   @Get('live/vehicles')
   @Roles('transport_manager', 'super_admin')

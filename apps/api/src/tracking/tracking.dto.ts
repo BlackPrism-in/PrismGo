@@ -160,3 +160,17 @@ export class TripTrackDto {
   @ApiPropertyOptional({ type: Number, nullable: true }) etaMinutes: number | null;
   @ApiProperty({ enum: ETA_TARGETS, enumName: 'EtaTarget' }) etaTo: (typeof ETA_TARGETS)[number];
 }
+
+export class UnlinkedTrackerDto {
+  @ApiProperty({
+    example: '358480082479488',
+    description: 'Tracker IMEI on the GPS vendor account',
+  })
+  imei: string;
+
+  @ApiProperty({ example: 'GJ01KT0057', description: 'Vehicle number the vendor reports for it' })
+  vehicleNo: string;
+
+  @ApiProperty({ format: 'date-time' })
+  lastSeen: string;
+}

@@ -25,4 +25,5 @@ export type TimelineEntry = S['TimelineEntryDto'];
 export type Availability = S['AvailabilityDto'];
 export type NotificationItem = S['NotificationDto'];
 export type LiveVehicle = S['LiveVehicleDto'];
+export type UnlinkedTracker = S['UnlinkedTrackerDto'];
 export type TripTrack = S['TripTrackDto'];

@@ -8,6 +8,7 @@ import type {
   Driver,
   NotificationItem,
   TripRequest,
+  UnlinkedTracker,
   User,
   Vehicle,
 } from './types';
@@ -22,6 +23,7 @@ export const keys = {
   notifications: ['notifications'] as const,
   unread: ['notifications', 'unread'] as const,
   liveVehicles: ['live', 'vehicles'] as const,
+  unlinkedTrackers: ['gps', 'unlinked'] as const,
   track: (tripId: string) => ['track', tripId] as const,
 };
 
@@ -36,6 +38,14 @@ export const useUsers = (params = '') =>
 
 export const useVehicles = () =>
   useQuery({ queryKey: keys.vehicles, queryFn: () => get<Vehicle[]>('/vehicles') });
+
+/** Trackers on the GPS vendor account whose vehicle number matches no vehicle here. */
+export const useUnlinkedTrackers = () =>
+  useQuery({
+    queryKey: keys.unlinkedTrackers,
+    queryFn: () => get<UnlinkedTracker[]>('/gps/trackers/unlinked'),
+    refetchInterval: 60_000,
+  });
 
 export const useDrivers = () =>
   useQuery({ queryKey: keys.drivers, queryFn: () => get<Driver[]>('/drivers') });

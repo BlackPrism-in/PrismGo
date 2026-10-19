@@ -11,9 +11,9 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 ### Done
 
 - [x] **Dev** API, web app and Android app for the full flow: phone + OTP login, roles, master data, request → HOD approval → vehicle and driver assignment, live map, automatic trip start and end, notifications
-- [x] **Dev** Tests green: API e2e 38, API unit 15, web 23, shared 19, mobile 18; CI on every push
+- [x] **Dev** Tests green: API e2e 39, API unit 15, web 23, shared 19, mobile 18; CI on every push
 - [x] **Dev** Demo / UAT live: web https://prismgo.blackprism.in (Vercel), API https://api.prismgo.blackprism.in (Render); deploys on every push to `main`
-- [x] **Dev** GPS: Uffizio (Trakzee) pull API poller built; push webhook live; [Push API spec](PrismGo-GPS-Push-API.pdf) sent to Uffizio
+- [x] **Dev** GPS: Uffizio (Trakzee) pull API poller built; trackers link to vehicles by registration number, unmatched ones listed on the Vehicles page; push webhook live; [Push API spec](PrismGo-GPS-Push-API.pdf) sent to Uffizio
 - [x] **Dev** Mobile push: Firebase project `prismgo-34a61` with the Android app registered; push sending (API) and device registration (app) built
 - [x] **BlackPrism** WhatsApp: Meta business verification submitted; WhatsApp account and sender +91 70014 41439; Meta app `PrismGo`, system user `prismgo-api`, access token stored in Render; 12 templates submitted
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
@@ -24,7 +24,7 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 
 - [ ] **Meta** Business verification (submitted 16 Oct)
 - [ ] **Meta** 12 WhatsApp templates (submitted 16 Oct; usually minutes to a day)
-- [ ] **Uffizio** IMEI and registration number for every vehicle; a test push batch; odometer unit, token lifetime, HTTPS address for the pull API
+- [ ] **Uffizio** A test push batch; odometer unit, token lifetime, HTTPS address for the pull API (IMEIs come from their feed; no list needed)
 - [ ] **Client** Master data: departments, HODs, employees (name, phone), vehicles, drivers
 - [ ] **Client** Logo (placeholder in use)
 - [ ] **Client** UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
@@ -45,7 +45,7 @@ BlackPrism (needs our accounts or credentials)
 
 Dev
 
-- [ ] Real GPS run once vehicles with IMEIs are entered; check Uffizio's test push, run push and pull side by side for a day, then turn pull off
+- [ ] Real GPS run once vehicles are entered (trackers link by registration number); check Uffizio's test push, run push and pull side by side for a day, then turn pull off
 - [ ] Switch login codes and alerts to WhatsApp once the templates are approved (`OTP_CHANNELS` / `MESSAGING_PROVIDER` = `whatsapp`, `OTP_EXPOSE_CODE=false`); test with a real number
 - [ ] Add `google-services.json`, build the signed release APK, test push on a phone, upload to Play internal testing
 - [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
@@ -132,7 +132,7 @@ Notes from Phase 0
 Inputs from the client (status 16 Oct)
 
 - [x] GPS vendor contact and pull API access (Uffizio, Trakzee platform)
-- [ ] Vehicle list with tracker IMEI and registration number for each vehicle (asked Uffizio)
+- [x] Tracker IMEIs: not needed as a list. The vendor feed reports each tracker with its vehicle number, and PrismGo links them (19 Oct)
 - [ ] Master data: departments, HOD per department, employees (name, phone), vehicles, drivers
 - [ ] Logo for the app icon and web app (placeholder until then)
 - [ ] UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
@@ -296,7 +296,7 @@ Push API (16 Oct): Uffizio also supports push. Sent them the [PrismGo GPS Push A
 - [x] [Deployment guide](deployment.md) and [UAT script](uat-script.md); the GPS simulator can drive trips on the UAT server until the vendor feed is live
 - [x] Demo / UAT deployment (16 Oct): web app on Vercel at https://prismgo.blackprism.in, API + PostgreSQL + Redis on Render (free, Singapore) at https://api.prismgo.blackprism.in; DNS at Namecheap; both deploy on push to `main`. See [deployment.md](deployment.md#demo-on-render-free-plan)
 - [ ] Uptime check on the API health URL (keeps the free Render service awake, so GPS polling runs)
-- [ ] Load client master data (departments, users, vehicles with tracker IMEIs, drivers)
+- [ ] Load client master data (departments, users, vehicles by registration number, drivers)
 - [ ] WhatsApp live: Meta business verification submitted; app `PrismGo`, system user `prismgo-api` and token set up; 12 templates submitted 16 Oct, in review. When approved: switch `OTP_CHANNELS` / `MESSAGING_PROVIDER` to `whatsapp`, `OTP_EXPOSE_CODE=false`
 - [ ] Production on our server before the free Render database expires (about 15 Nov): server, SSH access and domain; deploy with Compose; test restore
 - [ ] Sentry on api, web and mobile (deferred; logs + uptime check for the MVP)
