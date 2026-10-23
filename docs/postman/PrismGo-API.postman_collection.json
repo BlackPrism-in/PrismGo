@@ -1,0 +1,2960 @@
+{
+  "info": {
+    "name": "PrismGo API",
+    "description": "# PrismGo API\n\nVehicle requests, HOD approval, vehicle and driver assignment, and live GPS tracking.\n\n- **Demo / UAT:** `https://api.prismgo.blackprism.in/api/v1`\n\n- **Local:** `http://localhost:4000/api/v1` (set `baseUrl`)\n\n- **OpenAPI (Swagger):** `{{baseUrl}}/docs`\n\n## Getting started\n\n1. Set `phone` to a registered mobile number.\n\n2. **Auth → Request login code**. The code arrives on WhatsApp; put it in `otpCode` (on the demo server it is filled in automatically when WhatsApp could not deliver).\n\n3. **Auth → Verify login code**. The access token is saved and used by every request (Bearer auth on the collection). It lasts 15 minutes; run **Refresh tokens** when you get 401.\n\n4. List endpoints save the first id they return (`requestId`, `vehicleId`, …), so requests further down work without copying ids.\n\n## Roles\n\n`requester`, `hod`, `transport_manager`, `super_admin`. A user can hold several. Each request’s description says who can call it; others get 403 (or 404 for records outside their scope).\n\n## Request flow\n\n`draft` → `pending_approval` → `approved` / `rejected` → `assigned` → `in_progress` → `completed` (or `cancelled`). Trips start and end by themselves from GPS; Transport Managers can override.\n\n## Errors\n\nJSON `{ \"statusCode\": 400, \"message\": \"…\" }`. 400 invalid input (message names the field), 401 not signed in or token expired, 403 role not allowed, 404 not found, 409 conflict (double booking, duplicate registration number or phone), 429 too many attempts.\n\n## Realtime\n\nSocket.IO on the API origin, `auth: { token: <accessToken> }`. Events: `request.updated` `{ id, status }`, `vehicle.position`, `notification`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://api.prismgo.blackprism.in/api/v1"
+    },
+    {
+      "key": "phone",
+      "value": ""
+    },
+    {
+      "key": "otpCode",
+      "value": ""
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "gpsSecret",
+      "value": ""
+    },
+    {
+      "key": "departmentId",
+      "value": ""
+    },
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "vehicleId",
+      "value": ""
+    },
+    {
+      "key": "driverId",
+      "value": ""
+    },
+    {
+      "key": "requestId",
+      "value": ""
+    },
+    {
+      "key": "tripId",
+      "value": ""
+    },
+    {
+      "key": "notificationId",
+      "value": ""
+    },
+    {
+      "key": "deviceToken",
+      "value": ""
+    },
+    {
+      "key": "startAt",
+      "value": ""
+    },
+    {
+      "key": "endAt",
+      "value": ""
+    },
+    {
+      "key": "now",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Request login code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (b.devCode) pm.collectionVariables.set('otpCode', b.devCode);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{phone}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/otp/request",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "otp", "request"]
+            },
+            "description": "Sends a 6-digit login code to the phone on WhatsApp. The answer is the same for unregistered numbers, so it does not reveal who has an account. Rate-limited per phone and IP.\n\n`devCode` is returned only on the demo server (`OTP_EXPOSE_CODE=true`) when WhatsApp could not deliver; if present it is saved to `otpCode`.\n\n**Who can call it:** Public\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `phone` | string | yes | Indian mobile, any common format |\n\n**Success:** 200",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"{{phone}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/otp/request",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "otp", "request"]
+                },
+                "description": "Sends a 6-digit login code to the phone on WhatsApp. The answer is the same for unregistered numbers, so it does not reveal who has an account. Rate-limited per phone and IP.\n\n`devCode` is returned only on the demo server (`OTP_EXPOSE_CODE=true`) when WhatsApp could not deliver; if present it is saved to `otpCode`.\n\n**Who can call it:** Public\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `phone` | string | yes | Indian mobile, any common format |\n\n**Success:** 200",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"sent\": true,\n  \"devCode\": \"devCode\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Verify login code",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', b.accessToken);",
+                  "  if (b.refreshToken) pm.collectionVariables.set('refreshToken', b.refreshToken);",
+                  "  pm.collectionVariables.set('userId', b.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{phone}}\",\n  \"code\": \"{{otpCode}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/otp/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "otp", "verify"]
+            },
+            "description": "Exchanges the code for tokens. Codes expire after 5 minutes; 5 wrong attempts invalidate the code.\n\nSaves `accessToken` (sent as `Authorization: Bearer` by every other request) and `refreshToken`. Web clients send `X-Client: web` and get the refresh token as an httpOnly cookie instead.\n\n**Who can call it:** Public\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `phone` | string | yes |  |\n| `code` | string | yes |  |\n\n**Success:** 200",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"phone\": \"{{phone}}\",\n  \"code\": \"{{otpCode}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/otp/verify",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "otp", "verify"]
+                },
+                "description": "Exchanges the code for tokens. Codes expire after 5 minutes; 5 wrong attempts invalidate the code.\n\nSaves `accessToken` (sent as `Authorization: Bearer` by every other request) and `refreshToken`. Web clients send `X-Client: web` and get the refresh token as an httpOnly cookie instead.\n\n**Who can call it:** Public\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `phone` | string | yes |  |\n| `code` | string | yes |  |\n\n**Success:** 200",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accessToken\": \"accessToken\",\n  \"refreshToken\": \"refreshToken\",\n  \"expiresIn\": 0,\n  \"user\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"+919812345678\",\n    \"email\": \"email\",\n    \"roles\": [\n      \"requester\"\n    ],\n    \"department\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\"\n    },\n    \"orgId\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"orgName\": \"orgName\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Refresh tokens",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  pm.collectionVariables.set('accessToken', b.accessToken);",
+                  "  if (b.refreshToken) pm.collectionVariables.set('refreshToken', b.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "refresh"]
+            },
+            "description": "Issues a new access token and rotates the refresh token. The old refresh token stops working.\n\n**Who can call it:** Public (needs a refresh token)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `refreshToken` | string |  | Mobile sends it here; web uses the httpOnly cookie |\n\n**Success:** 200",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/refresh",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "refresh"]
+                },
+                "description": "Issues a new access token and rotates the refresh token. The old refresh token stops working.\n\n**Who can call it:** Public (needs a refresh token)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `refreshToken` | string |  | Mobile sends it here; web uses the httpOnly cookie |\n\n**Success:** 200",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accessToken\": \"accessToken\",\n  \"refreshToken\": \"refreshToken\",\n  \"expiresIn\": 0,\n  \"user\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"+919812345678\",\n    \"email\": \"email\",\n    \"roles\": [\n      \"requester\"\n    ],\n    \"department\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\"\n    },\n    \"orgId\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"orgName\": \"orgName\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Log out",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "logout"]
+            },
+            "description": "Revokes the refresh token. The access token stays valid until it expires (15 minutes).\n\n**Who can call it:** Public (needs a refresh token)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `refreshToken` | string |  | Mobile sends it here; web uses the httpOnly cookie |\n\n**Success:** 204 (no body)",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "204 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/auth/logout",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "logout"]
+                },
+                "description": "Revokes the refresh token. The access token stays valid until it expires (15 minutes).\n\n**Who can call it:** Public (needs a refresh token)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `refreshToken` | string |  | Mobile sends it here; web uses the httpOnly cookie |\n\n**Success:** 204 (no body)",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Current user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "The signed-in user with roles and department.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "me"]
+                },
+                "description": "The signed-in user with roles and department.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"+919812345678\",\n  \"email\": \"email\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"orgId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"orgName\": \"orgName\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Database and Redis status. 200 when both are up, 503 otherwise. Use it for uptime monitoring.\n\n**Who can call it:** Public\n\n**Success:** 200",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/health",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["health"]
+                },
+                "description": "Database and Redis status. 200 when both are up, 503 otherwise. Use it for uptime monitoring.\n\n**Who can call it:** Public\n\n**Success:** 200",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Departments",
+      "item": [
+        {
+          "name": "List departments",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('departmentId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            },
+            "description": "All departments with their HOD and member count.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/departments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["departments"]
+                },
+                "description": "All departments with their HOD and member count.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"costCentre\": \"costCentre\",\n    \"hod\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"memberCount\": 0\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create department",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  pm.collectionVariables.set('departmentId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Operations\",\n  \"costCentre\": \"CC-104\",\n  \"hodUserId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments"]
+            },
+            "description": "Names are unique within the organisation. `hodUserId` must be a user with the `hod` role.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `costCentre` | string |  |  |\n| `hodUserId` | string, nullable |  | User id of the HOD; the user must hold the hod role |\n\n**Success:** 201"
+          },
+          "response": [
+            {
+              "name": "201 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Operations\",\n  \"costCentre\": \"CC-104\",\n  \"hodUserId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/departments",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["departments"]
+                },
+                "description": "Names are unique within the organisation. `hodUserId` must be a user with the `hod` role.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `costCentre` | string |  |  |\n| `hodUserId` | string, nullable |  | User id of the HOD; the user must hold the hod role |\n\n**Success:** 201"
+              },
+              "status": "OK",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"costCentre\": \"costCentre\",\n  \"hod\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"memberCount\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update department",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Operations\",\n  \"costCentre\": \"CC-104\",\n  \"hodUserId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/departments/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["departments", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{departmentId}}"
+                }
+              ]
+            },
+            "description": "Changes name, cost centre or HOD. Send only the fields to change; `hodUserId: null` removes the HOD.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `costCentre` | string |  |  |\n| `hodUserId` | string, nullable |  | User id of the HOD; the user must hold the hod role |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Operations\",\n  \"costCentre\": \"CC-104\",\n  \"hodUserId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/departments/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["departments", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{departmentId}}"
+                    }
+                  ]
+                },
+                "description": "Changes name, cost centre or HOD. Send only the fields to change; `hodUserId: null` removes the HOD.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `costCentre` | string |  |  |\n| `hodUserId` | string, nullable |  | User id of the HOD; the user must hold the hod role |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"costCentre\": \"costCentre\",\n  \"hod\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"memberCount\": 0\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "List users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('userId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "requester",
+                  "description": "requester | hod | transport_manager | super_admin",
+                  "disabled": true
+                },
+                {
+                  "key": "departmentId",
+                  "value": "cm2x8k1qz0001abcd1234efgh",
+                  "description": "string",
+                  "disabled": true
+                },
+                {
+                  "key": "status",
+                  "value": "active",
+                  "description": "active | inactive",
+                  "disabled": true
+                },
+                {
+                  "key": "q",
+                  "value": "q",
+                  "description": "string",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Filter by `role`, `departmentId`, `status` or search `q` (name or phone). Disable the query params you do not need.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "requester",
+                      "description": "requester | hod | transport_manager | super_admin",
+                      "disabled": true
+                    },
+                    {
+                      "key": "departmentId",
+                      "value": "cm2x8k1qz0001abcd1234efgh",
+                      "description": "string",
+                      "disabled": true
+                    },
+                    {
+                      "key": "status",
+                      "value": "active",
+                      "description": "active | inactive",
+                      "disabled": true
+                    },
+                    {
+                      "key": "q",
+                      "value": "q",
+                      "description": "string",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "Filter by `role`, `departmentId`, `status` or search `q` (name or phone). Disable the query params you do not need.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"+919812345678\",\n    \"email\": \"email\",\n    \"roles\": [\n      \"requester\"\n    ],\n    \"status\": \"active\",\n    \"department\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\"\n    },\n    \"lastLoginAt\": \"2026-10-24T09:30:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create user",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  pm.collectionVariables.set('userId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"phone\": \"9812345678\",\n  \"email\": \"rahul@example.com\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"departmentId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"]
+            },
+            "description": "Phone numbers are unique and stored as +91XXXXXXXXXX. Requesters and HODs need a department.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `phone` | string | yes | Indian mobile; stored as +91XXXXXXXXXX |\n| `email` | string, nullable |  |  |\n| `roles` | array | yes |  |\n| `departmentId` | string, nullable |  |  |\n\n**Success:** 201"
+          },
+          "response": [
+            {
+              "name": "201 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"phone\": \"9812345678\",\n  \"email\": \"rahul@example.com\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"departmentId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"]
+                },
+                "description": "Phone numbers are unique and stored as +91XXXXXXXXXX. Requesters and HODs need a department.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `phone` | string | yes | Indian mobile; stored as +91XXXXXXXXXX |\n| `email` | string, nullable |  |  |\n| `roles` | array | yes |  |\n| `departmentId` | string, nullable |  |  |\n\n**Success:** 201"
+              },
+              "status": "OK",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"+919812345678\",\n  \"email\": \"email\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"status\": \"active\",\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"lastLoginAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get user",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "One user by id.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{userId}}"
+                    }
+                  ]
+                },
+                "description": "One user by id.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"+919812345678\",\n  \"email\": \"email\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"status\": \"active\",\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"lastLoginAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update user",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"phone\": \"9812345678\",\n  \"email\": \"rahul@example.com\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"departmentId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{userId}}"
+                }
+              ]
+            },
+            "description": "Change details, roles or department. `status: inactive` blocks login and ends their sessions.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `phone` | string |  | Indian mobile; stored as +91XXXXXXXXXX |\n| `email` | string, nullable |  |  |\n| `roles` | array |  |  |\n| `departmentId` | string, nullable |  |  |\n| `status` | `active` / `inactive` |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Rahul Verma\",\n  \"phone\": \"9812345678\",\n  \"email\": \"rahul@example.com\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"departmentId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"active\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/users/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{userId}}"
+                    }
+                  ]
+                },
+                "description": "Change details, roles or department. `status: inactive` blocks login and ends their sessions.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `phone` | string |  | Indian mobile; stored as +91XXXXXXXXXX |\n| `email` | string, nullable |  |  |\n| `roles` | array |  |  |\n| `departmentId` | string, nullable |  |  |\n| `status` | `active` / `inactive` |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"+919812345678\",\n  \"email\": \"email\",\n  \"roles\": [\n    \"requester\"\n  ],\n  \"status\": \"active\",\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"lastLoginAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Vehicles",
+      "item": [
+        {
+          "name": "List vehicles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('vehicleId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["vehicles"]
+            },
+            "description": "All vehicles with status and GPS device id.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["vehicles"]
+                },
+                "description": "All vehicles with status and GPS device id.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"regNo\": \"regNo\",\n    \"type\": \"type\",\n    \"make\": \"make\",\n    \"model\": \"model\",\n    \"seats\": 0,\n    \"status\": \"available\",\n    \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create vehicle",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  pm.collectionVariables.set('vehicleId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"regNo\": \"KA01AB1234\",\n  \"type\": \"Sedan\",\n  \"make\": \"Maruti\",\n  \"model\": \"Dzire\",\n  \"seats\": 4,\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["vehicles"]
+            },
+            "description": "Registration numbers are unique (stored uppercase without spaces). Leave `gpsDeviceId` empty: the tracker IMEI is filled in when the GPS vendor reports this registration number.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `regNo` | string | yes | Stored uppercase without spaces |\n| `type` | string | yes |  |\n| `make` | string, nullable |  |  |\n| `model` | string, nullable |  |  |\n| `seats` | number | yes |  |\n| `gpsDeviceId` | string, nullable |  | The tracker's device id in the GPS vendor system |\n\n**Success:** 201"
+          },
+          "response": [
+            {
+              "name": "201 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"regNo\": \"KA01AB1234\",\n  \"type\": \"Sedan\",\n  \"make\": \"Maruti\",\n  \"model\": \"Dzire\",\n  \"seats\": 4,\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["vehicles"]
+                },
+                "description": "Registration numbers are unique (stored uppercase without spaces). Leave `gpsDeviceId` empty: the tracker IMEI is filled in when the GPS vendor reports this registration number.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `regNo` | string | yes | Stored uppercase without spaces |\n| `type` | string | yes |  |\n| `make` | string, nullable |  |  |\n| `model` | string, nullable |  |  |\n| `seats` | number | yes |  |\n| `gpsDeviceId` | string, nullable |  | The tracker's device id in the GPS vendor system |\n\n**Success:** 201"
+              },
+              "status": "OK",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"regNo\": \"regNo\",\n  \"type\": \"type\",\n  \"make\": \"make\",\n  \"model\": \"model\",\n  \"seats\": 0,\n  \"status\": \"available\",\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update vehicle",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"regNo\": \"KA01AB1234\",\n  \"type\": \"Sedan\",\n  \"make\": \"Maruti\",\n  \"model\": \"Dzire\",\n  \"seats\": 4,\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"available\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/vehicles/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["vehicles", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{vehicleId}}"
+                }
+              ]
+            },
+            "description": "Vehicles in `maintenance` or `inactive` are not offered when assigning.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `regNo` | string |  | Stored uppercase without spaces |\n| `type` | string |  |  |\n| `make` | string, nullable |  |  |\n| `model` | string, nullable |  |  |\n| `seats` | number |  |  |\n| `gpsDeviceId` | string, nullable |  | The tracker's device id in the GPS vendor system |\n| `status` | `available` / `on_trip` / `maintenance` / `inactive` |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"regNo\": \"KA01AB1234\",\n  \"type\": \"Sedan\",\n  \"make\": \"Maruti\",\n  \"model\": \"Dzire\",\n  \"seats\": 4,\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"available\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/vehicles/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["vehicles", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{vehicleId}}"
+                    }
+                  ]
+                },
+                "description": "Vehicles in `maintenance` or `inactive` are not offered when assigning.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `regNo` | string |  | Stored uppercase without spaces |\n| `type` | string |  |  |\n| `make` | string, nullable |  |  |\n| `model` | string, nullable |  |  |\n| `seats` | number |  |  |\n| `gpsDeviceId` | string, nullable |  | The tracker's device id in the GPS vendor system |\n| `status` | `available` / `on_trip` / `maintenance` / `inactive` |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"regNo\": \"regNo\",\n  \"type\": \"type\",\n  \"make\": \"make\",\n  \"model\": \"model\",\n  \"seats\": 0,\n  \"status\": \"available\",\n  \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Drivers",
+      "item": [
+        {
+          "name": "List drivers",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('driverId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/drivers",
+              "host": ["{{baseUrl}}"],
+              "path": ["drivers"]
+            },
+            "description": "All drivers with status and default vehicle. Drivers have no login.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/drivers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["drivers"]
+                },
+                "description": "All drivers with status and default vehicle. Drivers have no login.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\",\n    \"licenceNo\": \"licenceNo\",\n    \"licenceExpiry\": \"2030-03-31\",\n    \"status\": \"active\",\n    \"defaultVehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\"\n    }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  pm.collectionVariables.set('driverId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"phone\": \"9812345678\",\n  \"licenceNo\": \"KA0120190012345\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"defaultVehicleId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/drivers",
+              "host": ["{{baseUrl}}"],
+              "path": ["drivers"]
+            },
+            "description": "Phone numbers are unique. The driver gets trip details on WhatsApp when assigned.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `phone` | string | yes |  |\n| `licenceNo` | string | yes |  |\n| `licenceExpiry` | string, nullable |  |  |\n| `defaultVehicleId` | string, nullable |  |  |\n\n**Success:** 201"
+          },
+          "response": [
+            {
+              "name": "201 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"phone\": \"9812345678\",\n  \"licenceNo\": \"KA0120190012345\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"defaultVehicleId\": \"cm2x8k1qz0001abcd1234efgh\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/drivers",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["drivers"]
+                },
+                "description": "Phone numbers are unique. The driver gets trip details on WhatsApp when assigned.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string | yes |  |\n| `phone` | string | yes |  |\n| `licenceNo` | string | yes |  |\n| `licenceExpiry` | string, nullable |  |  |\n| `defaultVehicleId` | string, nullable |  |  |\n\n**Success:** 201"
+              },
+              "status": "OK",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"phone\",\n  \"licenceNo\": \"licenceNo\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"status\": \"active\",\n  \"defaultVehicle\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"regNo\": \"regNo\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update driver",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"phone\": \"9812345678\",\n  \"licenceNo\": \"KA0120190012345\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"defaultVehicleId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/drivers/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["drivers", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{driverId}}"
+                }
+              ]
+            },
+            "description": "Drivers `on_leave` or `inactive` are not offered when assigning.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `phone` | string |  |  |\n| `licenceNo` | string |  |  |\n| `licenceExpiry` | string, nullable |  |  |\n| `defaultVehicleId` | string, nullable |  |  |\n| `status` | `active` / `on_leave` / `inactive` |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Suresh Kumar\",\n  \"phone\": \"9812345678\",\n  \"licenceNo\": \"KA0120190012345\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"defaultVehicleId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"active\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/drivers/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["drivers", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{driverId}}"
+                    }
+                  ]
+                },
+                "description": "Drivers `on_leave` or `inactive` are not offered when assigning.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `name` | string |  |  |\n| `phone` | string |  |  |\n| `licenceNo` | string |  |  |\n| `licenceExpiry` | string, nullable |  |  |\n| `defaultVehicleId` | string, nullable |  |  |\n| `status` | `active` / `on_leave` / `inactive` |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"name\": \"name\",\n  \"phone\": \"phone\",\n  \"licenceNo\": \"licenceNo\",\n  \"licenceExpiry\": \"2030-03-31\",\n  \"status\": \"active\",\n  \"defaultVehicle\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"regNo\": \"regNo\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Requests",
+      "item": [
+        {
+          "name": "List requests",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('requestId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/requests?scope=mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests"],
+              "query": [
+                {
+                  "key": "scope",
+                  "value": "mine",
+                  "description": "mine | approvals | all",
+                  "disabled": false
+                },
+                {
+                  "key": "status",
+                  "value": "draft",
+                  "description": "draft | pending_approval | approved | rejected | assigned | in_progress | completed | cancelled",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "`scope`:\n- `mine` (default): requests I raised\n- `approvals`: pending requests from departments I am HOD of\n- `all`: every request (Transport Manager, Super Admin)\n\nOptional `status` filter.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/requests?scope=mine",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests"],
+                  "query": [
+                    {
+                      "key": "scope",
+                      "value": "mine",
+                      "description": "mine | approvals | all",
+                      "disabled": false
+                    },
+                    {
+                      "key": "status",
+                      "value": "draft",
+                      "description": "draft | pending_approval | approved | rejected | assigned | in_progress | completed | cancelled",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "`scope`:\n- `mine` (default): requests I raised\n- `approvals`: pending requests from departments I am HOD of\n- `all`: every request (Transport Manager, Super Admin)\n\nOptional `status` filter.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"code\": \"PG-1042\",\n    \"status\": \"draft\",\n    \"requester\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"department\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\"\n    },\n    \"pickup\": {\n      \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n      \"lat\": 13.1989,\n      \"lng\": 77.7068\n    },\n    \"drop\": {\n      \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n      \"lat\": 13.1989,\n      \"lng\": 77.7068\n    },\n    \"startAt\": \"2026-10-24T09:30:00.000Z\",\n    \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n    \"passengers\": 0,\n    \"purpose\": \"purpose\",\n    \"notes\": \"notes\",\n    \"cancelReason\": \"cancelReason\",\n    \"trip\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"status\": \"scheduled\",\n      \"vehicle\": {\n        \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n        \"regNo\": \"regNo\",\n        \"type\": \"type\",\n        \"seats\": 0\n      },\n      \"driver\": {\n        \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n        \"name\": \"name\",\n        \"phone\": \"phone\"\n      },\n      \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n      \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n    },\n    \"timeline\": [\n      {\n        \"type\": \"created\",\n        \"at\": \"2026-10-24T09:30:00.000Z\",\n        \"actorName\": \"actorName\",\n        \"note\": \"note\"\n      }\n    ],\n    \"actions\": [\n      \"cancel\"\n    ],\n    \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Create request",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('startAt', new Date(Date.now() + 2 * 3600e3).toISOString());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  pm.collectionVariables.set('requestId', pm.response.json().id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickup\": {\n    \"address\": \"Siliguri Junction, Siliguri\",\n    \"lat\": 26.7271,\n    \"lng\": 88.3953\n  },\n  \"drop\": {\n    \"address\": \"Bagdogra Airport, Bagdogra\",\n    \"lat\": 26.6812,\n    \"lng\": 88.3286\n  },\n  \"startAt\": \"{{startAt}}\",\n  \"returnAt\": null,\n  \"passengers\": 2,\n  \"purpose\": \"Client visit\",\n  \"submit\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests"]
+            },
+            "description": "Creates a draft (`submit: false`) or submits it at once (`submit: true`). Pickup must be in the future; `returnAt` after `startAt`. A request raised by the HOD of the department is approved automatically.\n\nThe pre-request script sets `startAt` to 2 hours from now.\n\n**Who can call it:** Requester, HOD\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `pickup` | object | yes |  |\n| `drop` | object | yes |  |\n| `startAt` | string | yes |  |\n| `returnAt` | string, nullable |  | Return trip time, if any |\n| `passengers` | number | yes |  |\n| `purpose` | string | yes |  |\n| `notes` | string, nullable |  |  |\n| `submit` | boolean |  | Defaults to true; false saves a draft |\n\n**Success:** 201"
+          },
+          "response": [
+            {
+              "name": "201 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pickup\": {\n    \"address\": \"Siliguri Junction, Siliguri\",\n    \"lat\": 26.7271,\n    \"lng\": 88.3953\n  },\n  \"drop\": {\n    \"address\": \"Bagdogra Airport, Bagdogra\",\n    \"lat\": 26.6812,\n    \"lng\": 88.3286\n  },\n  \"startAt\": \"{{startAt}}\",\n  \"returnAt\": null,\n  \"passengers\": 2,\n  \"purpose\": \"Client visit\",\n  \"submit\": true\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests"]
+                },
+                "description": "Creates a draft (`submit: false`) or submits it at once (`submit: true`). Pickup must be in the future; `returnAt` after `startAt`. A request raised by the HOD of the department is approved automatically.\n\nThe pre-request script sets `startAt` to 2 hours from now.\n\n**Who can call it:** Requester, HOD\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `pickup` | object | yes |  |\n| `drop` | object | yes |  |\n| `startAt` | string | yes |  |\n| `returnAt` | string, nullable |  | Return trip time, if any |\n| `passengers` | number | yes |  |\n| `purpose` | string | yes |  |\n| `notes` | string, nullable |  |  |\n| `submit` | boolean |  | Defaults to true; false saves a draft |\n\n**Success:** 201"
+              },
+              "status": "OK",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (b.trip) pm.collectionVariables.set('tripId', b.trip.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Full request with timeline and trip (vehicle, driver). Others get 404.\n\n**Who can call it:** Requester (own), HOD (own department), Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Full request with timeline and trip (vehicle, driver). Others get 404.\n\n**Who can call it:** Requester (own), HOD (own department), Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update draft",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-20T09:30:00+05:30\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 2,\n  \"purpose\": \"Client meeting at airport hotel\",\n  \"notes\": \"notes\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Only drafts can be edited.\n\n**Who can call it:** Requester (own draft)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `pickup` | object |  |  |\n| `drop` | object |  |  |\n| `startAt` | string |  |  |\n| `returnAt` | string, nullable |  | Return trip time, if any |\n| `passengers` | number |  |  |\n| `purpose` | string |  |  |\n| `notes` | string, nullable |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-20T09:30:00+05:30\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 2,\n  \"purpose\": \"Client meeting at airport hotel\",\n  \"notes\": \"notes\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Only drafts can be edited.\n\n**Who can call it:** Requester (own draft)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `pickup` | object |  |  |\n| `drop` | object |  |  |\n| `startAt` | string |  |  |\n| `returnAt` | string, nullable |  | Return trip time, if any |\n| `passengers` | number |  |  |\n| `purpose` | string |  |  |\n| `notes` | string, nullable |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Submit draft",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id", "submit"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Moves a draft to `pending_approval` and notifies the HOD.\n\n**Who can call it:** Requester (own draft)\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id/submit",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id", "submit"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Moves a draft to `pending_approval` and notifies the HOD.\n\n**Who can call it:** Requester (own draft)\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Cancel request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"reason\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id", "cancel"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Cancels a request before the trip starts; frees the vehicle and driver if assigned.\n\n**Who can call it:** Requester (own), Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `reason` | string |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"reason\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id/cancel",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id", "cancel"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Cancels a request before the trip starts; frees the vehicle and driver if assigned.\n\n**Who can call it:** Requester (own), Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `reason` | string |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Approve request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comment\": \"comment\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id/approve",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id", "approve"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Moves `pending_approval` to `approved`; notifies the requester and Transport Managers.\n\n**Who can call it:** HOD of the request’s department\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `comment` | string |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"comment\": \"comment\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id/approve",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id", "approve"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Moves `pending_approval` to `approved`; notifies the requester and Transport Managers.\n\n**Who can call it:** HOD of the request’s department\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `comment` | string |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reject request",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"comment\": \"Please use the shuttle for this route\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id/reject",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id", "reject"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "A comment is required and shown to the requester.\n\n**Who can call it:** HOD of the request’s department\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `comment` | string | yes |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"comment\": \"Please use the shuttle for this route\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id/reject",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id", "reject"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "A comment is required and shown to the requester.\n\n**Who can call it:** HOD of the request’s department\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `comment` | string | yes |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Assignments",
+      "item": [
+        {
+          "name": "Check availability",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('startAt', new Date(Date.now() + 2 * 3600e3).toISOString());",
+                  "pm.collectionVariables.set('endAt', new Date(Date.now() + 4 * 3600e3).toISOString());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/availability?from={{startAt}}&to={{endAt}}&passengers=2",
+              "host": ["{{baseUrl}}"],
+              "path": ["availability"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{startAt}}",
+                  "description": "Required. date-time",
+                  "disabled": false
+                },
+                {
+                  "key": "to",
+                  "value": "{{endAt}}",
+                  "description": "Required. date-time",
+                  "disabled": false
+                },
+                {
+                  "key": "passengers",
+                  "value": "2",
+                  "description": "number",
+                  "disabled": false
+                }
+              ]
+            },
+            "description": "Vehicles and drivers for a time window. `available: false` comes with the clashing request in `conflict`; `fits` says whether the vehicle has enough seats for `passengers`.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/availability?from={{startAt}}&to={{endAt}}&passengers=2",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["availability"],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "{{startAt}}",
+                      "description": "Required. date-time",
+                      "disabled": false
+                    },
+                    {
+                      "key": "to",
+                      "value": "{{endAt}}",
+                      "description": "Required. date-time",
+                      "disabled": false
+                    },
+                    {
+                      "key": "passengers",
+                      "value": "2",
+                      "description": "number",
+                      "disabled": false
+                    }
+                  ]
+                },
+                "description": "Vehicles and drivers for a time window. `available: false` comes with the clashing request in `conflict`; `fits` says whether the vehicle has enough seats for `passengers`.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"vehicles\": [\n    {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0,\n      \"available\": true,\n      \"fits\": true,\n      \"conflict\": {\n        \"requestCode\": \"PG-1041\",\n        \"requestId\": \"cm2x8k1qz0001abcd1234efgh\",\n        \"from\": \"2026-10-24T09:30:00.000Z\",\n        \"to\": \"2026-10-24T09:30:00.000Z\"\n      }\n    }\n  ],\n  \"drivers\": [\n    {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\",\n      \"defaultVehicleId\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"available\": true,\n      \"conflict\": {\n        \"requestCode\": \"PG-1041\",\n        \"requestId\": \"cm2x8k1qz0001abcd1234efgh\",\n        \"from\": \"2026-10-24T09:30:00.000Z\",\n        \"to\": \"2026-10-24T09:30:00.000Z\"\n      }\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Assign vehicle and driver",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (b.trip) pm.collectionVariables.set('tripId', b.trip.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"driverId\": \"{{driverId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/requests/:id/assign",
+              "host": ["{{baseUrl}}"],
+              "path": ["requests", ":id", "assign"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{requestId}}"
+                }
+              ]
+            },
+            "description": "Assigns an approved request. Double booking is refused (409). If two managers assign at once, one gets 409 \"already assigned\". Notifies the requester and the driver.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `vehicleId` | string | yes |  |\n| `driverId` | string | yes |  |\n| `scheduledEnd` | string, nullable |  | When the vehicle is free again. Defaults to the return time, else pickup + 2 hours. |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"driverId\": \"{{driverId}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/requests/:id/assign",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["requests", ":id", "assign"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{requestId}}"
+                    }
+                  ]
+                },
+                "description": "Assigns an approved request. Double booking is refused (409). If two managers assign at once, one gets 409 \"already assigned\". Notifies the requester and the driver.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `vehicleId` | string | yes |  |\n| `driverId` | string | yes |  |\n| `scheduledEnd` | string, nullable |  | When the vehicle is free again. Defaults to the return time, else pickup + 2 hours. |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Reassign trip",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"driverId\": \"{{driverId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/trips/:id/reassign",
+              "host": ["{{baseUrl}}"],
+              "path": ["trips", ":id", "reassign"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tripId}}"
+                }
+              ]
+            },
+            "description": "Changes the vehicle and/or driver of a scheduled trip.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `vehicleId` | string |  |  |\n| `driverId` | string |  |  |\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"vehicleId\": \"{{vehicleId}}\",\n  \"driverId\": \"{{driverId}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/trips/:id/reassign",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["trips", ":id", "reassign"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{tripId}}"
+                    }
+                  ]
+                },
+                "description": "Changes the vehicle and/or driver of a scheduled trip.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `vehicleId` | string |  |  |\n| `driverId` | string |  |  |\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Live tracking",
+      "item": [
+        {
+          "name": "Unlinked GPS trackers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gps/trackers/unlinked",
+              "host": ["{{baseUrl}}"],
+              "path": ["gps", "trackers", "unlinked"]
+            },
+            "description": "Trackers the vendor reported in the last 24 h whose registration number matches no vehicle.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/gps/trackers/unlinked",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["gps", "trackers", "unlinked"]
+                },
+                "description": "Trackers the vendor reported in the last 24 h whose registration number matches no vehicle.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"imei\": \"358480082479488\",\n    \"vehicleNo\": \"GJ01KT0057\",\n    \"lastSeen\": \"2026-10-24T09:30:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Live vehicles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/live/vehicles",
+              "host": ["{{baseUrl}}"],
+              "path": ["live", "vehicles"]
+            },
+            "description": "Every vehicle with its latest position, `stale` when no position for 5 minutes, and its current or next trip with ETA.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/live/vehicles",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["live", "vehicles"]
+                },
+                "description": "Every vehicle with its latest position, `stale` when no position for 5 minutes, and its current or next trip with ETA.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"regNo\": \"regNo\",\n    \"type\": \"type\",\n    \"status\": \"available\",\n    \"gpsDeviceId\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"position\": {\n      \"lat\": 0,\n      \"lng\": 0,\n      \"speedKmh\": 0,\n      \"heading\": 0,\n      \"recordedAt\": \"2026-10-24T09:30:00.000Z\"\n    },\n    \"stale\": true,\n    \"trip\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"requestId\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"code\": \"PG-1001\",\n      \"status\": \"scheduled\",\n      \"requesterName\": \"requesterName\",\n      \"pickupAddress\": \"pickupAddress\",\n      \"dropAddress\": \"dropAddress\",\n      \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n      \"etaMinutes\": 0,\n      \"etaTo\": \"pickup\"\n    }\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Trip track",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trips/:id/track",
+              "host": ["{{baseUrl}}"],
+              "path": ["trips", ":id", "track"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tripId}}"
+                }
+              ]
+            },
+            "description": "Driven path and latest position for a trip; the vehicle position is shown from an hour before pickup.\n\n**Who can call it:** Requester (own), Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trips/:id/track",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["trips", ":id", "track"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{tripId}}"
+                    }
+                  ]
+                },
+                "description": "Driven path and latest position for a trip; the vehicle position is shown from an hour before pickup.\n\n**Who can call it:** Requester (own), Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"tripId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"requestId\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"status\": \"scheduled\",\n  \"vehicleRegNo\": \"vehicleRegNo\",\n  \"pickup\": {\n    \"lat\": 0,\n    \"lng\": 0,\n    \"at\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"drop\": {\n    \"lat\": 0,\n    \"lng\": 0,\n    \"at\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"points\": [\n    {\n      \"lat\": 0,\n      \"lng\": 0,\n      \"at\": \"2026-10-24T09:30:00.000Z\"\n    }\n  ],\n  \"position\": {\n    \"lat\": 0,\n    \"lng\": 0,\n    \"speedKmh\": 0,\n    \"heading\": 0,\n    \"recordedAt\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"etaMinutes\": 0,\n  \"etaTo\": \"pickup\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Start trip manually",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trips/:id/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["trips", ":id", "start"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tripId}}"
+                }
+              ]
+            },
+            "description": "Trips start by themselves when the vehicle leaves pickup; this overrides it.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trips/:id/start",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["trips", ":id", "start"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{tripId}}"
+                    }
+                  ]
+                },
+                "description": "Trips start by themselves when the vehicle leaves pickup; this overrides it.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "End trip manually",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/trips/:id/end",
+              "host": ["{{baseUrl}}"],
+              "path": ["trips", ":id", "end"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{tripId}}"
+                }
+              ]
+            },
+            "description": "Trips end by themselves at drop (or back at pickup with a return); this overrides it.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/trips/:id/end",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["trips", ":id", "end"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{tripId}}"
+                    }
+                  ]
+                },
+                "description": "Trips end by themselves at drop (or back at pickup with a return); this overrides it.\n\n**Who can call it:** Transport Manager, Super Admin\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n  \"code\": \"PG-1042\",\n  \"status\": \"draft\",\n  \"requester\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\",\n    \"phone\": \"phone\"\n  },\n  \"department\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"name\": \"name\"\n  },\n  \"pickup\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"drop\": {\n    \"address\": \"Terminal 1, Kempegowda International Airport, Bengaluru\",\n    \"lat\": 13.1989,\n    \"lng\": 77.7068\n  },\n  \"startAt\": \"2026-10-24T09:30:00.000Z\",\n  \"returnAt\": \"2026-10-24T09:30:00.000Z\",\n  \"passengers\": 0,\n  \"purpose\": \"purpose\",\n  \"notes\": \"notes\",\n  \"cancelReason\": \"cancelReason\",\n  \"trip\": {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"status\": \"scheduled\",\n    \"vehicle\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"regNo\": \"regNo\",\n      \"type\": \"type\",\n      \"seats\": 0\n    },\n    \"driver\": {\n      \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n      \"name\": \"name\",\n      \"phone\": \"phone\"\n    },\n    \"scheduledStart\": \"2026-10-24T09:30:00.000Z\",\n    \"scheduledEnd\": \"2026-10-24T09:30:00.000Z\"\n  },\n  \"timeline\": [\n    {\n      \"type\": \"created\",\n      \"at\": \"2026-10-24T09:30:00.000Z\",\n      \"actorName\": \"actorName\",\n      \"note\": \"note\"\n    }\n  ],\n  \"actions\": [\n    \"cancel\"\n  ],\n  \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GPS webhook",
+      "item": [
+        {
+          "name": "GPS push (vendor webhook)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.collectionVariables.set('now', new Date().toISOString());"]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "X-GPS-Secret",
+                "value": "{{gpsSecret}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"points\": [\n    {\n      \"deviceId\": \"<tracker IMEI>\",\n      \"recordedAt\": \"{{now}}\",\n      \"lat\": 26.7271,\n      \"lng\": 88.3953,\n      \"speedKmh\": 32.5,\n      \"heading\": 304,\n      \"ignition\": true,\n      \"odometerKm\": 9050\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/gps/webhook",
+              "host": ["{{baseUrl}}"],
+              "path": ["gps", "webhook"]
+            },
+            "description": "Where the GPS vendor (Uffizio) pushes positions. Up to 1,000 points per request. Points for devices not linked to a vehicle are counted in `rejected` and listed in `unknownDevices`. 401 without the correct secret.\n\nSet `gpsSecret` in the collection variables (Current value only).\n\n**Who can call it:** GPS vendor (X-GPS-Secret header)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `points` | array | yes |  |\n\n**Success:** 200",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-GPS-Secret",
+                    "value": "{{gpsSecret}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"points\": [\n    {\n      \"deviceId\": \"<tracker IMEI>\",\n      \"recordedAt\": \"{{now}}\",\n      \"lat\": 26.7271,\n      \"lng\": 88.3953,\n      \"speedKmh\": 32.5,\n      \"heading\": 304,\n      \"ignition\": true,\n      \"odometerKm\": 9050\n    }\n  ]\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/gps/webhook",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["gps", "webhook"]
+                },
+                "description": "Where the GPS vendor (Uffizio) pushes positions. Up to 1,000 points per request. Points for devices not linked to a vehicle are counted in `rejected` and listed in `unknownDevices`. 401 without the correct secret.\n\nSet `gpsSecret` in the collection variables (Current value only).\n\n**Who can call it:** GPS vendor (X-GPS-Secret header)\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `points` | array | yes |  |\n\n**Success:** 200",
+                "auth": {
+                  "type": "noauth"
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"accepted\": 0,\n  \"duplicates\": 0,\n  \"rejected\": 0,\n  \"unknownDevices\": [\n    \"unknownDevices\"\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List notifications",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const b = pm.response.json();",
+                  "  if (Array.isArray(b) && b.length) pm.collectionVariables.set('notificationId', b[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"]
+            },
+            "description": "The signed-in user’s notifications, newest first.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/notifications",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["notifications"]
+                },
+                "description": "The signed-in user’s notifications, newest first.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "[\n  {\n    \"id\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"template\": \"request_approved\",\n    \"title\": \"title\",\n    \"body\": \"body\",\n    \"requestId\": \"cm2x8k1qz0001abcd1234efgh\",\n    \"readAt\": \"2026-10-24T09:30:00.000Z\",\n    \"createdAt\": \"2026-10-24T09:30:00.000Z\"\n  }\n]"
+            }
+          ]
+        },
+        {
+          "name": "Unread count",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/unread-count",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "unread-count"]
+            },
+            "description": "Number of unread notifications (for the bell badge).\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+          },
+          "response": [
+            {
+              "name": "200 example",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/notifications/unread-count",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["notifications", "unread-count"]
+                },
+                "description": "Number of unread notifications (for the bell badge).\n\n**Who can call it:** Any signed-in user\n\n**Success:** 200"
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": "{\n  \"count\": 0\n}"
+            }
+          ]
+        },
+        {
+          "name": "Mark notification read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/:id/read",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", ":id", "read"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "{{notificationId}}"
+                }
+              ]
+            },
+            "description": "Marks one notification as read.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+          },
+          "response": [
+            {
+              "name": "204 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/notifications/:id/read",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["notifications", ":id", "read"],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "{{notificationId}}"
+                    }
+                  ]
+                },
+                "description": "Marks one notification as read.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+              },
+              "status": "OK",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Mark all read",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/read-all",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", "read-all"]
+            },
+            "description": "Marks every notification of the signed-in user as read.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+          },
+          "response": [
+            {
+              "name": "204 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/notifications/read-all",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["notifications", "read-all"]
+                },
+                "description": "Marks every notification of the signed-in user as read.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+              },
+              "status": "OK",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Register device for push",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"{{deviceToken}}\",\n  \"platform\": \"android\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/devices",
+              "host": ["{{baseUrl}}"],
+              "path": ["devices"]
+            },
+            "description": "Called by the mobile app after login with its Firebase (FCM) token, so the user gets push notifications.\n\n**Who can call it:** Any signed-in user\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `token` | string | yes | FCM registration token |\n| `platform` | `android` / `ios` | yes |  |\n\n**Success:** 204 (no body)"
+          },
+          "response": [
+            {
+              "name": "204 example",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"token\": \"{{deviceToken}}\",\n  \"platform\": \"android\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/devices",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["devices"]
+                },
+                "description": "Called by the mobile app after login with its Firebase (FCM) token, so the user gets push notifications.\n\n**Who can call it:** Any signed-in user\n\n**Body**\n\n| Field | Type | Required | Notes |\n| --- | --- | --- | --- |\n| `token` | string | yes | FCM registration token |\n| `platform` | `android` / `ios` | yes |  |\n\n**Success:** 204 (no body)"
+              },
+              "status": "OK",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        },
+        {
+          "name": "Unregister device",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/devices/:token",
+              "host": ["{{baseUrl}}"],
+              "path": ["devices", ":token"],
+              "variable": [
+                {
+                  "key": "token",
+                  "value": "{{deviceToken}}"
+                }
+              ]
+            },
+            "description": "Called by the mobile app on logout.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+          },
+          "response": [
+            {
+              "name": "204 example",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/devices/:token",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["devices", ":token"],
+                  "variable": [
+                    {
+                      "key": "token",
+                      "value": "{{deviceToken}}"
+                    }
+                  ]
+                },
+                "description": "Called by the mobile app on logout.\n\n**Who can call it:** Any signed-in user\n\n**Success:** 204 (no body)"
+              },
+              "status": "OK",
+              "code": 204,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                }
+              ],
+              "body": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

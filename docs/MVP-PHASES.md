@@ -26,7 +26,7 @@ UAT (planned 20 Oct) and go-live (planned 21 Oct) did not happen on those dates.
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
 - [x] **BlackPrism** Reply to Uffizio sent with the client's username and the cURL (23 Oct)
 - [x] **Dev** Vehicles entered on the demo (23 Oct): WB74BS4165 and WB73L9779, Sedan, 4 seats each, GPS device id left empty for auto-linking
-- [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
+- [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), [Postman collection](postman/PrismGo-API.postman_collection.json) (all 42 endpoints; regenerate with `pnpm --filter @prismgo/api postman`), system design
 - [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
 
 ### In review / waiting on others

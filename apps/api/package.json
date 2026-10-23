@@ -18,7 +18,8 @@
     "test:e2e": "vitest run --config vitest.e2e.config.ts",
     "openapi": "prisma generate && tsc -p tsconfig.build.json --outDir .openapi-build && node .openapi-build/openapi.js",
     "sim": "tsx scripts/gps-sim.ts",
-    "gps:check": "tsx scripts/gps-check.ts"
+    "gps:check": "tsx scripts/gps-check.ts",
+    "postman": "tsx scripts/postman.ts"
   },
   "devDependencies": {
     "@nestjs/cli": "^12.0.8",
