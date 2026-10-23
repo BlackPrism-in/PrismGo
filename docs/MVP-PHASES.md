@@ -4,9 +4,11 @@ Go-live: **Wed 21 Oct 2026**. Plan starts Wed 14 Oct 2026.
 
 Full system design: [PrismGo — Fleet Request & Tracking: System Design](https://claude.ai/code/artifact/27358f3e-0cd3-4647-b93e-587d24a4bf5d)
 
-## Status at a glance (checked 23 Oct 2026)
+## Status at a glance (checked 23 Oct 2026, evening)
 
 Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our credentials), **Dev** (engineering).
+
+UAT (planned 20 Oct) and go-live (planned 21 Oct) did not happen on those dates. New dates to be agreed with the client once live GPS works.
 
 ### Done
 
@@ -22,39 +24,42 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 - [x] **Meta** All 12 WhatsApp templates approved (Active, checked 19 Oct)
 - [x] **Dev** WhatsApp sending works (19 Oct, after giving `prismgo-api` the Messaging account). Payment method added to the WhatsApp account on 20 Oct (Meta drops template messages without one); back on WhatsApp the same day (`OTP_CHANNELS=whatsapp,console`)
 - [x] **BlackPrism** Domain and DNS: `prismgo` and `api.prismgo` on blackprism.in (Namecheap)
+- [x] **BlackPrism** Reply to Uffizio sent with the client's username and the cURL (23 Oct)
+- [x] **Dev** Vehicles entered on the demo (23 Oct): WB74BS4165 and WB73L9779, Sedan, 4 seats each, GPS device id left empty for auto-linking
 - [x] **Dev** Docs: [deployment](deployment.md), [UAT script](uat-script.md), [GPS integration](gps-integration.md), [WhatsApp templates](whatsapp-templates.md), system design
 - [x] Decisions: no SMS fallback (WhatsApp only); Android first, iOS after the client approves the demo
 
 ### In review / waiting on others
 
 - [ ] **Meta** Business verification: still "In review" on 23 Oct (submitted 16 Oct; Meta's estimate was about 2 business days). Messaging is allowed meanwhile, with a lower daily limit (250 business-started conversations)
-- [ ] **Uffizio** Push setup: the client confirmed the account (username `bijayguptabhu@gmail.com`, vehicles WB74BS4165 and WB73L9779) on 22 Oct; we sent the cURL on 23 Oct. Waiting for Uffizio to configure push and send a test batch; the shared secret goes by phone. Still open: odometer unit, token lifetime, HTTPS for the pull API
+- [ ] **Uffizio** Push setup: the client confirmed the account (username `bijayguptabhu@gmail.com`, vehicles WB74BS4165 and WB73L9779) on 22 Oct; we sent the cURL on 23 Oct. Waiting for Uffizio to configure push and send a test batch. Still open: odometer unit, token lifetime, HTTPS for the pull API
 - [ ] **WhatsApp delivery** Payment method added 20 Oct, but WhatsApp Manager still shows 0 messages sent on 23 Oct: confirm with a test login code that messages are delivered
-- [ ] **Client** Master data: departments, HODs, employees (name, phone), drivers, and vehicles by registration number (at least WB74BS4165 and WB73L9779)
-- [ ] **BlackPrism** Pull API login: the client's Uffizio account is `bijayguptabhu@gmail.com`, not the example account in Uffizio's PDF. Update `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD` and `GPS_VENDOR_COMPANY` in Render if they still hold the PDF's values
+- [ ] **Client** Rest of the master data: departments, HODs, employees (name, phone), drivers (vehicles done)
 - [ ] **Client** Logo (placeholder in use)
-- [ ] **Client** UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
+- [ ] **Client** UAT participants and a new UAT date: a requester, their HOD, the Transport Manager, an admin
 
 ### To do
 
 BlackPrism (needs our accounts or credentials)
 
+- [ ] **First:** both vehicles still show "Not linked" after several polls (23 Oct), and no unlinked trackers are listed, so the pull API isn't returning the client's trackers. Set `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD` and `GPS_VENDOR_COMPANY` in Render to the client's Uffizio account (`bijayguptabhu@gmail.com`); the PDF's example account can't see these vehicles. Within about 15 s of the restart both should show a tracker IMEI
+- [ ] Log in to Render again in Chrome (session expired 23 Oct) so Dev can read the logs if linking still fails
+- [ ] Give Uffizio the webhook secret by phone (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
+- [ ] Uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min: the API sleeps when idle, and GPS polling stops while it sleeps
 - [ ] Fix the "invalid payment info" warning on Render
-- [ ] **Today, before UAT:** uptime monitor on `https://api.prismgo.blackprism.in/api/v1/health` every 5 min. Not set up yet: the API restarted 8 times in the last 24 h after sleeping, and GPS polling stops while it sleeps
-- [ ] **Today:** send the reply to Uffizio (username `deep@cital.co` + cURL); then give them the webhook secret by phone (Render → `prismgo` → Environment → `GPS_WEBHOOK_SECRET`)
+- [ ] Delete the downloaded Firebase service-account key (`prismgo-34a61-firebase-adminsdk-…json`) from Downloads
+- [ ] Agree new UAT and go-live dates with the client
 - [ ] Create the Android upload signing key (keystore); Play Console app + internal testing track
 - [ ] Google Maps API key with billing (OpenStreetMap and straight-line ETA until then)
 - [ ] Production server before the free Render database expires (about 15 Nov)
-- [ ] **Today:** confirm the UAT session for 20 Oct and get the client's master data entered (or the CSVs to import)
 
 Dev
 
-- [ ] Real GPS run once vehicles are entered (trackers link by registration number); check Uffizio's test push, run push and pull side by side for a day, then turn pull off
-- [ ] Test the WhatsApp switch with a real number: login code on WhatsApp, then each alert through approve and assign
-- [ ] At go-live: `OTP_CHANNELS=whatsapp`, `OTP_EXPOSE_CODE=false`, `APP_ENV=production`
+- [ ] Real GPS run once the trackers link: both vehicles on the Live map, then a trip through auto start and end; check Uffizio's test push, run push and pull side by side for a day, then turn pull off
+- [ ] Test WhatsApp with a real number: login code on WhatsApp, then each alert through approve and assign
 - [ ] Test push on a phone with the UAT APK; then sign with the upload key and upload to Play internal testing
-- [ ] UAT on 20 Oct with the [UAT script](uat-script.md); blockers fixed the same day
-- [ ] Go-live on 21 Oct: tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
+- [ ] UAT on the new date with the [UAT script](uat-script.md); blockers fixed the same day
+- [ ] At go-live: `OTP_CHANNELS=whatsapp`, `OTP_EXPOSE_CODE=false`, `APP_ENV=production`; tag `v0.1.0`, walkthrough for the Transport Manager and HODs, handover note
 - [ ] Google Places search, Google map tiles and Directions ETA once the Maps key arrives
 - [ ] Move production to our server; test a restore there
 
