@@ -118,7 +118,7 @@ async function bookDemo(manager: string): Promise<Req> {
   const requester = await login(SEED.requester);
   const hod = await login(SEED.hod);
   const r = await call<Req>('POST', '/requests', requester, {
-    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7271, lng: 88.3953 },
+    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7187, lng: 88.4250 },
     drop: { address: 'Bagdogra Airport, Siliguri', lat: 26.6812, lng: 88.3286 },
     startAt: new Date(Date.now() + 5 * 60_000).toISOString(),
     passengers: 2,

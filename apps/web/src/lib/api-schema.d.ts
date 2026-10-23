@@ -993,9 +993,9 @@ export interface components {
             deviceId: string;
             /** Format: date-time */
             recordedAt: string;
-            /** @example 26.7271 */
+            /** @example 26.7187 */
             lat: number;
-            /** @example 88.3953 */
+            /** @example 88.425 */
             lng: number;
             /** @example 32.5 */
             speedKmh?: number;

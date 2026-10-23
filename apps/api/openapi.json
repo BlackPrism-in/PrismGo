@@ -2874,11 +2874,11 @@
           },
           "lat": {
             "type": "number",
-            "example": 26.7271
+            "example": 26.7187
           },
           "lng": {
             "type": "number",
-            "example": 88.3953
+            "example": 88.425
           },
           "speedKmh": {
             "type": "number",

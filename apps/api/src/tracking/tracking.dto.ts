@@ -31,11 +31,11 @@ export class GpsPointDto {
   @IsDateString()
   recordedAt: string;
 
-  @ApiProperty({ example: 26.7271 })
+  @ApiProperty({ example: 26.7187 })
   @IsLatitude()
   lat: number;
 
-  @ApiProperty({ example: 88.3953 })
+  @ApiProperty({ example: 88.4250 })
   @IsLongitude()
   lng: number;
 

@@ -306,7 +306,7 @@ const BODIES: Record<string, unknown> = {
   'POST /auth/refresh': { refreshToken: '{{refreshToken}}' },
   'POST /auth/logout': { refreshToken: '{{refreshToken}}' },
   'POST /requests': {
-    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7271, lng: 88.3953 },
+    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7187, lng: 88.4250 },
     drop: { address: 'Bagdogra Airport, Siliguri', lat: 26.6812, lng: 88.3286 },
     startAt: '{{startAt}}',
     returnAt: null,
@@ -322,8 +322,8 @@ const BODIES: Record<string, unknown> = {
       {
         deviceId: '<tracker IMEI>',
         recordedAt: '{{now}}',
-        lat: 26.7271,
-        lng: 88.3953,
+        lat: 26.7187,
+        lng: 88.4250,
         speedKmh: 32.5,
         heading: 304,
         ignition: true,
