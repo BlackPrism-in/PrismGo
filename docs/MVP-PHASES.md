@@ -4,7 +4,7 @@ Go-live: **Wed 21 Oct 2026**. Plan starts Wed 14 Oct 2026.
 
 Full system design: [PrismGo — Fleet Request & Tracking: System Design](https://claude.ai/code/artifact/27358f3e-0cd3-4647-b93e-587d24a4bf5d)
 
-## Status at a glance (checked 19 Oct 2026)
+## Status at a glance (checked 23 Oct 2026)
 
 Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our credentials), **Dev** (engineering).
 
@@ -27,9 +27,11 @@ Owners: **Client**, **BlackPrism** (accounts, decisions, anything needing our cr
 
 ### In review / waiting on others
 
-- [ ] **Meta** Business verification: still "In review" on 19 Oct (Meta says about 2 business days). Messaging works meanwhile, with Meta's lower daily limit
-- [ ] **Uffizio** Asked (19 Oct) for the username to integrate and a sample cURL before setting up push; **our reply is not sent yet** (draft ready). Then: their test push batch, odometer unit, token lifetime, HTTPS address for the pull API
-- [ ] **Client** Master data: departments, HODs, employees (name, phone), vehicles by registration number, drivers. Not entered yet on 19 Oct (the GPS poller finds no vehicles to ask about)
+- [ ] **Meta** Business verification: still "In review" on 23 Oct (submitted 16 Oct; Meta's estimate was about 2 business days). Messaging is allowed meanwhile, with a lower daily limit (250 business-started conversations)
+- [ ] **Uffizio** Push setup: the client confirmed the account (username `bijayguptabhu@gmail.com`, vehicles WB74BS4165 and WB73L9779) on 22 Oct; we sent the cURL on 23 Oct. Waiting for Uffizio to configure push and send a test batch; the shared secret goes by phone. Still open: odometer unit, token lifetime, HTTPS for the pull API
+- [ ] **WhatsApp delivery** Payment method added 20 Oct, but WhatsApp Manager still shows 0 messages sent on 23 Oct: confirm with a test login code that messages are delivered
+- [ ] **Client** Master data: departments, HODs, employees (name, phone), drivers, and vehicles by registration number (at least WB74BS4165 and WB73L9779)
+- [ ] **BlackPrism** Pull API login: the client's Uffizio account is `bijayguptabhu@gmail.com`, not the example account in Uffizio's PDF. Update `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD` and `GPS_VENDOR_COMPANY` in Render if they still hold the PDF's values
 - [ ] **Client** Logo (placeholder in use)
 - [ ] **Client** UAT participants on 20 Oct: a requester, their HOD, the Transport Manager, an admin
 
