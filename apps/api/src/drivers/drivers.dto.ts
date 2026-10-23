@@ -21,7 +21,7 @@ export class CreateDriverDto {
   @IsString()
   phone: string;
 
-  @ApiProperty({ example: 'KA0120190012345' })
+  @ApiProperty({ example: 'WB7320190012345' })
   @IsString()
   @MinLength(5)
   @MaxLength(30)

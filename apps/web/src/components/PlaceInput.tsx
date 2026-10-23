@@ -23,7 +23,7 @@ export function PlaceInput({
   const [address, setAddress] = useState(value?.address ?? '');
   const [coords, setCoords] = useState(value ? `${value.lat}, ${value.lng}` : '');
   const parsed = parseCoords(coords);
-  const coordsError = coords && !parsed ? 'Enter as "12.9716, 77.5946"' : null;
+  const coordsError = coords && !parsed ? 'Enter as "26.7271, 88.3953"' : null;
 
   function update(nextAddress: string, nextCoords: string) {
     setAddress(nextAddress);
@@ -51,7 +51,7 @@ export function PlaceInput({
         <Input
           id={`${id}-coords`}
           aria-label={`${label} coordinates`}
-          placeholder="12.9716, 77.5946"
+          placeholder="26.7271, 88.3953"
           inputMode="decimal"
           value={coords}
           onChange={(e) => update(address, e.target.value)}

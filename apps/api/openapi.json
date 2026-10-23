@@ -2030,7 +2030,7 @@
         "properties": {
           "regNo": {
             "type": "string",
-            "example": "KA01AB1234",
+            "example": "WB74BS4165",
             "description": "Stored uppercase without spaces"
           },
           "type": {
@@ -2068,7 +2068,7 @@
         "properties": {
           "regNo": {
             "type": "string",
-            "example": "KA01AB1234",
+            "example": "WB74BS4165",
             "description": "Stored uppercase without spaces"
           },
           "type": {
@@ -2184,7 +2184,7 @@
           },
           "licenceNo": {
             "type": "string",
-            "example": "KA0120190012345"
+            "example": "WB7320190012345"
           },
           "licenceExpiry": {
             "type": "string",
@@ -2216,7 +2216,7 @@
           },
           "licenceNo": {
             "type": "string",
-            "example": "KA0120190012345"
+            "example": "WB7320190012345"
           },
           "licenceExpiry": {
             "type": "string",
@@ -2366,15 +2366,15 @@
         "properties": {
           "address": {
             "type": "string",
-            "example": "Terminal 1, Kempegowda International Airport, Bengaluru"
+            "example": "Bagdogra Airport, Siliguri"
           },
           "lat": {
             "type": "number",
-            "example": 13.1989
+            "example": 26.6812
           },
           "lng": {
             "type": "number",
-            "example": 77.7068
+            "example": 88.3286
           }
         },
         "required": [
@@ -2874,11 +2874,11 @@
           },
           "lat": {
             "type": "number",
-            "example": 12.9756
+            "example": 26.7271
           },
           "lng": {
             "type": "number",
-            "example": 77.6066
+            "example": 88.3953
           },
           "speedKmh": {
             "type": "number",
@@ -2956,7 +2956,7 @@
           },
           "vehicleNo": {
             "type": "string",
-            "example": "GJ01KT0057",
+            "example": "WB74BS4165",
             "description": "Vehicle number the vendor reports for it"
           },
           "lastSeen": {

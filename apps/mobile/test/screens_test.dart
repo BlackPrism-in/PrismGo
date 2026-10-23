@@ -134,7 +134,7 @@ void main() {
       'not numbers',
     );
     await tester.pump();
-    expect(find.text('Enter as "12.9716, 77.5946"'), findsOneWidget);
+    expect(find.text('Enter as "26.7271, 88.3953"'), findsOneWidget);
     expect(submit().onPressed, isNull);
   });
 

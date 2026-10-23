@@ -3,7 +3,8 @@ import L, { type LatLngExpression } from 'leaflet';
 import { useEffect, type ReactNode } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 
-const BENGALURU: LatLngExpression = [12.9716, 77.5946];
+// Siliguri, where the client's fleet runs; maps with markers fit to them instead.
+const SILIGURI: LatLngExpression = [26.7271, 88.3953];
 
 /**
  * Map canvas. Uses OpenStreetMap tiles until the Google Maps key is configured;
@@ -17,7 +18,7 @@ export function BaseMap({
   className?: string;
 }) {
   return (
-    <MapContainer center={BENGALURU} zoom={12} scrollWheelZoom className={`z-0 ${className}`}>
+    <MapContainer center={SILIGURI} zoom={13} scrollWheelZoom className={`z-0 ${className}`}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

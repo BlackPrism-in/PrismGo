@@ -61,7 +61,7 @@ class _PlaceFieldState extends State<PlaceField> {
   Widget build(BuildContext context) {
     final coordsError =
         _coords.text.isNotEmpty && parseCoords(_coords.text) == null
-        ? 'Enter as "12.9716, 77.5946"'
+        ? 'Enter as "26.7271, 88.3953"'
         : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +82,7 @@ class _PlaceFieldState extends State<PlaceField> {
           controller: _coords,
           decoration: InputDecoration(
             labelText: '${widget.label} coordinates',
-            hintText: '12.9716, 77.5946',
+            hintText: '26.7271, 88.3953',
             helperText:
                 'Long-press the spot in Google Maps and copy the numbers',
             errorText: coordsError,

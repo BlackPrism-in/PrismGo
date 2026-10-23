@@ -306,8 +306,8 @@ const BODIES: Record<string, unknown> = {
   'POST /auth/refresh': { refreshToken: '{{refreshToken}}' },
   'POST /auth/logout': { refreshToken: '{{refreshToken}}' },
   'POST /requests': {
-    pickup: { address: 'Siliguri Junction, Siliguri', lat: 26.7271, lng: 88.3953 },
-    drop: { address: 'Bagdogra Airport, Bagdogra', lat: 26.6812, lng: 88.3286 },
+    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7271, lng: 88.3953 },
+    drop: { address: 'Bagdogra Airport, Siliguri', lat: 26.6812, lng: 88.3286 },
     startAt: '{{startAt}}',
     returnAt: null,
     passengers: 2,

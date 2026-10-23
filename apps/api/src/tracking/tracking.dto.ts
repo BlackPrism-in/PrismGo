@@ -31,11 +31,11 @@ export class GpsPointDto {
   @IsDateString()
   recordedAt: string;
 
-  @ApiProperty({ example: 12.9756 })
+  @ApiProperty({ example: 26.7271 })
   @IsLatitude()
   lat: number;
 
-  @ApiProperty({ example: 77.6066 })
+  @ApiProperty({ example: 88.3953 })
   @IsLongitude()
   lng: number;
 
@@ -168,7 +168,7 @@ export class UnlinkedTrackerDto {
   })
   imei: string;
 
-  @ApiProperty({ example: 'GJ01KT0057', description: 'Vehicle number the vendor reports for it' })
+  @ApiProperty({ example: 'WB74BS4165', description: 'Vehicle number the vendor reports for it' })
   vehicleNo: string;
 
   @ApiProperty({ format: 'date-time' })

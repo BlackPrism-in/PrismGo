@@ -167,7 +167,7 @@ function VehicleForm({
           label="Reg no"
           value={regNo}
           onChange={(e) => setRegNo(e.target.value)}
-          placeholder="KA01AB1234"
+          placeholder="WB74BS4165"
           required
         />
         <TextField

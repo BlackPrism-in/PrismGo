@@ -44,7 +44,7 @@ String timelineLabel(TimelineType t) => switch (t) {
   TimelineType.cancelled => 'Cancelled',
 };
 
-/// Parses "12.9716, 77.5946" (as copied from Google Maps); null when invalid.
+/// Parses "26.7271, 88.3953" (as copied from Google Maps); null when invalid.
 ({double lat, double lng})? parseCoords(String text) {
   final m = RegExp(
     r'^\s*(-?\d{1,2}(?:\.\d+)?)\s*,\s*(-?\d{1,3}(?:\.\d+)?)\s*$',

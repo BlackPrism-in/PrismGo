@@ -118,8 +118,8 @@ async function bookDemo(manager: string): Promise<Req> {
   const requester = await login(SEED.requester);
   const hod = await login(SEED.hod);
   const r = await call<Req>('POST', '/requests', requester, {
-    pickup: { address: 'PrismGo Demo Office, MG Road, Bengaluru', lat: 12.9756, lng: 77.6066 },
-    drop: { address: 'Whitefield Tech Park, Bengaluru', lat: 12.9698, lng: 77.75 },
+    pickup: { address: 'Hill Cart Road, Siliguri', lat: 26.7271, lng: 88.3953 },
+    drop: { address: 'Bagdogra Airport, Siliguri', lat: 26.6812, lng: 88.3286 },
     startAt: new Date(Date.now() + 5 * 60_000).toISOString(),
     passengers: 2,
     purpose: 'GPS simulator demo',

@@ -18,17 +18,17 @@ import {
 } from 'class-validator';
 
 export class LocationDto {
-  @ApiProperty({ example: 'Terminal 1, Kempegowda International Airport, Bengaluru' })
+  @ApiProperty({ example: 'Bagdogra Airport, Siliguri' })
   @IsString()
   @MinLength(3)
   @MaxLength(300)
   address: string;
 
-  @ApiProperty({ example: 13.1989 })
+  @ApiProperty({ example: 26.6812 })
   @IsLatitude()
   lat: number;
 
-  @ApiProperty({ example: 77.7068 })
+  @ApiProperty({ example: 88.3286 })
   @IsLongitude()
   lng: number;
 }

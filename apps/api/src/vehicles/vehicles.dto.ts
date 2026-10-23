@@ -3,7 +3,7 @@ import { VEHICLE_STATUSES, type VehicleStatus } from '@prismgo/shared';
 import { IsIn, IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 export class CreateVehicleDto {
-  @ApiProperty({ example: 'KA01AB1234', description: 'Stored uppercase without spaces' })
+  @ApiProperty({ example: 'WB74BS4165', description: 'Stored uppercase without spaces' })
   @IsString()
   @MinLength(4)
   @MaxLength(15)
