@@ -76,6 +76,7 @@ class FakeSession extends SessionController {
   final MeDto? initial;
   String? requestedPhone;
   String? verifiedCode;
+  int verifyCalls = 0;
 
   @override
   Future<MeDto?> build() async => initial;
@@ -89,6 +90,7 @@ class FakeSession extends SessionController {
   @override
   Future<void> verifyCode(String phone, String code) async {
     verifiedCode = code;
+    verifyCalls++;
     state = AsyncData(me());
   }
 

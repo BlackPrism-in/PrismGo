@@ -38,6 +38,30 @@ it('sends a code to the normalised number, then verifies it', async () => {
   await waitFor(() => expect(auth.verifyCode).toHaveBeenCalledWith('+919000000005', '424242'));
 });
 
+it('logs in when Enter is pressed in the code field', async () => {
+  const auth = renderLogin();
+  fireEvent.change(screen.getByLabelText('Mobile number'), { target: { value: '9000000005' } });
+  fireEvent.submit(screen.getByLabelText('Mobile number'));
+  await screen.findByText('Enter code');
+
+  // Enter submits through the form's submit button, so it must not be disabled.
+  expect(screen.getByRole('button', { name: 'Log in' })).toBeEnabled();
+  fireEvent.change(screen.getByLabelText('6-digit code'), { target: { value: '424242' } });
+  fireEvent.submit(screen.getByLabelText('6-digit code'));
+  await waitFor(() => expect(auth.verifyCode).toHaveBeenCalledWith('+919000000005', '424242'));
+});
+
+it('asks for all 6 digits instead of verifying a short code', async () => {
+  const auth = renderLogin();
+  fireEvent.change(screen.getByLabelText('Mobile number'), { target: { value: '9000000005' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Send code' }));
+  await screen.findByText('Enter code');
+  fireEvent.change(screen.getByLabelText('6-digit code'), { target: { value: '4242' } });
+  fireEvent.submit(screen.getByLabelText('6-digit code'));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Enter the 6-digit code');
+  expect(auth.verifyCode).not.toHaveBeenCalled();
+});
+
 it('flags an invalid number without calling the API', () => {
   const auth = renderLogin();
   fireEvent.change(screen.getByLabelText('Mobile number'), { target: { value: '5812345678' } });

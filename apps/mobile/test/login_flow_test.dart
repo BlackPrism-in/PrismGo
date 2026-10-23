@@ -39,6 +39,30 @@ void main() {
     expect(find.text('Approvals'), findsNothing);
   });
 
+  testWidgets('the keyboard Send and Done keys submit number and code', (
+    tester,
+  ) async {
+    final session = await pumpApp(tester);
+    await tester.enterText(find.byKey(const Key('phone')), '9000000005');
+    await tester.testTextInput.receiveAction(TextInputAction.send);
+    await tester.pumpAndSettle();
+    expect(session.requestedPhone, '+919000000005');
+
+    await tester.enterText(find.byKey(const Key('code')), '4242');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(find.text('Enter the 6-digit code'), findsOneWidget);
+    expect(session.verifiedCode, isNull);
+
+    // The 6th digit verifies; Done right after must not verify a second time.
+    await tester.enterText(find.byKey(const Key('code')), '424242');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
+    await tester.pumpAndSettle();
+    expect(session.verifiedCode, '424242');
+    expect(session.verifyCalls, 1);
+    expect(find.text('Hello, Rahul'), findsOneWidget);
+  });
+
   testWidgets('rejects an invalid number locally', (tester) async {
     final session = await pumpApp(tester);
     await tester.enterText(find.byKey(const Key('phone')), '12345');

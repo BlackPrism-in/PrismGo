@@ -31,6 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _sendCode() async {
+    if (_busy) return;
     final phone = normalizeIndianMobile(_phone.text);
     if (phone == null) {
       setState(() => _error = 'Enter a valid 10-digit mobile number');
@@ -57,7 +58,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _verify() async {
-    if (_code.text.length != 6 || _sentTo == null) return;
+    // Typing the 6th digit and pressing Done/Enter both land here; verify once.
+    if (_busy || _sentTo == null) return;
+    if (_code.text.length != 6) {
+      setState(() => _error = 'Enter the 6-digit code');
+      return;
+    }
     setState(() {
       _busy = true;
       _error = null;
@@ -108,6 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       controller: _phone,
                       keyboardType: TextInputType.phone,
                       autofillHints: const [AutofillHints.telephoneNumber],
+                      textInputAction: TextInputAction.send,
                       decoration: const InputDecoration(
                         labelText: 'Mobile number',
                         hintText: '98123 45678',
@@ -147,6 +154,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       autofocus: true,
                       keyboardType: TextInputType.number,
                       autofillHints: const [AutofillHints.oneTimeCode],
+                      textInputAction: TextInputAction.done,
                       maxLength: 6,
                       textAlign: TextAlign.center,
                       style: const TextStyle(fontSize: 24, letterSpacing: 12),
@@ -160,6 +168,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         setState(() {});
                         if (v.length == 6) _verify();
                       },
+                      onSubmitted: (_) => _verify(),
                     ),
                     const SizedBox(height: 16),
                     FilledButton(

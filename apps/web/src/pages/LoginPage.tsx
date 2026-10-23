@@ -48,7 +48,8 @@ export function LoginPage() {
 
   async function submitCode(e: FormEvent) {
     e.preventDefault();
-    if (step.kind !== 'code') return;
+    if (step.kind !== 'code' || busy) return;
+    if (code.length !== 6) return setError(new Error('Enter the 6-digit code'));
     setBusy(true);
     setError(null);
     try {
@@ -109,7 +110,9 @@ export function LoginPage() {
                 autoFocus
               />
               <ErrorBanner error={error} />
-              <Button type="submit" className="w-full" disabled={busy || code.length !== 6}>
+              {/* Enabled while the code is incomplete: a disabled submit button stops Enter
+                  from submitting, e.g. when Enter follows an autofilled code. */}
+              <Button type="submit" className="w-full" disabled={busy}>
                 {busy ? 'Checking…' : 'Log in'}
               </Button>
               <div className="flex justify-between text-sm">
