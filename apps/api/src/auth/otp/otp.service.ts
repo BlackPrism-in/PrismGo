@@ -22,6 +22,11 @@ export class OtpService {
   private readonly secret: string;
   /** Show console codes in the response: always in dev; in production builds only with OTP_EXPOSE_CODE. */
   private readonly exposeCode: boolean;
+  /**
+   * OTP_REVIEW_PHONES: numbers (+91XXXXXXXXXX) whose code is shown on screen instead of sent,
+   * for app store reviewers who can't receive WhatsApp. Only where codes may be exposed.
+   */
+  private readonly reviewPhones: Set<string>;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -32,6 +37,12 @@ export class OtpService {
     this.secret = config.getOrThrow<string>('JWT_REFRESH_SECRET');
     this.exposeCode =
       config.get('NODE_ENV') !== 'production' || config.get('OTP_EXPOSE_CODE') === 'true';
+    this.reviewPhones = new Set(
+      (config.get<string>('OTP_REVIEW_PHONES') ?? '')
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean),
+    );
   }
 
   /** Issues and delivers a code. Returns the code only for the console sender (dev). */
@@ -56,7 +67,8 @@ export class OtpService {
       },
     });
 
-    const sentWith = await this.deliver(phone, code);
+    const sentWith =
+      this.exposeCode && this.reviewPhones.has(phone) ? 'console' : await this.deliver(phone, code);
     return sentWith === 'console' && this.exposeCode ? { devCode: code } : {};
   }
 

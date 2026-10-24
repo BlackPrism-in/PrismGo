@@ -140,20 +140,21 @@ Rollback: `git checkout <previous tag> && prod up -d --build`. Migrations are ad
 
 ## Settings reference
 
-| Variable                                                                                                           | Purpose                                                                         |
-| ------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| `DOMAIN`                                                                                                           | Public domain; HTTPS certificate and allowed web origin                         |
-| `APP_ENV`                                                                                                          | `production`, or `staging` for UAT (allows console senders)                     |
-| `POSTGRES_PASSWORD`, `REDIS_PASSWORD`                                                                              | Internal service passwords                                                      |
-| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                                                          | Sign login sessions; changing them logs everyone out                            |
-| `GPS_WEBHOOK_SECRET`                                                                                               | Webhook secret (simulator, or a vendor that pushes)                             |
-| `GPS_PULL_PROVIDER`, `GPS_PULL_INTERVAL_S`                                                                         | `trakzee` to poll the vendor; seconds between polls (15)                        |
-| `GPS_VENDOR_BASE_URL`, `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD`, `GPS_VENDOR_PROJECT_ID`, `GPS_VENDOR_COMPANY` | Vendor API access                                                               |
-| `OTP_CHANNELS`                                                                                                     | `whatsapp` (`console` in staging)                                               |
-| `OTP_EXPOSE_CODE`                                                                                                  | Staging UAT only: show the login code on screen                                 |
-| `MESSAGING_PROVIDER`                                                                                               | `whatsapp` (`console` in staging)                                               |
-| `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`                                                                | WhatsApp Cloud API; templates in [whatsapp-templates.md](whatsapp-templates.md) |
-| `VITE_GOOGLE_MAPS_API_KEY`                                                                                         | Browser key restricted to the domain; applied at build (`--build`)              |
+| Variable                                                                                                           | Purpose                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| `DOMAIN`                                                                                                           | Public domain; HTTPS certificate and allowed web origin                                                          |
+| `APP_ENV`                                                                                                          | `production`, or `staging` for UAT (allows console senders)                                                      |
+| `POSTGRES_PASSWORD`, `REDIS_PASSWORD`                                                                              | Internal service passwords                                                                                       |
+| `JWT_ACCESS_SECRET`, `JWT_REFRESH_SECRET`                                                                          | Sign login sessions; changing them logs everyone out                                                             |
+| `GPS_WEBHOOK_SECRET`                                                                                               | Webhook secret (simulator, or a vendor that pushes)                                                              |
+| `GPS_PULL_PROVIDER`, `GPS_PULL_INTERVAL_S`                                                                         | `trakzee` to poll the vendor; seconds between polls (15)                                                         |
+| `GPS_VENDOR_BASE_URL`, `GPS_VENDOR_USERNAME`, `GPS_VENDOR_PASSWORD`, `GPS_VENDOR_PROJECT_ID`, `GPS_VENDOR_COMPANY` | Vendor API access                                                                                                |
+| `OTP_CHANNELS`                                                                                                     | `whatsapp` (`console` in staging)                                                                                |
+| `OTP_EXPOSE_CODE`                                                                                                  | Staging UAT only: show the login code on screen                                                                  |
+| `OTP_REVIEW_PHONES`                                                                                                | Staging only: numbers whose code is shown on screen instead of sent (Play reviewers' test user, `+919000000099`) |
+| `MESSAGING_PROVIDER`                                                                                               | `whatsapp` (`console` in staging)                                                                                |
+| `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_ACCESS_TOKEN`                                                                | WhatsApp Cloud API; templates in [whatsapp-templates.md](whatsapp-templates.md)                                  |
+| `VITE_GOOGLE_MAPS_API_KEY`                                                                                         | Browser key restricted to the domain; applied at build (`--build`)                                               |
 
 ## Demo on Render (free plan)
 

@@ -45,6 +45,9 @@ services:
         value: whatsapp,console
       - key: OTP_EXPOSE_CODE
         value: 'true'
+      # Google Play reviewers' test user: its code is shown on screen, never sent.
+      - key: OTP_REVIEW_PHONES
+        value: '+919000000099'
       - key: MESSAGING_PROVIDER
         value: whatsapp
       - key: OTP_TTL_SECONDS
