@@ -6,6 +6,24 @@ Goal: the client's requesters and HODs install PrismGo from the Play Store on th
 
 Owners: **BlackPrism** (account, keys, declarations), **Dev** (builds and uploads), **Client** (tester list).
 
+## Status (24 Oct 2026)
+
+Play Console app **PrismGo** (`in.blackprism.prismgo`, app id 4972532720897411261) created.
+
+| Item                                            | Status                                                                                                                                                                                                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Privacy policy                                  | https://prismgo.blackprism.in/privacy.html (deletion steps at `#delete-data`)                                                                                                                                                                                       |
+| Ads, financial features, health, advertising ID | No / none                                                                                                                                                                                                                                                           |
+| Sign in details                                 | Test user `+91 9000000099` (Google Play Reviewer: requester + HOD of "Google Play review"); its code is shown on screen (`OTP_REVIEW_PHONES`, demo server only). Google's robot testing with it is off, so it doesn't create requests that alert the transport team |
+| Target audience                                 | 18 and over                                                                                                                                                                                                                                                         |
+| Data safety                                     | Collected, not shared: name, email, phone, address (pickup/drop), user-generated content (requests, notes), device ID (push token); encrypted in transit; accounts created by the organisation; deletion on request                                                 |
+| App category / contact                          | Business; admin@blackprism.in, https://blackprism.in                                                                                                                                                                                                                |
+| Store listing                                   | Short and full description, icon and feature graphic ([play-store/](play-store/)) saved as draft. **Phone screenshots still needed** (at least 2)                                                                                                                   |
+| Content rating                                  | Email and category filled; **BlackPrism to accept the IARC terms**, then the questionnaire                                                                                                                                                                          |
+| Government apps                                 | **BlackPrism to answer**: is the app made for a government body?                                                                                                                                                                                                    |
+| Testers                                         | **Waiting for the client's Google account emails**                                                                                                                                                                                                                  |
+| First release                                   | After the upload key (step 1)                                                                                                                                                                                                                                       |
+
 ## Steps
 
 ### 1. Upload key (BlackPrism, once, 10 min)
