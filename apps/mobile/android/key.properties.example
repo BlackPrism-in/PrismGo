@@ -1,0 +1,5 @@
+# Copy to key.properties (kept out of git) and fill in. See docs/play-internal-testing.md.
+storeFile=/Users/<you>/keys/prismgo-upload.jks
+storePassword=
+keyAlias=upload
+keyPassword=

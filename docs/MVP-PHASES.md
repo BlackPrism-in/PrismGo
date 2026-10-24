@@ -49,7 +49,7 @@ BlackPrism (needs our accounts or credentials)
 - [ ] Fix the "invalid payment info" warning on Render
 - [ ] Delete the downloaded Firebase service-account key (`prismgo-34a61-firebase-adminsdk-…json`) from Downloads
 - [ ] Agree new UAT and go-live dates with the client
-- [ ] Create the Android upload signing key (keystore); Play Console app + internal testing track
+- [ ] Play internal testing: upload key, create the app, tester list, privacy policy URL; plan in [play-internal-testing.md](play-internal-testing.md). Release builds already sign with the upload key once `key.properties` exists
 - [ ] Google Maps API key with billing (OpenStreetMap and straight-line ETA until then)
 - [ ] Production server before the free Render database expires (about 15 Nov)
 
