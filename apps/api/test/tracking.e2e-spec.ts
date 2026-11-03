@@ -236,9 +236,27 @@ describe('GPS tracking', () => {
     expect(r.status).toBe('completed');
   });
 
-  it('rejects points from the future', async () => {
-    const res = await send('SIM-002', [{ ...office, t: Date.now() + 10 * 60_000 }]).expect(200);
-    expect(res.body).toMatchObject({ accepted: 0, rejected: 1 });
+  it('stamps a tracker with a wrong clock with the time we received its newest point', async () => {
+    const before = Date.now();
+    const res = await send('SIM-002', [
+      { ...office, t: Date.now() + 10 * 60_000 },
+      { ...office, t: Date.now() + 11 * 60_000 },
+    ]).expect(200);
+    expect(res.body).toMatchObject({ accepted: 1, rejected: 1 });
+    const last = await prisma.locationPoint.findFirst({
+      where: { vehicleId: innova },
+      orderBy: { recordedAt: 'desc' },
+    });
+    expect(last!.recordedAt.getTime()).toBeGreaterThanOrEqual(before);
+    expect(last!.recordedAt.getTime()).toBeLessThanOrEqual(Date.now());
+  });
+
+  it('drops bad-clock points when the same batch has points with a usable time', async () => {
+    const res = await send('SIM-002', [
+      { ...office, t: Date.now() - 30_000 },
+      { ...office, t: Date.now() - 20 * 24 * 3600_000 },
+    ]).expect(200);
+    expect(res.body).toMatchObject({ accepted: 1, rejected: 1 });
   });
 
   it('pushes the vehicle position to the requester of the active trip', async () => {

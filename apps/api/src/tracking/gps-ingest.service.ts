@@ -34,12 +34,27 @@ export class GpsIngestService {
     const unknownDevices = deviceIds.filter((d) => !byDevice.has(d));
 
     const now = Date.now();
+    const outOfRange = (t: number) => t > now + MAX_FUTURE_MS || t < now - MAX_AGE_MS;
+
+    // A tracker with a wrong clock sends times days off. When none of a device's points in
+    // the batch has a usable time, its newest one is stamped with the time we received it.
+    const devicesWithGoodTime = new Set(
+      points.filter((p) => !outOfRange(Date.parse(p.recordedAt))).map((p) => p.deviceId),
+    );
+    const restamp = new Map<string, GpsPointDto>();
+    for (const p of points) {
+      if (devicesWithGoodTime.has(p.deviceId) || !byDevice.has(p.deviceId)) continue;
+      const cur = restamp.get(p.deviceId);
+      if (!cur || Date.parse(cur.recordedAt) < Date.parse(p.recordedAt)) restamp.set(p.deviceId, p);
+    }
+
     let rejected = 0;
     const perVehicle = new Map<string, { orgId: string; points: LivePosition[] }>();
     for (const p of points) {
       const vehicle = byDevice.get(p.deviceId);
-      const t = Date.parse(p.recordedAt);
-      if (!vehicle || t > now + MAX_FUTURE_MS || t < now - MAX_AGE_MS) {
+      let t = Date.parse(p.recordedAt);
+      if (vehicle && outOfRange(t) && restamp.get(p.deviceId) === p) t = now;
+      if (!vehicle || outOfRange(t)) {
         rejected++;
         continue;
       }
