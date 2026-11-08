@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { get, patch, post } from './api';
+import { del, get, patch, post } from './api';
 import type {
   AccessRequest,
   Availability,
@@ -150,6 +150,19 @@ export function useAccessDecision() {
       Promise.all([
         qc.invalidateQueries({ queryKey: ['access'] }),
         qc.invalidateQueries({ queryKey: ['users'] }),
+      ]),
+  });
+}
+
+/** Super admin: permanently delete a user without trip history. */
+export function useDeleteUser() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => del(`/users/${id}`),
+    onSuccess: () =>
+      Promise.all([
+        qc.invalidateQueries({ queryKey: ['users'] }),
+        qc.invalidateQueries({ queryKey: ['departments'] }),
       ]),
   });
 }

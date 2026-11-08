@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { normalizeIndianMobile } from '@prismgo/shared';
 import { AuditService } from '../audit/audit.service';
 import type { AuthUser } from '../auth/auth.types';
@@ -119,6 +124,41 @@ export class UsersService {
     // Role or status changes take effect at next refresh; deactivation ends sessions now.
     if (row.status === 'inactive') await this.tokens.revokeAll(id);
     return toDto(row);
+  }
+
+  /**
+   * Permanently removes a user who has no trip history (e.g. added by mistake or left
+   * before using the app). Anyone who requested, approved, assigned or cancelled a trip
+   * stays in the records and must be deactivated instead.
+   */
+  async remove(actor: AuthUser, id: string): Promise<void> {
+    if (id === actor.id) throw new BadRequestException('You cannot delete your own account');
+    const before = await this.findInOrg(actor.orgId, id);
+    const [requests, approvals, trips, cancelled] = await Promise.all([
+      this.prisma.tripRequest.count({ where: { requesterId: id } }),
+      this.prisma.approval.count({ where: { approverId: id } }),
+      this.prisma.trip.count({ where: { assignedById: id } }),
+      this.prisma.tripRequest.count({ where: { cancelledById: id } }),
+    ]);
+    if (requests + approvals + trips + cancelled > 0) {
+      throw new ConflictException(
+        `${before.name} has trip history, so they can't be deleted. Untick "Active" instead: they won't be able to log in.`,
+      );
+    }
+    await this.prisma.$transaction(async (tx) => {
+      await tx.department.updateMany({ where: { hodUserId: id }, data: { hodUserId: null } });
+      await tx.notification.deleteMany({ where: { userId: id } });
+      await tx.tripEvent.updateMany({ where: { actorId: id }, data: { actorId: null } });
+      // Earlier audit entries keep the change; the person is named in this delete entry.
+      await tx.auditLog.updateMany({ where: { actorId: id }, data: { actorId: null } });
+      await tx.user.delete({ where: { id } });
+      await this.audit.record(tx, actor, {
+        entity: 'user',
+        entityId: id,
+        action: 'delete',
+        before,
+      });
+    });
   }
 
   private phone(raw: string): string {

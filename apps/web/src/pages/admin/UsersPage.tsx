@@ -1,6 +1,6 @@
 import { formatIndianMobile, ROLES, type Role } from '@prismgo/shared';
 import { useDeferredValue, useState, type FormEvent } from 'react';
-import { ROLE_LABELS, useMe } from '../../auth/auth-context';
+import { hasRole, ROLE_LABELS, useMe } from '../../auth/auth-context';
 import {
   Badge,
   Button,
@@ -16,7 +16,7 @@ import {
   TextField,
 } from '../../components/ui';
 import { AccessRequests } from '../../components/AccessRequests';
-import { useDepartments, useSave, useUsers } from '../../lib/queries';
+import { useDeleteUser, useDepartments, useSave, useUsers } from '../../lib/queries';
 import type { CreateUser, UpdateUser, User } from '../../lib/types';
 
 export function UsersPage() {
@@ -123,6 +123,14 @@ function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
   const [departmentId, setDepartmentId] = useState(user?.department?.id ?? '');
   const [active, setActive] = useState(user ? user.status === 'active' : true);
   const isSelf = user?.id === me.id;
+  const remove = useDeleteUser();
+  const canDelete = user !== null && !isSelf && hasRole(me, 'super_admin');
+
+  function deleteUser() {
+    if (!user) return;
+    if (!confirm(`Delete ${user.name} permanently? This can't be undone.`)) return;
+    remove.mutate(user.id, { onSuccess: onDone });
+  }
 
   function toggleRole(role: Role) {
     setRoles((current) =>
@@ -199,8 +207,18 @@ function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
           Active {isSelf && <span className="text-sand-500">(you can't deactivate yourself)</span>}
         </label>
       )}
-      <ErrorBanner error={save.error} />
+      <ErrorBanner error={save.error ?? remove.error} />
       <div className="flex justify-end gap-2">
+        {canDelete && (
+          <Button
+            variant="secondary"
+            className="mr-auto text-red-700"
+            disabled={remove.isPending || save.isPending}
+            onClick={deleteUser}
+          >
+            {remove.isPending ? 'Deleting…' : 'Delete'}
+          </Button>
+        )}
         <Button variant="secondary" onClick={onDone}>
           Cancel
         </Button>

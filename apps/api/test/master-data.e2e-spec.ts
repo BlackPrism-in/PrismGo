@@ -136,4 +136,65 @@ describe('master data', () => {
       .send({ regNo: 'KA01ZZ0001', type: 'Sedan', seats: 4, orgId: 'someone-else' })
       .expect(400);
   });
+
+  it('lets only a super admin delete a user, and only one without trip history', async () => {
+    const admin = (await login(app, PHONES.admin)).accessToken;
+    const created = await http()
+      .post('/api/v1/users')
+      .set('Authorization', `Bearer ${admin}`)
+      .send({ name: 'Delete Me', phone: `97${suffix}11`, roles: ['requester'] })
+      .expect(201);
+
+    await http()
+      .delete(`/api/v1/users/${created.body.id}`)
+      .set('Authorization', `Bearer ${manager}`)
+      .expect(403);
+    await http()
+      .delete(`/api/v1/users/${created.body.id}`)
+      .set('Authorization', `Bearer ${admin}`)
+      .expect(204);
+    await http()
+      .get(`/api/v1/users/${created.body.id}`)
+      .set('Authorization', `Bearer ${admin}`)
+      .expect(404);
+
+    const me = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.admin } });
+    await http()
+      .delete(`/api/v1/users/${me.id}`)
+      .set('Authorization', `Bearer ${admin}`)
+      .expect(400);
+  });
+
+  it('refuses to delete someone with trip history', async () => {
+    const admin = (await login(app, PHONES.admin)).accessToken;
+    const user = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.requester } });
+    const org = await prisma.organisation.findFirstOrThrow();
+    const dept = await prisma.department.findFirstOrThrow({ where: { name: 'Operations' } });
+    const req = await prisma.tripRequest.create({
+      data: {
+        orgId: org.id,
+        requesterId: user.id,
+        departmentId: dept.id,
+        status: 'draft',
+        pickupAddress: 'A',
+        pickupLat: 26.7,
+        pickupLng: 88.4,
+        dropAddress: 'B',
+        dropLat: 26.6,
+        dropLng: 88.3,
+        startAt: new Date(Date.now() + 86_400_000),
+        passengers: 1,
+        purpose: 'delete test',
+      },
+    });
+    try {
+      const res = await http()
+        .delete(`/api/v1/users/${user.id}`)
+        .set('Authorization', `Bearer ${admin}`)
+        .expect(409);
+      expect(res.body.message).toContain('trip history');
+    } finally {
+      await prisma.tripRequest.delete({ where: { id: req.id } });
+    }
+  });
 });
