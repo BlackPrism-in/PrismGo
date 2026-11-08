@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AssignmentsModule } from './assignments/assignments.module';
+import { AccessModule } from './access/access.module';
 import { AuditModule } from './audit/audit.module';
 import { AuthModule } from './auth/auth.module';
 import { validateEnv } from './config/env';
@@ -34,6 +35,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     HealthModule,
     DepartmentsModule,
     UsersModule,
+    AccessModule,
     VehiclesModule,
     DriversModule,
     RealtimeModule,

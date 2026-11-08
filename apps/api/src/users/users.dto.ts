@@ -13,8 +13,10 @@ import {
   MinLength,
 } from 'class-validator';
 
-export const USER_STATUSES = ['active', 'inactive'] as const;
+export const USER_STATUSES = ['active', 'inactive', 'pending'] as const;
 export type UserStatus = (typeof USER_STATUSES)[number];
+/** Statuses an admin can set; "pending" only comes from a self-service access request. */
+const SETTABLE_STATUSES = ['active', 'inactive'] as const;
 
 export class CreateUserDto {
   @ApiProperty({ example: 'Rahul Verma' })
@@ -46,10 +48,10 @@ export class CreateUserDto {
 }
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-  @ApiPropertyOptional({ enum: USER_STATUSES, enumName: 'UserStatus' })
+  @ApiPropertyOptional({ enum: SETTABLE_STATUSES })
   @IsOptional()
-  @IsIn(USER_STATUSES)
-  status?: UserStatus;
+  @IsIn(SETTABLE_STATUSES)
+  status?: (typeof SETTABLE_STATUSES)[number];
 }
 
 export class UserDepartmentDto {

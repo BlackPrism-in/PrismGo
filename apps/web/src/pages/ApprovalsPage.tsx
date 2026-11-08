@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AccessRequests } from '../components/AccessRequests';
 import { DecisionDialog, type Decision } from '../components/DecisionDialog';
 import { RequestList } from '../components/RequestList';
 import { Button, PageHeader } from '../components/ui';
@@ -14,6 +15,7 @@ export function ApprovalsPage() {
   return (
     <>
       <PageHeader title="Approvals" description="Vehicle requests from your department." />
+      <AccessRequests />
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-sand-600">
           Waiting for you {pending.data ? `(${pending.data.length})` : ''}

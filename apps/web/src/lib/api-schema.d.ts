@@ -164,6 +164,70 @@ export interface paths {
         patch: operations["UsersController_update"];
         trace?: never;
     };
+    "/api/v1/access/departments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AccessController_departments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["AccessController_list"];
+        put?: never;
+        post: operations["AccessController_request"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/requests/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/access/requests/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["AccessController_reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/vehicles": {
         parameters: {
             query?: never;
@@ -646,7 +710,7 @@ export interface components {
             hodUserId?: string | null;
         };
         /** @enum {string} */
-        UserStatus: "active" | "inactive";
+        UserStatus: "active" | "inactive" | "pending";
         UserDepartmentDto: {
             id: string;
             name: string;
@@ -698,7 +762,39 @@ export interface components {
              */
             roles?: components["schemas"]["Role"][];
             departmentId?: string | null;
-            status?: components["schemas"]["UserStatus"];
+            /** @enum {string} */
+            status?: "active" | "inactive";
+        };
+        SignupDepartmentDto: {
+            id: string;
+            name: string;
+        };
+        CreateAccessRequestDto: {
+            /** @example Rahul Verma */
+            name: string;
+            /**
+             * @description Indian mobile, any common format
+             * @example 9812345678
+             */
+            phone: string;
+            /** @description From GET /access/departments */
+            departmentId: string;
+            /** @example rahul@example.com */
+            email?: string;
+        };
+        AccessRequestReceivedDto: {
+            /** @example true */
+            received: boolean;
+        };
+        AccessRequestDto: {
+            id: string;
+            name: string;
+            /** @example +919812345678 */
+            phone: string;
+            email?: string | null;
+            department?: components["schemas"]["SignupDepartmentDto"] | null;
+            /** Format: date-time */
+            requestedAt: string;
         };
         /** @enum {string} */
         VehicleStatus: "available" | "on_trip" | "maintenance" | "inactive";
@@ -1407,6 +1503,107 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UserDto"];
                 };
+            };
+        };
+    };
+    AccessController_departments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SignupDepartmentDto"][];
+                };
+            };
+        };
+    };
+    AccessController_list: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessRequestDto"][];
+                };
+            };
+        };
+    };
+    AccessController_request: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAccessRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessRequestReceivedDto"];
+                };
+            };
+        };
+    };
+    AccessController_approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AccessRequestDto"];
+                };
+            };
+        };
+    };
+    AccessController_reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

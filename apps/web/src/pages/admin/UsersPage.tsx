@@ -15,6 +15,7 @@ import {
   Select,
   TextField,
 } from '../../components/ui';
+import { AccessRequests } from '../../components/AccessRequests';
 import { useDepartments, useSave, useUsers } from '../../lib/queries';
 import type { CreateUser, UpdateUser, User } from '../../lib/types';
 
@@ -37,6 +38,7 @@ export function UsersPage() {
         description="Everyone who logs in with their phone number."
         action={<Button onClick={() => setEditing('new')}>Add user</Button>}
       />
+      <AccessRequests />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <Input
           placeholder="Search name or phone"

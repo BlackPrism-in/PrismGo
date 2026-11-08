@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../app/logo.dart';
 import '../../app/theme.dart';
@@ -83,6 +84,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _requestAccess() {
+    final digits = _phone.text.replaceAll(RegExp(r'\D'), '');
+    context.push('/signup', extra: digits.isEmpty ? null : digits);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -128,6 +134,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     FilledButton(
                       onPressed: _busy ? null : _sendCode,
                       child: Text(_busy ? 'Sending…' : 'Send code'),
+                    ),
+                    const SizedBox(height: 8),
+                    TextButton(
+                      key: const Key('request-access'),
+                      onPressed: _busy ? null : _requestAccess,
+                      child: const Text('New to PrismGo? Request access'),
                     ),
                   ] else ...[
                     Text('Enter code', style: theme.textTheme.titleLarge),
@@ -194,6 +206,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           child: const Text('Resend code'),
                         ),
                       ],
+                    ),
+                    TextButton(
+                      onPressed: _busy ? null : _requestAccess,
+                      child: const Text('No code? Request access'),
                     ),
                   ],
                   if (_error != null) ...[

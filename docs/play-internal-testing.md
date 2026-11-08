@@ -105,7 +105,7 @@ Push notifications (Firebase) need no change for Play signing.
 
 ## Checklist
 
-- [ ] BlackPrism: upload key created and backed up; `key.properties` filled in
+- [x] BlackPrism: upload key created (8 Nov, `~/keys/prismgo-upload.jks`, SHA-256 69:E9:40:05:…:38:7D:C6); `key.properties` filled in. Still to do: back up the `.jks` and password in the password manager
 - [ ] BlackPrism: PrismGo app created in Play Console
 - [ ] Client: tester Google accounts sent; BlackPrism: email list created
 - [ ] Testers added as PrismGo users with their mobile numbers

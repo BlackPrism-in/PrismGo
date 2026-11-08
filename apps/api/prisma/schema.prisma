@@ -23,6 +23,8 @@ enum Role {
 enum UserStatus {
   active
   inactive
+  /// Asked for access from the app; an HOD or admin must approve before they can log in.
+  pending
 }
 
 enum RequestStatus {

@@ -19,6 +19,7 @@ import { RequestFormPage } from './pages/requests/RequestFormPage';
 import { RequestsPage } from './pages/requests/RequestsPage';
 import { LiveMapPage } from './pages/live/LiveMapPage';
 import { LoginPage } from './pages/LoginPage';
+import { SignupPage } from './pages/SignupPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
@@ -30,6 +31,7 @@ const admin = (element: React.ReactNode) => (
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
+  { path: '/signup', element: <SignupPage /> },
   {
     element: (
       <RequireAuth>

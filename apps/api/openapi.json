@@ -508,6 +508,151 @@
         ]
       }
     },
+    "/api/v1/access/departments": {
+      "get": {
+        "operationId": "AccessController_departments",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SignupDepartmentDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "access"
+        ]
+      }
+    },
+    "/api/v1/access/requests": {
+      "post": {
+        "operationId": "AccessController_request",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAccessRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessRequestReceivedDto"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "access"
+        ]
+      },
+      "get": {
+        "operationId": "AccessController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AccessRequestDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "access"
+        ]
+      }
+    },
+    "/api/v1/access/requests/{id}/approve": {
+      "post": {
+        "operationId": "AccessController_approve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessRequestDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "access"
+        ]
+      }
+    },
+    "/api/v1/access/requests/{id}/reject": {
+      "post": {
+        "operationId": "AccessController_reject",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "access"
+        ]
+      }
+    },
     "/api/v1/vehicles": {
       "get": {
         "operationId": "VehiclesController_list",
@@ -1826,7 +1971,8 @@
         "type": "string",
         "enum": [
           "active",
-          "inactive"
+          "inactive",
+          "pending"
         ]
       },
       "UserDepartmentDto": {
@@ -1965,13 +2111,105 @@
             "nullable": true
           },
           "status": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/UserStatus"
-              }
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
             ]
           }
         }
+      },
+      "SignupDepartmentDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "CreateAccessRequestDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Rahul Verma"
+          },
+          "phone": {
+            "type": "string",
+            "example": "9812345678",
+            "description": "Indian mobile, any common format"
+          },
+          "departmentId": {
+            "type": "string",
+            "description": "From GET /access/departments"
+          },
+          "email": {
+            "type": "string",
+            "example": "rahul@example.com"
+          }
+        },
+        "required": [
+          "name",
+          "phone",
+          "departmentId"
+        ]
+      },
+      "AccessRequestReceivedDto": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "received"
+        ]
+      },
+      "AccessRequestDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+919812345678"
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "department": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SignupDepartmentDto"
+              }
+            ]
+          },
+          "requestedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "phone",
+          "requestedAt"
+        ]
       },
       "VehicleStatus": {
         "type": "string",

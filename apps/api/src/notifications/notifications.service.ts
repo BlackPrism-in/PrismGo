@@ -119,7 +119,7 @@ export class NotificationsService {
       }
     }
 
-    if (phone) {
+    if (phone && message.whatsapp) {
       const row = await this.prisma.notification.create({
         data: {
           orgId,

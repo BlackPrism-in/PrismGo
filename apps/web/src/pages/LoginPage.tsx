@@ -1,6 +1,6 @@
 import { formatIndianMobile, normalizeIndianMobile } from '@prismgo/shared';
 import { useState, type FormEvent } from 'react';
-import { Navigate, useLocation } from 'react-router';
+import { Link, Navigate, useLocation } from 'react-router';
 import { useAuth } from '../auth/auth-context';
 import { FullPageSpinner, Unreachable } from '../auth/guards';
 import { Logo } from '../components/Logo';
@@ -87,6 +87,12 @@ export function LoginPage() {
               <Button type="submit" className="w-full" disabled={busy || !phoneInput}>
                 {busy ? 'Sending…' : 'Send code'}
               </Button>
+              <p className="text-center text-sm text-sand-600">
+                New to PrismGo?{' '}
+                <Link to="/signup" className="text-coral-700 hover:underline">
+                  Request access
+                </Link>
+              </p>
             </form>
           ) : (
             <form onSubmit={submitCode} className="space-y-4" noValidate>
@@ -135,6 +141,12 @@ export function LoginPage() {
                   Resend code
                 </button>
               </div>
+              <p className="text-center text-xs text-sand-500">
+                No code? You may not have access yet.{' '}
+                <Link to="/signup" className="text-coral-700 hover:underline">
+                  Request access
+                </Link>
+              </p>
             </form>
           )}
         </div>

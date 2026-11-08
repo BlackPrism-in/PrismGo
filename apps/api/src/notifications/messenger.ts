@@ -15,7 +15,9 @@ export class ConsoleMessenger implements Messenger {
   private readonly logger = new Logger('WhatsApp');
 
   async send(phone: string, message: Message): Promise<void> {
-    this.logger.log(`→ ${phone} [${message.whatsapp.template}] ${message.title} — ${message.body}`);
+    this.logger.log(
+      `→ ${phone} [${message.whatsapp?.template ?? 'in-app'}] ${message.title} — ${message.body}`,
+    );
   }
 }
 
@@ -30,6 +32,8 @@ export class WhatsAppMessenger implements Messenger {
   ) {}
 
   async send(phone: string, message: Message): Promise<void> {
+    const { whatsapp } = message;
+    if (!whatsapp) return;
     const res = await fetch(`https://graph.facebook.com/v21.0/${this.phoneNumberId}/messages`, {
       method: 'POST',
       headers: {
@@ -41,12 +45,12 @@ export class WhatsAppMessenger implements Messenger {
         to: phone.replace('+', ''),
         type: 'template',
         template: {
-          name: message.whatsapp.template,
+          name: whatsapp.template,
           language: { code: this.languageCode },
           components: [
             {
               type: 'body',
-              parameters: message.whatsapp.params.map((text) => ({ type: 'text', text })),
+              parameters: whatsapp.params.map((text) => ({ type: 'text', text })),
             },
           ],
         },

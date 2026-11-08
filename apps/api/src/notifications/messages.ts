@@ -7,7 +7,8 @@ export interface Message {
   template: string;
   title: string;
   body: string;
-  whatsapp: { template: string; params: string[] };
+  /** Omitted for in-app and push only messages (no approved WhatsApp template). */
+  whatsapp?: { template: string; params: string[] };
 }
 
 const when = (d: Date) =>
@@ -125,5 +126,11 @@ export const messages = {
     title: `No GPS from ${vehicle}`,
     body: `${r.code} is in progress but ${vehicle} has sent no location for ${minutes} min.`,
     whatsapp: { template: 'gps_lost', params: [vehicle, r.code, String(minutes)] },
+  }),
+
+  accessRequested: (name: string, departmentName: string): Message => ({
+    template: 'access_requested',
+    title: `Access request: ${name}`,
+    body: `${name} (${departmentName}) asked to use PrismGo. Approve or decline in Approvals.`,
   }),
 };

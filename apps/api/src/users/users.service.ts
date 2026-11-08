@@ -38,7 +38,8 @@ export class UsersService {
         orgId: actor.orgId,
         roles: query.role ? { has: query.role } : undefined,
         departmentId: query.departmentId,
-        status: query.status,
+        // Pending sign-ups are handled under /access/requests, not in the user list.
+        status: query.status ?? { not: 'pending' },
         OR: q
           ? [
               { name: { contains: q, mode: 'insensitive' } },
