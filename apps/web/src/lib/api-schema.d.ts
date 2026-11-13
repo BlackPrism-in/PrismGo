@@ -228,6 +228,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/places/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["PlacesController_search"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/vehicles": {
         parameters: {
             query?: never;
@@ -805,6 +821,14 @@ export interface components {
             department?: components["schemas"]["SignupDepartmentDto"] | null;
             /** Format: date-time */
             requestedAt: string;
+        };
+        PlaceDto: {
+            /** @example Hill Cart Road, Siliguri, West Bengal */
+            address: string;
+            /** @example 26.7191 */
+            lat: number;
+            /** @example 88.4204 */
+            lng: number;
         };
         /** @enum {string} */
         VehicleStatus: "available" | "on_trip" | "maintenance" | "inactive";
@@ -1659,6 +1683,28 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    PlacesController_search: {
+        parameters: {
+            query: {
+                /** @description At least 3 characters */
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlaceDto"][];
+                };
             };
         };
     };

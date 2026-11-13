@@ -723,6 +723,46 @@
         ]
       }
     },
+    "/api/v1/places/search": {
+      "get": {
+        "operationId": "PlacesController_search",
+        "parameters": [
+          {
+            "name": "q",
+            "required": true,
+            "in": "query",
+            "description": "At least 3 characters",
+            "schema": {
+              "example": "Hill Cart Road",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlaceDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "places"
+        ]
+      }
+    },
     "/api/v1/vehicles": {
       "get": {
         "operationId": "VehiclesController_list",
@@ -2303,6 +2343,28 @@
           "name",
           "phone",
           "requestedAt"
+        ]
+      },
+      "PlaceDto": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "example": "Hill Cart Road, Siliguri, West Bengal"
+          },
+          "lat": {
+            "type": "number",
+            "example": 26.7191
+          },
+          "lng": {
+            "type": "number",
+            "example": 88.4204
+          }
+        },
+        "required": [
+          "address",
+          "lat",
+          "lng"
         ]
       },
       "VehicleStatus": {

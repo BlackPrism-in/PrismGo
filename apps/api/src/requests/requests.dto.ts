@@ -26,10 +26,14 @@ export class LocationDto {
 
   @ApiProperty({ example: 26.6812 })
   @IsLatitude()
+  @Min(6.5, { message: 'Choose a place in India' })
+  @Max(35.7, { message: 'Choose a place in India' })
   lat: number;
 
   @ApiProperty({ example: 88.3286 })
   @IsLongitude()
+  @Min(68.1, { message: 'Choose a place in India' })
+  @Max(97.4, { message: 'Choose a place in India' })
   lng: number;
 }
 

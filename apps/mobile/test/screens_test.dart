@@ -5,6 +5,7 @@ import 'package:prismgo/app/theme.dart';
 import 'package:prismgo/features/approvals/approvals_screen.dart';
 import 'package:prismgo/features/notifications/notifications_screen.dart';
 import 'package:prismgo/features/requests/request_detail_screen.dart';
+import 'package:prismgo/features/requests/place_field.dart';
 import 'package:prismgo/features/requests/request_form_screen.dart';
 import 'package:prismgo_api/prismgo_api.dart';
 
@@ -101,42 +102,64 @@ void main() {
     expect(find.text('Edit'), findsNothing);
   });
 
-  testWidgets('new request form stays disabled until complete', (tester) async {
-    await pump(
-      tester,
-      const RequestFormScreen(),
-      offline(session: FakeSession(me())),
-    );
+  testWidgets(
+    'addresses must be picked from search results; no coordinates box',
+    (tester) async {
+      final searched = <String>[];
+      await pump(tester, const RequestFormScreen(), [
+        ...offline(session: FakeSession(me())),
+        placeSearchProvider.overrideWithValue((q) async {
+          searched.add(q);
+          return q.toLowerCase().contains('nowhere')
+              ? <LocationDto>[]
+              : [
+                  LocationDto(
+                    address: 'Hill Cart Road, Siliguri, West Bengal',
+                    lat: 26.7191,
+                    lng: 88.4204,
+                  ),
+                ];
+        }),
+      ]);
 
-    FilledButton submit() => tester.widget<FilledButton>(
-      find.widgetWithText(
-        FilledButton,
-        'Submit for approval',
-        skipOffstage: false,
-      ),
-    );
-    expect(submit().onPressed, isNull);
+      FilledButton submit() => tester.widget<FilledButton>(
+        find.widgetWithText(
+          FilledButton,
+          'Submit for approval',
+          skipOffstage: false,
+        ),
+      );
+      expect(find.textContaining('coordinates'), findsNothing);
+      expect(submit().onPressed, isNull);
 
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Pickup address'),
-      'MG Road Office',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Pickup coordinates'),
-      '12.97, 77.60',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Drop address'),
-      'Airport',
-    );
-    await tester.enterText(
-      find.widgetWithText(TextField, 'Drop coordinates'),
-      'not numbers',
-    );
-    await tester.pump();
-    expect(find.text('Enter as "26.7187, 88.4250"'), findsOneWidget);
-    expect(submit().onPressed, isNull);
-  });
+      // Typed text alone is not an address.
+      await tester.enterText(
+        find.byKey(const Key('place-Pickup')),
+        'Hill Cart',
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump();
+      expect(searched, ['Hill Cart']);
+      expect(find.text('Choose an address from the list'), findsOneWidget);
+
+      await tester.tap(find.text('Hill Cart Road, Siliguri, West Bengal'));
+      await tester.pump();
+      expect(find.text('Choose an address from the list'), findsNothing);
+      expect(find.byIcon(Icons.check_circle), findsOneWidget);
+
+      await tester.enterText(
+        find.byKey(const Key('place-Drop')),
+        'Nowhere land',
+      );
+      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pump();
+      expect(
+        find.text('No matching place. Try an area, road or landmark nearby.'),
+        findsOneWidget,
+      );
+      expect(submit().onPressed, isNull);
+    },
+  );
 
   testWidgets('alerts list shows unread state', (tester) async {
     await pump(
