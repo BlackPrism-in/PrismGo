@@ -2,6 +2,7 @@ import type { Role } from '@prismgo/shared';
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
 import { Button } from '../components/ui';
+import { LandingPage } from '../pages/LandingPage';
 import { ProfileSetup } from '../pages/ProfileSetup';
 import { hasRole, needsProfile, useAuth } from './auth-context';
 
@@ -30,6 +31,8 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   if (state.status === 'loading') return <FullPageSpinner />;
   if (state.status === 'unreachable') return <Unreachable onRetry={retry} />;
   if (state.status === 'anonymous') {
+    // Visitors at the site root see the public home page; deep links go to login.
+    if (location.pathname === '/') return <LandingPage />;
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
   if (needsProfile(state.user)) return <ProfileSetup />;

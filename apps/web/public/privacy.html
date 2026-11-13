@@ -67,8 +67,17 @@
       a {
         color: var(--accent);
       }
-      ul {
+      ul,
+      ol {
         padding-left: 20px;
+      }
+      nav.legal {
+        margin-top: 16px;
+        text-align: center;
+        font-size: 14px;
+      }
+      nav.legal a {
+        margin: 0 8px;
       }
     </style>
   </head>
@@ -76,24 +85,29 @@
     <main>
       <div class="card">
         <h1>Prism<span>Go</span> Privacy Policy</h1>
-        <p class="muted">Last updated: 24 October 2026</p>
+        <p class="muted">Last updated: 13 November 2026</p>
 
         <p>
           PrismGo is a vehicle request and tracking app for organisations. Employees request a
-          vehicle, their head of department approves it, and the transport team assigns a vehicle
-          and driver and follows the trip. PrismGo is built and operated by BlackPrism
-          (blackprism.in) for the organisation that gives you access, usually your employer.
+          vehicle, a head of department (HOD) approves it, and the transport team assigns a vehicle
+          and driver and follows the trip. PrismGo is built and operated by BlackPrism Private
+          Limited (blackprism.in), Siliguri, West Bengal, India, for the organisation you use it
+          with, usually your employer. See also our <a href="/terms.html">Terms of Service</a>.
         </p>
 
         <h2>Information we collect</h2>
         <ul>
           <li>
-            <strong>Account details</strong> entered by your organisation's administrator: your
-            name, mobile number, email address (optional), department and role.
+            <strong>Account details</strong>: your mobile number (your login), the name you enter on
+            first login, an optional email address, and the role your organisation's administrator
+            gives you.
           </li>
           <li>
             <strong>Trip requests</strong>: pickup and drop addresses and coordinates, times, number
             of people, purpose, notes, approvals and comments.
+          </li>
+          <li>
+            <strong>Address searches</strong>: the words you type to find a pickup or drop place.
           </li>
           <li>
             <strong>Vehicle locations</strong> from the GPS trackers fitted to your organisation's
@@ -125,15 +139,16 @@
         <h2>Who we share it with</h2>
         <ul>
           <li>
-            <strong>People in your organisation</strong> who need it: your head of department and
-            the transport team see your requests; drivers receive the trip details and your name and
-            phone number for pickup.
+            <strong>People in your organisation</strong> who need it: HODs and the transport team
+            see your requests; drivers receive the trip details and your name and phone number for
+            pickup.
           </li>
           <li>
             <strong>Service providers</strong> that run PrismGo on our behalf: Meta (WhatsApp
             messages, including login codes), Google Firebase (push notifications), our hosting
-            providers (Render, Vercel), and the GPS tracking provider that supplies vehicle
-            locations.
+            provider (Render), Photon by komoot with OpenStreetMap data (address search: only the
+            words you search for are sent, not who you are), and the GPS tracking provider that
+            supplies vehicle locations.
           </li>
           <li>Authorities, when the law requires it.</li>
         </ul>
@@ -148,16 +163,16 @@
 
         <h2>Security</h2>
         <p>
-          Data is encrypted in transit (HTTPS). Access is limited by role: requesters see their own
-          requests, heads of department see their department's, and only the transport team and
-          administrators see all requests and vehicle locations.
+          Data is encrypted in transit (HTTPS). Access is limited by role: requesters see only their
+          own requests; HODs see the requests they may approve; only the transport team and
+          administrators see vehicle locations, the vehicle and driver lists, and user accounts.
         </p>
 
         <h2>Your choices</h2>
         <p>
-          You can ask to see, correct or delete your information through your organisation's PrismGo
-          administrator, or by writing to us. You can turn off push notifications in your phone's
-          settings.
+          You can change your name by asking your organisation's PrismGo administrator, and ask to
+          see, correct or delete your information through them or by writing to us. You can turn off
+          push notifications in your phone's settings.
         </p>
 
         <h2 id="delete-data">Delete your PrismGo account and data</h2>
@@ -190,8 +205,14 @@
         </p>
 
         <h2>Contact</h2>
-        <p>BlackPrism, <a href="mailto:admin@blackprism.in">admin@blackprism.in</a></p>
+        <p>
+          BlackPrism Private Limited, Siliguri, West Bengal, India ·
+          <a href="mailto:admin@blackprism.in">admin@blackprism.in</a>
+        </p>
       </div>
+      <nav class="legal" aria-label="Legal">
+        <a href="/">Home</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a>
+      </nav>
     </main>
   </body>
 </html>

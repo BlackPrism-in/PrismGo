@@ -138,6 +138,17 @@ export function LoginPage() {
             </form>
           )}
         </div>
+        <nav aria-label="Legal" className="mt-6 flex justify-center gap-4 text-xs text-sand-500">
+          <a href="/" className="hover:text-coral-700">
+            Home
+          </a>
+          <a href="/privacy.html" className="hover:text-coral-700">
+            Privacy
+          </a>
+          <a href="/terms.html" className="hover:text-coral-700">
+            Terms
+          </a>
+        </nav>
       </div>
     </div>
   );
