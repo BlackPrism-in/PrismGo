@@ -164,70 +164,6 @@ export interface paths {
         patch: operations["UsersController_update"];
         trace?: never;
     };
-    "/api/v1/access/departments": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AccessController_departments"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/access/requests": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["AccessController_list"];
-        put?: never;
-        post: operations["AccessController_request"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/access/requests/{id}/approve": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AccessController_approve"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/api/v1/access/requests/{id}/reject": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post: operations["AccessController_reject"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
     "/api/v1/places/search": {
         parameters: {
             query?: never;
@@ -791,37 +727,6 @@ export interface components {
             /** @enum {string} */
             status?: "active" | "inactive";
         };
-        SignupDepartmentDto: {
-            id: string;
-            name: string;
-        };
-        CreateAccessRequestDto: {
-            /** @example Rahul Verma */
-            name: string;
-            /**
-             * @description Indian mobile, any common format
-             * @example 9812345678
-             */
-            phone: string;
-            /** @description From GET /access/departments */
-            departmentId: string;
-            /** @example rahul@example.com */
-            email?: string;
-        };
-        AccessRequestReceivedDto: {
-            /** @example true */
-            received: boolean;
-        };
-        AccessRequestDto: {
-            id: string;
-            name: string;
-            /** @example +919812345678 */
-            phone: string;
-            email?: string | null;
-            department?: components["schemas"]["SignupDepartmentDto"] | null;
-            /** Format: date-time */
-            requestedAt: string;
-        };
         PlaceDto: {
             /** @example Hill Cart Road, Siliguri, West Bengal */
             address: string;
@@ -952,10 +857,6 @@ export interface components {
             name: string;
             phone: string;
         };
-        NamedDto: {
-            id: string;
-            name: string;
-        };
         LocationDto: {
             /** @example Bagdogra Airport, Siliguri */
             address: string;
@@ -997,7 +898,6 @@ export interface components {
             code: string;
             status: components["schemas"]["RequestStatus"];
             requester: components["schemas"]["PersonDto"];
-            department: components["schemas"]["NamedDto"];
             pickup: components["schemas"]["LocationDto"];
             drop: components["schemas"]["LocationDto"];
             /** Format: date-time */
@@ -1585,107 +1485,6 @@ export interface operations {
             };
         };
     };
-    AccessController_departments: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["SignupDepartmentDto"][];
-                };
-            };
-        };
-    };
-    AccessController_list: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AccessRequestDto"][];
-                };
-            };
-        };
-    };
-    AccessController_request: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateAccessRequestDto"];
-            };
-        };
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AccessRequestReceivedDto"];
-                };
-            };
-        };
-    };
-    AccessController_approve: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["AccessRequestDto"];
-                };
-            };
-        };
-    };
-    AccessController_reject: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            204: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content?: never;
-            };
-        };
-    };
     PlacesController_search: {
         parameters: {
             query: {
@@ -1959,7 +1758,7 @@ export interface operations {
     RequestsController_list: {
         parameters: {
             query?: {
-                /** @description mine: my requests · approvals: departments I head · all: managers only */
+                /** @description mine: my requests · approvals: requests for HODs to decide · all: managers only */
                 scope?: components["schemas"]["RequestScope"];
                 status?: components["schemas"]["RequestStatus"];
             };

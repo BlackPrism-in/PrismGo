@@ -61,11 +61,13 @@ describe('request → approve → assign', () => {
     });
     expect(created.body.actions).toEqual(['edit', 'cancel']);
 
-    // HOD of Operations sees it with approve/reject; Finance HOD can't see it at all.
+    // Any HOD sees it with approve/reject; requesters can't decide; other requesters can't see it.
     const asHod = await http().get(`/api/v1/requests/${id}`).set(as('hodOps')).expect(200);
     expect(asHod.body.actions).toEqual(expect.arrayContaining(['approve', 'reject', 'cancel']));
-    await http().get(`/api/v1/requests/${id}`).set(as('hodFinance')).expect(404);
-    await http().post(`/api/v1/requests/${id}/approve`).set(as('hodFinance')).send({}).expect(404);
+    const asOtherHod = await http().get(`/api/v1/requests/${id}`).set(as('hodFinance')).expect(200);
+    expect(asOtherHod.body.actions).toEqual(expect.arrayContaining(['approve', 'reject']));
+    expect(created.body.department).toBeUndefined();
+    await http().get(`/api/v1/requests/${id}`).set(as('requesterFinance')).expect(404);
     await http().post(`/api/v1/requests/${id}/approve`).set(as('requester')).send({}).expect(403);
 
     const pending = await http()
@@ -114,6 +116,11 @@ describe('request → approve → assign', () => {
     const mgr = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.manager } });
     const req = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.requester } });
     expect(await templatesFor({ userId: hod.id })).toEqual([
+      'in_app:request_submitted',
+      'whatsapp:request_submitted',
+    ]);
+    const otherHod = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.hodFinance } });
+    expect(await templatesFor({ userId: otherHod.id })).toEqual([
       'in_app:request_submitted',
       'whatsapp:request_submitted',
     ]);

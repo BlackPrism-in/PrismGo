@@ -8,27 +8,23 @@ import {
   DataTable,
   EmptyRow,
   ErrorBanner,
-  Field,
   Input,
   Modal,
   PageHeader,
   Select,
   TextField,
 } from '../../components/ui';
-import { AccessRequests } from '../../components/AccessRequests';
-import { useDeleteUser, useDepartments, useSave, useUsers } from '../../lib/queries';
+import { useDeleteUser, useSave, useUsers } from '../../lib/queries';
 import type { CreateUser, UpdateUser, User } from '../../lib/types';
 
 export function UsersPage() {
   const [q, setQ] = useState('');
   const [role, setRole] = useState('');
-  const [departmentId, setDepartmentId] = useState('');
   const search = useDeferredValue(q.trim());
   const params = new URLSearchParams(
-    Object.entries({ q: search, role, departmentId }).filter(([, v]) => v),
+    Object.entries({ q: search, role }).filter(([, v]) => v),
   ).toString();
   const { data, isLoading, error } = useUsers(params);
-  const departments = useDepartments();
   const [editing, setEditing] = useState<User | 'new' | null>(null);
 
   return (
@@ -38,7 +34,6 @@ export function UsersPage() {
         description="Everyone who logs in with their phone number."
         action={<Button onClick={() => setEditing('new')}>Add user</Button>}
       />
-      <AccessRequests />
       <div className="mb-4 grid gap-3 sm:grid-cols-3">
         <Input
           placeholder="Search name or phone"
@@ -54,21 +49,9 @@ export function UsersPage() {
             </option>
           ))}
         </Select>
-        <Select
-          aria-label="Filter by department"
-          value={departmentId}
-          onChange={(e) => setDepartmentId(e.target.value)}
-        >
-          <option value="">All departments</option>
-          {departments.data?.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </Select>
       </div>
       <ErrorBanner error={error} />
-      <DataTable head={['Name', 'Phone', 'Roles', 'Department', 'Status']}>
+      <DataTable head={['Name', 'Phone', 'Roles', 'Status']}>
         {isLoading ? (
           <EmptyRow colSpan={5}>Loading…</EmptyRow>
         ) : !data?.length ? (
@@ -91,7 +74,6 @@ export function UsersPage() {
                   ))}
                 </div>
               </td>
-              <td className={cellClass}>{u.department?.name ?? '—'}</td>
               <td className={cellClass}>
                 <Badge tone={u.status === 'active' ? 'green' : 'slate'}>{u.status}</Badge>
               </td>
@@ -114,13 +96,11 @@ export function UsersPage() {
 
 function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
   const me = useMe();
-  const departments = useDepartments();
-  const save = useSave<CreateUser | UpdateUser, User>('users', ['users', 'departments']);
+  const save = useSave<CreateUser | UpdateUser, User>('users', ['users']);
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user ? formatIndianMobile(user.phone) : '');
   const [email, setEmail] = useState(user?.email ?? '');
   const [roles, setRoles] = useState<Role[]>(user?.roles ?? ['requester']);
-  const [departmentId, setDepartmentId] = useState(user?.department?.id ?? '');
   const [active, setActive] = useState(user ? user.status === 'active' : true);
   const isSelf = user?.id === me.id;
   const remove = useDeleteUser();
@@ -145,7 +125,6 @@ function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
       phone,
       email: email || null,
       roles,
-      departmentId: departmentId || null,
       ...(user ? { status: active ? 'active' : 'inactive' } : {}),
     };
     save.mutate({ id: user?.id, body }, { onSuccess: onDone });
@@ -185,16 +164,6 @@ function UserForm({ user, onDone }: { user: User | null; onDone: () => void }) {
           ))}
         </div>
       </fieldset>
-      <Field label="Department">
-        <Select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
-          <option value="">No department</option>
-          {departments.data?.map((d) => (
-            <option key={d.id} value={d.id}>
-              {d.name}
-            </option>
-          ))}
-        </Select>
-      </Field>
       {user && (
         <label className="flex items-center gap-2 text-sm">
           <input

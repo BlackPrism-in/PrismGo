@@ -3,7 +3,7 @@ import { useAuth, useMe } from '../auth/auth-context';
 import { Logo } from '../components/Logo';
 import { Button, ErrorBanner, TextField } from '../components/ui';
 
-/** Shown once after a new number's first login. An admin sets their department later. */
+/** Shown once after a new number's first login. */
 export function ProfileSetup() {
   const me = useMe();
   const { saveProfile, logout } = useAuth();

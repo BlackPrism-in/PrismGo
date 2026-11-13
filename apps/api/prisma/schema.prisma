@@ -266,7 +266,8 @@ model TripRequest {
   number        Int           @unique @default(autoincrement())
   orgId         String        @map("org_id") @db.Uuid
   requesterId   String        @map("requester_id") @db.Uuid
-  departmentId  String        @map("department_id") @db.Uuid
+  /// Only on requests made before departments were dropped from the workflow.
+  departmentId  String?       @map("department_id") @db.Uuid
   pickupAddress String        @map("pickup_address")
   pickupLat     Float         @map("pickup_lat")
   pickupLng     Float         @map("pickup_lng")
@@ -291,7 +292,7 @@ model TripRequest {
   org         Organisation @relation(fields: [orgId], references: [id])
   requester   User         @relation("RequestRequester", fields: [requesterId], references: [id])
   cancelledBy User?        @relation("RequestCancelledBy", fields: [cancelledById], references: [id])
-  department  Department   @relation(fields: [departmentId], references: [id])
+  department  Department?  @relation(fields: [departmentId], references: [id])
   approvals   Approval[]
   trips       Trip[]
 

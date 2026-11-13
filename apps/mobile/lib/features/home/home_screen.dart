@@ -73,12 +73,7 @@ class HomeScreen extends ConsumerWidget {
               style: theme.textTheme.headlineSmall,
             ),
             const SizedBox(height: 4),
-            Text(
-              [
-                me.orgName,
-                if (me.department != null) me.department!.name,
-              ].join(' · '),
-            ),
+            Text(me.orgName),
             const SizedBox(height: 16),
             if (canRequest)
               FilledButton.icon(

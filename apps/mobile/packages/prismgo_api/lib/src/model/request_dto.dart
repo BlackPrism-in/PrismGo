@@ -32,8 +32,6 @@ class RequestDto {
 
     required this.requester,
 
-    required this.department,
-
     required this.pickup,
 
     required this.drop,
@@ -70,9 +68,6 @@ class RequestDto {
 
   @JsonKey(name: r'requester', required: true, includeIfNull: false)
   final PersonDto requester;
-
-  @JsonKey(name: r'department', required: true, includeIfNull: false)
-  final NamedDto department;
 
   @JsonKey(name: r'pickup', required: true, includeIfNull: false)
   final LocationDto pickup;
@@ -120,7 +115,6 @@ class RequestDto {
           other.code == code &&
           other.status == status &&
           other.requester == requester &&
-          other.department == department &&
           other.pickup == pickup &&
           other.drop == drop &&
           other.startAt == startAt &&
@@ -140,7 +134,6 @@ class RequestDto {
       code.hashCode +
       status.hashCode +
       requester.hashCode +
-      department.hashCode +
       pickup.hashCode +
       drop.hashCode +
       startAt.hashCode +

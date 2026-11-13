@@ -100,7 +100,7 @@ void main() {
     );
   });
 
-  testWidgets('a brand-new number is asked for name and department first', (
+  testWidgets('a brand-new number is asked for their name first', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -109,7 +109,6 @@ void main() {
         child: const PrismGoApp(),
       ),
     );
-    // The department list keeps a progress bar animating, so pump a fixed time.
     for (var i = 0; i < 10; i++) {
       await tester.pump(const Duration(milliseconds: 100));
     }

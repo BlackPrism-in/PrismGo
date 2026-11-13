@@ -63,14 +63,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: 'authenticated', user: res.user });
   }, []);
 
-  const saveProfile = useCallback(
-    async (body: { name: string; departmentId?: string; email?: string }) => {
-      const res = await api<AuthResponse>('PATCH', '/auth/me', body);
-      setAccessToken(res.accessToken);
-      setState({ status: 'authenticated', user: res.user });
-    },
-    [],
-  );
+  const saveProfile = useCallback(async (body: { name: string; email?: string }) => {
+    const res = await api<AuthResponse>('PATCH', '/auth/me', body);
+    setAccessToken(res.accessToken);
+    setState({ status: 'authenticated', user: res.user });
+  }, []);
 
   const logout = useCallback(async () => {
     try {

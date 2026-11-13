@@ -49,7 +49,7 @@ class SessionController extends AsyncNotifier<MeDto?> {
     state = AsyncData(auth.user);
   }
 
-  /// First-login name. An admin assigns the department later.
+  /// First-login name.
   Future<void> saveProfile({required String name, String? email}) async {
     final tokens = ref.read(tokenStorageProvider);
     final res = await ref

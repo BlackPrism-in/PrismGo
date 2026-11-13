@@ -15,8 +15,6 @@ abstract class _$RequestDtoCWProxy {
 
   RequestDto requester(PersonDto requester);
 
-  RequestDto department(NamedDto department);
-
   RequestDto pickup(LocationDto pickup);
 
   RequestDto drop(LocationDto drop);
@@ -52,7 +50,6 @@ abstract class _$RequestDtoCWProxy {
     String code,
     RequestStatus status,
     PersonDto requester,
-    NamedDto department,
     LocationDto pickup,
     LocationDto drop,
     DateTime startAt,
@@ -85,9 +82,6 @@ class _$RequestDtoCWProxyImpl implements _$RequestDtoCWProxy {
 
   @override
   RequestDto requester(PersonDto requester) => this(requester: requester);
-
-  @override
-  RequestDto department(NamedDto department) => this(department: department);
 
   @override
   RequestDto pickup(LocationDto pickup) => this(pickup: pickup);
@@ -139,7 +133,6 @@ class _$RequestDtoCWProxyImpl implements _$RequestDtoCWProxy {
     Object? code = const $CopyWithPlaceholder(),
     Object? status = const $CopyWithPlaceholder(),
     Object? requester = const $CopyWithPlaceholder(),
-    Object? department = const $CopyWithPlaceholder(),
     Object? pickup = const $CopyWithPlaceholder(),
     Object? drop = const $CopyWithPlaceholder(),
     Object? startAt = const $CopyWithPlaceholder(),
@@ -170,10 +163,6 @@ class _$RequestDtoCWProxyImpl implements _$RequestDtoCWProxy {
           ? _value.requester
           // ignore: cast_nullable_to_non_nullable
           : requester as PersonDto,
-      department: department == const $CopyWithPlaceholder()
-          ? _value.department
-          // ignore: cast_nullable_to_non_nullable
-          : department as NamedDto,
       pickup: pickup == const $CopyWithPlaceholder()
           ? _value.pickup
           // ignore: cast_nullable_to_non_nullable
@@ -246,7 +235,6 @@ RequestDto _$RequestDtoFromJson(
       'code',
       'status',
       'requester',
-      'department',
       'pickup',
       'drop',
       'startAt',
@@ -267,10 +255,6 @@ RequestDto _$RequestDtoFromJson(
     requester: $checkedConvert(
       'requester',
       (v) => PersonDto.fromJson(v as Map<String, dynamic>),
-    ),
-    department: $checkedConvert(
-      'department',
-      (v) => NamedDto.fromJson(v as Map<String, dynamic>),
     ),
     pickup: $checkedConvert(
       'pickup',
@@ -315,7 +299,6 @@ Map<String, dynamic> _$RequestDtoToJson(RequestDto instance) =>
       'code': instance.code,
       'status': _$RequestStatusEnumMap[instance.status]!,
       'requester': instance.requester.toJson(),
-      'department': instance.department.toJson(),
       'pickup': instance.pickup.toJson(),
       'drop': instance.drop.toJson(),
       'startAt': instance.startAt.toIso8601String(),

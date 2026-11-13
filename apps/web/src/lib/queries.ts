@@ -1,11 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { del, get, patch, post } from './api';
 import type {
-  AccessRequest,
   Availability,
   LiveVehicle,
   TripTrack,
-  Department,
   Driver,
   NotificationItem,
   TripRequest,
@@ -15,7 +13,6 @@ import type {
 } from './types';
 
 export const keys = {
-  departments: ['departments'] as const,
   users: (params = '') => ['users', params] as const,
   vehicles: ['vehicles'] as const,
   drivers: ['drivers'] as const,
@@ -26,11 +23,7 @@ export const keys = {
   liveVehicles: ['live', 'vehicles'] as const,
   unlinkedTrackers: ['gps', 'unlinked'] as const,
   track: (tripId: string) => ['track', tripId] as const,
-  accessRequests: ['access', 'requests'] as const,
 };
-
-export const useDepartments = () =>
-  useQuery({ queryKey: keys.departments, queryFn: () => get<Department[]>('/departments') });
 
 export const useUsers = (params = '') =>
   useQuery({
@@ -91,7 +84,6 @@ export const useUnreadCount = () =>
 
 /**
  * Create (no id) or update (with id) a resource, then refresh the listed query keys.
- * Users and departments both show HOD data, so saving one refreshes the other.
  */
 export function useSave<TBody, TResult>(resource: string, invalidate: readonly string[]) {
   const qc = useQueryClient();
@@ -133,36 +125,11 @@ export const useTrack = (tripId: string | null | undefined) =>
     refetchInterval: 60_000,
   });
 
-/** Self-service sign-ups waiting for this HOD (their department) or an admin (all). */
-export const useAccessRequests = () =>
-  useQuery({
-    queryKey: keys.accessRequests,
-    queryFn: () => get<AccessRequest[]>('/access/requests'),
-    refetchInterval: 60_000,
-  });
-
-export function useAccessDecision() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ id, decision }: { id: string; decision: 'approve' | 'reject' }) =>
-      post<unknown>(`/access/requests/${id}/${decision}`),
-    onSuccess: () =>
-      Promise.all([
-        qc.invalidateQueries({ queryKey: ['access'] }),
-        qc.invalidateQueries({ queryKey: ['users'] }),
-      ]),
-  });
-}
-
 /** Super admin: permanently delete a user without trip history. */
 export function useDeleteUser() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => del(`/users/${id}`),
-    onSuccess: () =>
-      Promise.all([
-        qc.invalidateQueries({ queryKey: ['users'] }),
-        qc.invalidateQueries({ queryKey: ['departments'] }),
-      ]),
+    onSuccess: () => Promise.all([qc.invalidateQueries({ queryKey: ['users'] })]),
   });
 }

@@ -15,7 +15,6 @@ MeDto me({
   name: name,
   phone: '+919000000005',
   roles: roles,
-  department: MeDepartmentDto(id: 'd1', name: 'Operations'),
   orgId: 'o1',
   orgName: 'PrismGo Demo',
 );
@@ -34,7 +33,6 @@ RequestDto request({
     name: 'Rahul Requester',
     phone: '+919000000005',
   ),
-  department: NamedDto(id: 'd1', name: 'Operations'),
   pickup: LocationDto(address: 'MG Road Office', lat: 12.97, lng: 77.6),
   drop: LocationDto(address: 'Bengaluru Airport', lat: 13.2, lng: 77.7),
   startAt: DateTime.utc(2026, 10, 16, 4, 30),

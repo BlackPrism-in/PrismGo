@@ -7,7 +7,6 @@ import { MASTER_DATA_ROLES } from './auth/auth-context';
 import { AuthProvider } from './auth/AuthProvider';
 import { RequireAuth, RequireRole } from './auth/guards';
 import './index.css';
-import { DepartmentsPage } from './pages/admin/DepartmentsPage';
 import { DriversPage } from './pages/admin/DriversPage';
 import { UsersPage } from './pages/admin/UsersPage';
 import { VehiclesPage } from './pages/admin/VehiclesPage';
@@ -19,7 +18,6 @@ import { RequestFormPage } from './pages/requests/RequestFormPage';
 import { RequestsPage } from './pages/requests/RequestsPage';
 import { LiveMapPage } from './pages/live/LiveMapPage';
 import { LoginPage } from './pages/LoginPage';
-import { SignupPage } from './pages/SignupPage';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1 } },
@@ -31,7 +29,6 @@ const admin = (element: React.ReactNode) => (
 
 const router = createBrowserRouter([
   { path: '/login', element: <LoginPage /> },
-  { path: '/signup', element: <SignupPage /> },
   {
     element: (
       <RequireAuth>
@@ -54,7 +51,6 @@ const router = createBrowserRouter([
       },
       { path: 'dispatch', element: admin(<DispatchPage />) },
       { path: 'live', element: admin(<LiveMapPage />) },
-      { path: 'admin/departments', element: admin(<DepartmentsPage />) },
       { path: 'admin/users', element: admin(<UsersPage />) },
       { path: 'admin/vehicles', element: admin(<VehiclesPage />) },
       { path: 'admin/drivers', element: admin(<DriversPage />) },

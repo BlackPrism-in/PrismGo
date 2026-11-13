@@ -44,7 +44,7 @@ class RequestDetailScreen extends ConsumerWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      '${r.requester.name} · ${r.department.name}',
+                      r.requester.name,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),

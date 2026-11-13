@@ -14,8 +14,8 @@ export interface AuthContextValue {
   requestCode: (phone: string) => Promise<RequestOtpResponse>;
   verifyCode: (phone: string, code: string) => Promise<void>;
   logout: () => Promise<void>;
-  /** First-login details; swaps in fresh tokens because the department is in them. */
-  saveProfile: (body: { name: string; departmentId?: string; email?: string }) => Promise<void>;
+  /** First-login name; swaps in the fresh tokens the API returns. */
+  saveProfile: (body: { name: string; email?: string }) => Promise<void>;
   /** Tries to restore the session again after the API was unreachable. */
   retry: () => void;
 }

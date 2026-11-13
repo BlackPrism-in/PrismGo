@@ -7,7 +7,6 @@ import '../features/auth/login_screen.dart';
 import '../features/auth/offline_screen.dart';
 import '../features/auth/session_controller.dart';
 import '../features/auth/profile_screen.dart';
-import '../features/auth/signup_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/notifications/notifications_screen.dart';
 import '../features/requests/request_detail_screen.dart';
@@ -29,7 +28,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (session.hasError) return '/offline';
       final loggedIn = session.value != null;
       final at = state.matchedLocation;
-      const publicPages = {'/login', '/signup'};
+      const publicPages = {'/login'};
       if (!loggedIn) return publicPages.contains(at) ? null : '/login';
       if (needsProfile(session.value!)) {
         return at == '/profile' ? null : '/profile';
@@ -52,11 +51,6 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/profile',
         builder: (context, state) => const ProfileScreen(),
-      ),
-      GoRoute(
-        path: '/signup',
-        builder: (context, state) =>
-            SignupScreen(phone: state.extra as String?),
       ),
       GoRoute(
         path: '/offline',

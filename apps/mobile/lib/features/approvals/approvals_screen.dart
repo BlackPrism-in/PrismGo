@@ -6,7 +6,6 @@ import 'package:prismgo_api/prismgo_api.dart';
 import '../../core/api.dart';
 import '../../shared/widgets.dart';
 import '../requests/decision_sheet.dart';
-import 'access_requests.dart';
 import '../requests/requests_providers.dart';
 
 class ApprovalsScreen extends ConsumerWidget {
@@ -15,7 +14,7 @@ class ApprovalsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pending = ref.watch(requestsProvider(pendingApprovalsQuery));
-    final all = ref.watch(requestsProvider(departmentRequestsQuery));
+    final all = ref.watch(requestsProvider(approvalsListQuery));
     final recent = (all.value ?? [])
         .where((r) => r.status != RequestStatus.pendingApproval)
         .take(20)
@@ -36,13 +35,11 @@ class ApprovalsScreen extends ConsumerWidget {
         data: (list) => RefreshIndicator(
           onRefresh: () async {
             ref.invalidate(requestsProvider);
-            ref.invalidate(accessRequestsProvider);
             await ref.read(requestsProvider(pendingApprovalsQuery).future);
           },
           child: ListView(
             padding: const EdgeInsets.all(16),
             children: [
-              const AccessRequestsSection(),
               Text(
                 'Waiting for you (${list.length})',
                 style: Theme.of(context).textTheme.titleSmall,

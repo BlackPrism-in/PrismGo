@@ -4,8 +4,8 @@ import 'package:prismgo_api/prismgo_api.dart';
 
 import '../../core/api.dart';
 
-/// Which list to load: the signed-in user's own requests, or their department's
-/// (HOD), optionally filtered by status.
+/// Which list to load: the signed-in user's own requests, or (HODs) the requests
+/// waiting for approval, optionally filtered by status.
 typedef RequestQuery = ({RequestScope scope, RequestStatus? status});
 
 final requestsProvider = FutureProvider.autoDispose
@@ -34,7 +34,7 @@ const pendingApprovalsQuery = (
   status: RequestStatus.pendingApproval,
 );
 const myRequestsQuery = (scope: RequestScope.mine, status: null);
-const departmentRequestsQuery = (scope: RequestScope.approvals, status: null);
+const approvalsListQuery = (scope: RequestScope.approvals, status: null);
 
 /// Request actions. Each returns the updated request and refreshes the lists.
 class RequestActions {

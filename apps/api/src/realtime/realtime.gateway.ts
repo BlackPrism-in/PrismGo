@@ -9,6 +9,8 @@ export const rooms = {
   user: (userId: string) => `user:${userId}`,
   /** Transport managers and super admins of an organisation. */
   managers: (orgId: string) => `org:${orgId}:managers`,
+  /** HODs of an organisation: any of them can approve any request. */
+  hods: (orgId: string) => `org:${orgId}:hods`,
 };
 
 /**
@@ -32,6 +34,7 @@ export class RealtimeGateway implements OnGatewayConnection {
       if (payload.roles.some((r) => r === 'transport_manager' || r === 'super_admin')) {
         await socket.join(rooms.managers(payload.org));
       }
+      if (payload.roles.includes('hod')) await socket.join(rooms.hods(payload.org));
     } catch {
       socket.emit('unauthorized');
       socket.disconnect(true);

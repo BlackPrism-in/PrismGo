@@ -121,7 +121,7 @@ export class ListRequestsQuery {
   @ApiPropertyOptional({
     enum: REQUEST_SCOPES,
     enumName: 'RequestScope',
-    description: 'mine: my requests · approvals: departments I head · all: managers only',
+    description: 'mine: my requests · approvals: requests for HODs to decide · all: managers only',
   })
   @IsOptional()
   @IsIn(REQUEST_SCOPES)
@@ -195,7 +195,6 @@ export class RequestDto {
   @ApiProperty({ example: 'PG-1042' }) code: string;
   @ApiProperty({ enum: REQUEST_STATUSES, enumName: 'RequestStatus' }) status: RequestStatus;
   @ApiProperty({ type: PersonDto }) requester: PersonDto;
-  @ApiProperty({ type: NamedDto }) department: NamedDto;
   @ApiProperty({ type: LocationDto }) pickup: LocationDto;
   @ApiProperty({ type: LocationDto }) drop: LocationDto;
   @ApiProperty({ format: 'date-time' }) startAt: Date;

@@ -13,7 +13,6 @@ const NAV = [
   { to: '/approvals', label: 'Approvals', roles: ['hod'] },
   { to: '/dispatch', label: 'Dispatch', roles: MASTER_DATA_ROLES },
   { to: '/live', label: 'Live map', roles: MASTER_DATA_ROLES },
-  { to: '/admin/departments', label: 'Departments', roles: MASTER_DATA_ROLES },
   { to: '/admin/users', label: 'Users', roles: MASTER_DATA_ROLES },
   { to: '/admin/vehicles', label: 'Vehicles', roles: MASTER_DATA_ROLES },
   { to: '/admin/drivers', label: 'Drivers', roles: MASTER_DATA_ROLES },

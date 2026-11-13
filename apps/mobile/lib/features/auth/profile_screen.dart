@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api.dart';
 import 'session_controller.dart';
 
-/// Shown once after a new number's first login. An admin sets their department later.
+/// Shown once after a new number's first login.
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 

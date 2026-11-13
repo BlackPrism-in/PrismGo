@@ -29,9 +29,7 @@ export function RequestDetailPage() {
             <h1 className="text-2xl font-semibold">{r.code}</h1>
             <RequestStatusBadge status={r.status} />
           </div>
-          <p className="mt-1 text-sm text-sand-600">
-            {r.requester.name} · {r.department.name}
-          </p>
+          <p className="mt-1 text-sm text-sand-600">{r.requester.name}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {can('approve') && <Button onClick={() => setDecision('approve')}>Approve</Button>}

@@ -37,7 +37,7 @@ export function RequestList({
               {r.pickup.address} → {r.drop.address}
             </div>
             <div className="mt-0.5 text-xs text-sand-500">
-              {showRequester ? `${r.requester.name} · ${r.department.name} · ` : ''}
+              {showRequester ? `${r.requester.name} · ` : ''}
               {r.passengers} {r.passengers === 1 ? 'person' : 'people'} · {r.purpose}
               {r.trip ? ` · ${r.trip.vehicle.regNo}, ${r.trip.driver.name}` : ''}
             </div>

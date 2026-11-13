@@ -5,8 +5,6 @@ type S = components['schemas'];
 export type Me = S['MeDto'];
 export type AuthResponse = S['AuthResponseDto'];
 export type RequestOtpResponse = S['RequestOtpResponseDto'];
-export type Department = S['DepartmentDto'];
-export type CreateDepartment = S['CreateDepartmentDto'];
 export type User = S['UserDto'];
 export type CreateUser = S['CreateUserDto'];
 export type UpdateUser = S['UpdateUserDto'];
@@ -27,18 +25,3 @@ export type NotificationItem = S['NotificationDto'];
 export type LiveVehicle = S['LiveVehicleDto'];
 export type UnlinkedTracker = S['UnlinkedTrackerDto'];
 export type TripTrack = S['TripTrackDto'];
-
-/** A new employee waiting for their HOD or an admin to let them in. */
-export interface AccessRequest {
-  id: string;
-  name: string;
-  phone: string;
-  email: string | null;
-  department: { id: string; name: string } | null;
-  requestedAt: string;
-}
-
-export interface SignupDepartment {
-  id: string;
-  name: string;
-}

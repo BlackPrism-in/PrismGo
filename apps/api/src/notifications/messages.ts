@@ -23,7 +23,6 @@ const when = (d: Date) =>
 export interface RequestFacts {
   code: string;
   requesterName: string;
-  departmentName: string;
   pickup: string;
   drop: string;
   startAt: Date;
@@ -42,9 +41,9 @@ export const messages = {
 
   noHod: (r: RequestFacts): Message => ({
     template: 'request_no_hod',
-    title: `No HOD for ${r.departmentName}`,
-    body: `${r.code} from ${r.requesterName} is waiting for approval, but ${r.departmentName} has no HOD assigned.`,
-    whatsapp: { template: 'request_no_hod', params: [r.code, r.departmentName] },
+    title: `No HOD to approve ${r.code}`,
+    body: `${r.code} from ${r.requesterName} is waiting for approval, but nobody has the HOD role. Give someone the HOD role in Users.`,
+    whatsapp: { template: 'request_no_hod', params: [r.code, r.requesterName] },
   }),
 
   approved: (r: RequestFacts, approver: string): Message => ({
@@ -57,10 +56,10 @@ export const messages = {
   readyToAssign: (r: RequestFacts): Message => ({
     template: 'request_ready_to_assign',
     title: `Assign a vehicle: ${r.code}`,
-    body: `${r.departmentName} · ${when(r.startAt)} · ${r.pickup} → ${r.drop}.`,
+    body: `${r.requesterName} · ${when(r.startAt)} · ${r.pickup} → ${r.drop}.`,
     whatsapp: {
       template: 'request_ready_to_assign',
-      params: [r.code, r.departmentName, when(r.startAt), r.pickup, r.drop],
+      params: [r.code, r.requesterName, when(r.startAt), r.pickup, r.drop],
     },
   }),
 
@@ -131,12 +130,7 @@ export const messages = {
   newUserJoined: (name: string, phone: string): Message => ({
     template: 'new_user_joined',
     title: `New user: ${name}`,
-    body: `${name} (${phone}) logged in for the first time. Assign their department in Users so their trips reach an HOD.`,
+    body: `${name} (${phone}) joined PrismGo as a requester.`,
   }),
 
-  accessRequested: (name: string, departmentName: string): Message => ({
-    template: 'access_requested',
-    title: `Access request: ${name}`,
-    body: `${name} (${departmentName}) asked to use PrismGo. Approve or decline in Approvals.`,
-  }),
 };

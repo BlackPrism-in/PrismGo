@@ -48,9 +48,17 @@ describe('auth', () => {
     expect(me.body.name).toBe('Rahul Requester');
   });
 
-  it('signs up a new number on first login; they give a name and admins assign the department', async () => {
+  it('signs up a new number on first login; after giving a name they can request a vehicle', async () => {
     const phone = '+919000000091';
-    await prisma.user.deleteMany({ where: { phone } });
+    const removeUser = async () => {
+      const u = await prisma.user.findUnique({ where: { phone } });
+      if (!u) return;
+      await prisma.tripRequest.deleteMany({ where: { requesterId: u.id } });
+      await prisma.auditLog.deleteMany({ where: { actorId: u.id } });
+      await prisma.notification.deleteMany({ where: { userId: u.id } });
+      await prisma.user.delete({ where: { id: u.id } });
+    };
+    await removeUser();
     await prisma.otpCode.deleteMany({ where: { phone } });
 
     const otp = await http().post('/api/v1/auth/otp/request').send({ phone }).expect(200);
@@ -73,7 +81,7 @@ describe('auth', () => {
       .send({ refreshToken: login.body.refreshToken })
       .expect(401);
 
-    // Admins are told to assign a department.
+    // Admins are told someone joined.
     const admin = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.admin } });
     const note = await prisma.notification.findFirst({
       where: { userId: admin.id, template: 'new_user_joined' },
@@ -81,8 +89,8 @@ describe('auth', () => {
     });
     expect(note?.payload).toMatchObject({ title: 'New user: Neha New' });
 
-    // Until then a trip request explains what is missing.
-    const blocked = await http()
+    // No department needed: the request goes straight to the HODs.
+    const created = await http()
       .post('/api/v1/requests')
       .set('Authorization', `Bearer ${done.body.accessToken}`)
       .send({
@@ -92,10 +100,10 @@ describe('auth', () => {
         passengers: 1,
         purpose: 'test',
       });
-    expect(JSON.stringify(blocked.body)).toMatch(/department/i);
+    expect(created.status).toBe(201);
 
     await prisma.notification.deleteMany({ where: { template: 'new_user_joined' } });
-    await prisma.user.deleteMany({ where: { phone } });
+    await removeUser();
   });
 
   it('sends nothing to a deactivated user but answers the same', async () => {

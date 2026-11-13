@@ -15,7 +15,7 @@ export function DashboardPage() {
     <>
       <PageHeader
         title={`Hello, ${me.name.split(' ')[0]}`}
-        description={`${me.orgName}${me.department ? ` · ${me.department.name}` : ''}`}
+        description={me.orgName}
         action={
           canRequest ? (
             <Link

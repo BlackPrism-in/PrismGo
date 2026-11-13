@@ -23,7 +23,6 @@ import type {
 
 export const requestInclude = {
   requester: { select: { id: true, name: true, phone: true } },
-  department: { select: { id: true, name: true, hodUserId: true } },
   cancelledBy: { select: { name: true } },
   approvals: { include: { approver: { select: { name: true } } }, orderBy: { decidedAt: 'asc' } },
   trips: {
@@ -38,7 +37,10 @@ export const requestInclude = {
 
 export type RequestRow = Prisma.TripRequestGetPayload<{ include: typeof requestInclude }>;
 
-const AUTO_APPROVE_NOTE = 'Auto-approved: requester is the department HOD';
+const AUTO_APPROVE_NOTE = 'Auto-approved: requester is an HOD';
+
+/** Any HOD approves any request (requesters have no department). */
+export const isHod = (u: AuthUser) => u.roles.includes('hod');
 
 export const isManager = (u: AuthUser) =>
   u.roles.includes('transport_manager') || u.roles.includes('super_admin');
@@ -53,7 +55,6 @@ export function factsOf(r: RequestRow): RequestFacts {
   return {
     code: requestCode(r.number),
     requesterName: r.requester.name,
-    departmentName: r.department.name,
     pickup: r.pickupAddress,
     drop: r.dropAddress,
     startAt: r.startAt,
@@ -78,7 +79,7 @@ export class RequestsService {
     if (scope === 'mine') {
       where.requesterId = actor.id;
     } else if (scope === 'approvals') {
-      where.department = { hodUserId: actor.id };
+      if (!isHod(actor)) throw new ForbiddenException('Only HODs approve requests');
       where.status = query.status ?? { not: 'draft' };
     } else {
       if (!isManager(actor))
@@ -105,11 +106,6 @@ export class RequestsService {
     if (!actor.roles.includes('requester') && !actor.roles.includes('hod')) {
       throw new ForbiddenException('Your role cannot raise vehicle requests');
     }
-    if (!actor.departmentId) {
-      throw new BadRequestException(
-        'Your department has not been assigned yet. Ask your admin or transport desk to set it.',
-      );
-    }
     const { startAt, returnAt } = this.validateTimes(dto.startAt, dto.returnAt ?? null);
 
     const created = await this.prisma.$transaction(async (tx) => {
@@ -117,7 +113,6 @@ export class RequestsService {
         data: {
           orgId: actor.orgId,
           requesterId: actor.id,
-          departmentId: actor.departmentId!,
           pickupAddress: dto.pickup.address.trim(),
           pickupLat: dto.pickup.lat,
           pickupLng: dto.pickup.lng,
@@ -185,14 +180,14 @@ export class RequestsService {
   }
 
   /**
-   * draft → pending_approval. If the requester heads the department, it is
-   * approved straight away (an HOD does not approve their own request twice).
+   * draft → pending_approval, and every HOD is asked to approve. An HOD's own
+   * request is approved straight away.
    */
   async submit(actor: AuthUser, id: string): Promise<RequestDto> {
     const r = await this.loadVisible(actor, id);
     if (r.requesterId !== actor.id) throw new ForbiddenException('Only the requester can submit');
     this.transition(r.status, 'submit');
-    const selfApproved = r.department.hodUserId === actor.id;
+    const selfApproved = isHod(actor);
 
     await this.prisma.$transaction(async (tx) => {
       await this.guardedUpdate(tx, r, {
@@ -225,10 +220,10 @@ export class RequestsService {
         messages.readyToAssign(facts),
         { requestId: id },
       );
-    } else if (fresh.department.hodUserId) {
+    } else if ((await this.hods(actor.orgId, actor.id)).length > 0) {
       await this.notifications.notify(
         actor.orgId,
-        [{ userId: fresh.department.hodUserId }],
+        await this.hods(actor.orgId, actor.id),
         messages.submitted(facts),
         { requestId: id },
       );
@@ -273,9 +268,7 @@ export class RequestsService {
     const actorName =
       (await this.prisma.user.findUnique({ where: { id: actor.id } }))?.name ?? 'Someone';
     const recipients: Recipient[] = [{ userId: r.requesterId }];
-    if (r.status === 'pending_approval' && r.department.hodUserId) {
-      recipients.push({ userId: r.department.hodUserId });
-    }
+    if (r.status === 'pending_approval') recipients.push(...(await this.hods(actor.orgId)));
     if (r.status === 'approved' || r.status === 'assigned') {
       recipients.push(...(await this.managers(actor.orgId)));
     }
@@ -373,11 +366,10 @@ export class RequestsService {
     return r;
   }
 
-  /** Loads a request the actor may see: requester, HOD of its department, or a manager. */
+  /** Loads a request the actor may see: its requester, any HOD, or a manager. */
   async loadVisible(actor: AuthUser, id: string): Promise<RequestRow> {
     const r = await this.load(actor.orgId, id);
-    const visible =
-      r.requesterId === actor.id || r.department.hodUserId === actor.id || isManager(actor);
+    const visible = r.requesterId === actor.id || isHod(actor) || isManager(actor);
     if (!visible || (r.status === 'draft' && r.requesterId !== actor.id)) {
       throw new NotFoundException('Request not found');
     }
@@ -419,6 +411,20 @@ export class RequestsService {
     return users.map((u) => ({ userId: u.id }));
   }
 
+  /** Active HODs, optionally leaving one out (the person acting). */
+  async hods(orgId: string, except?: string): Promise<Recipient[]> {
+    const users = await this.prisma.user.findMany({
+      where: {
+        orgId,
+        status: 'active',
+        roles: { has: 'hod' },
+        id: except ? { not: except } : undefined,
+      },
+      select: { id: true },
+    });
+    return users.map((u) => ({ userId: u.id }));
+  }
+
   private async admins(orgId: string): Promise<Recipient[]> {
     const users = await this.prisma.user.findMany({
       where: { orgId, status: 'active', roles: { hasSome: ['super_admin', 'transport_manager'] } },
@@ -434,14 +440,14 @@ export class RequestsService {
 
   broadcast(actor: AuthUser, r: RequestRow): RequestDto {
     const targets = [rooms.user(r.requesterId), rooms.managers(r.orgId)];
-    if (r.department.hodUserId) targets.push(rooms.user(r.department.hodUserId));
+    if (r.status !== 'draft') targets.push(rooms.hods(r.orgId));
     this.realtime.emit(targets, 'request.updated', { id: r.id, status: r.status });
     return this.toDto(r, actor);
   }
 
   allowedActions(r: RequestRow, actor: AuthUser): string[] {
     const mine = r.requesterId === actor.id;
-    const hod = r.department.hodUserId === actor.id;
+    const hod = isHod(actor);
     const manager = isManager(actor);
     const trip = currentTrip(r);
     const actions: string[] = [];
@@ -466,7 +472,6 @@ export class RequestsService {
       code: requestCode(r.number),
       status: r.status,
       requester: r.requester,
-      department: { id: r.department.id, name: r.department.name },
       pickup: { address: r.pickupAddress, lat: r.pickupLat, lng: r.pickupLng },
       drop: { address: r.dropAddress, lat: r.dropLat, lng: r.dropLng },
       startAt: r.startAt,
@@ -539,9 +544,7 @@ export class RequestsService {
 
   private async loadForApprover(actor: AuthUser, id: string): Promise<RequestRow> {
     const r = await this.loadVisible(actor, id);
-    if (r.department.hodUserId !== actor.id) {
-      throw new ForbiddenException('Only the HOD of this department can decide on it');
-    }
+    if (!isHod(actor)) throw new ForbiddenException('Only an HOD can approve or decline');
     if (r.requesterId === actor.id) {
       throw new ForbiddenException('You cannot approve your own request');
     }
