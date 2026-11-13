@@ -106,7 +106,9 @@ export class RequestsService {
       throw new ForbiddenException('Your role cannot raise vehicle requests');
     }
     if (!actor.departmentId) {
-      throw new BadRequestException('You are not in a department yet. Ask your admin to add you.');
+      throw new BadRequestException(
+        'Your department has not been assigned yet. Ask your admin or transport desk to set it.',
+      );
     }
     const { startAt, returnAt } = this.validateTimes(dto.startAt, dto.returnAt ?? null);
 

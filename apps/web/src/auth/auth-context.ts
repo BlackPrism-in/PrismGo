@@ -35,12 +35,9 @@ export function useMe(): Me {
   return state.user;
 }
 
-const STAFF_ROLES: Role[] = ['hod', 'transport_manager', 'super_admin'];
-
-/** New self-signed-up requesters must give their name and department before using the app. */
-export function needsProfile(user: Pick<Me, 'name' | 'roles' | 'department'>): boolean {
-  if (!user.name.trim()) return true;
-  return user.department === null && !user.roles.some((r) => STAFF_ROLES.includes(r));
+/** A number's first login creates the account without a name; ask for it once. */
+export function needsProfile(user: Pick<Me, 'name'>): boolean {
+  return !user.name.trim();
 }
 
 export function hasRole(user: Pick<Me, 'roles'>, ...roles: Role[]): boolean {

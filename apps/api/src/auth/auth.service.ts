@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { normalizeIndianMobile } from '@prismgo/shared';
+import { messages } from '../notifications/messages';
+import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import type { MeDto, UpdateProfileDto } from './auth.dto';
 import { OtpService } from './otp/otp.service';
@@ -19,6 +21,7 @@ export class AuthService {
     private readonly otp: OtpService,
     private readonly tokens: TokensService,
     private readonly config: ConfigService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   /**
@@ -55,8 +58,9 @@ export class AuthService {
   }
 
   /**
-   * First-login details: name, and department while the user has none (it decides
-   * which HOD approves their trips; after that only an admin can change it).
+   * First-login details: their name (and optionally a department while they have none;
+   * after that only an admin can change it). The first time a new user without a
+   * department gives their name, admins are told to assign one.
    */
   async updateProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
@@ -71,7 +75,7 @@ export class AuthService {
       if (!dept) throw new BadRequestException('Department not found');
       departmentId = dept.id;
     }
-    return this.prisma.user.update({
+    const updated = await this.prisma.user.update({
       where: { id: userId },
       data: {
         name: dto.name.trim(),
@@ -79,6 +83,22 @@ export class AuthService {
         email: dto.email === undefined ? undefined : dto.email.trim() || null,
       },
     });
+    if (!user.name.trim() && !updated.departmentId) {
+      const admins = await this.prisma.user.findMany({
+        where: {
+          orgId: user.orgId,
+          status: 'active',
+          roles: { hasSome: ['super_admin', 'transport_manager'] },
+        },
+        select: { id: true },
+      });
+      await this.notifications.notify(
+        user.orgId,
+        admins.map((a) => ({ userId: a.id })),
+        messages.newUserJoined(updated.name, updated.phone),
+      );
+    }
+    return updated;
   }
 
   async me(userId: string): Promise<MeDto> {

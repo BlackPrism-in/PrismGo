@@ -128,6 +128,12 @@ export const messages = {
     whatsapp: { template: 'gps_lost', params: [vehicle, r.code, String(minutes)] },
   }),
 
+  newUserJoined: (name: string, phone: string): Message => ({
+    template: 'new_user_joined',
+    title: `New user: ${name}`,
+    body: `${name} (${phone}) logged in for the first time. Assign their department in Users so their trips reach an HOD.`,
+  }),
+
   accessRequested: (name: string, departmentName: string): Message => ({
     template: 'access_requested',
     title: `Access request: ${name}`,

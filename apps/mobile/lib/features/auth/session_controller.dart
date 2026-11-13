@@ -49,13 +49,8 @@ class SessionController extends AsyncNotifier<MeDto?> {
     state = AsyncData(auth.user);
   }
 
-  /// First-login name and department. The reply carries new tokens because the
-  /// access token holds the department.
-  Future<void> saveProfile({
-    required String name,
-    required String departmentId,
-    String? email,
-  }) async {
+  /// First-login name. An admin assigns the department later.
+  Future<void> saveProfile({required String name, String? email}) async {
     final tokens = ref.read(tokenStorageProvider);
     final res = await ref
         .read(apiProvider)
@@ -64,7 +59,6 @@ class SessionController extends AsyncNotifier<MeDto?> {
           '/api/v1/auth/me',
           data: {
             'name': name,
-            'departmentId': departmentId,
             if (email != null && email.isNotEmpty) 'email': email,
             'refreshToken': await tokens.refreshToken,
           },
@@ -99,12 +93,8 @@ class SessionController extends AsyncNotifier<MeDto?> {
   void expire() => state = const AsyncData(null);
 }
 
-/// New self-signed-up requesters give their name and department before using the app.
-bool needsProfile(MeDto me) {
-  if (me.name.trim().isEmpty) return true;
-  const staff = {Role.hod, Role.transportManager, Role.superAdmin};
-  return me.department == null && !me.roles.any(staff.contains);
-}
+/// A number's first login creates the account without a name; ask for it once.
+bool needsProfile(MeDto me) => me.name.trim().isEmpty;
 
 final sessionControllerProvider =
     AsyncNotifierProvider<SessionController, MeDto?>(SessionController.new);

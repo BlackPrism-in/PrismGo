@@ -48,7 +48,7 @@ describe('auth', () => {
     expect(me.body.name).toBe('Rahul Requester');
   });
 
-  it('signs up a new number on first login as a requester who then picks a department', async () => {
+  it('signs up a new number on first login; they give a name and admins assign the department', async () => {
     const phone = '+919000000091';
     await prisma.user.deleteMany({ where: { phone } });
     await prisma.otpCode.deleteMany({ where: { phone } });
@@ -61,34 +61,40 @@ describe('auth', () => {
       .expect(200);
     expect(login.body.user).toMatchObject({ name: '', roles: ['requester'], department: null });
 
-    const ops = await prisma.department.findFirstOrThrow({ where: { name: 'Operations' } });
-    const finance = await prisma.department.findFirstOrThrow({ where: { name: 'Finance' } });
     const done = await http()
       .patch('/api/v1/auth/me')
       .set('Authorization', `Bearer ${login.body.accessToken}`)
-      .send({ name: 'Neha New', departmentId: ops.id, refreshToken: login.body.refreshToken })
+      .send({ name: 'Neha New', refreshToken: login.body.refreshToken })
       .expect(200);
-    expect(done.body.user).toMatchObject({ name: 'Neha New', department: { name: 'Operations' } });
+    expect(done.body.user).toMatchObject({ name: 'Neha New', department: null });
     // The old refresh token was replaced.
     await http()
       .post('/api/v1/auth/refresh')
       .send({ refreshToken: login.body.refreshToken })
       .expect(401);
 
-    // The new access token carries the department, so they can request a vehicle.
-    await http()
+    // Admins are told to assign a department.
+    const admin = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.admin } });
+    const note = await prisma.notification.findFirst({
+      where: { userId: admin.id, template: 'new_user_joined' },
+      orderBy: { createdAt: 'desc' },
+    });
+    expect(note?.payload).toMatchObject({ title: 'New user: Neha New' });
+
+    // Until then a trip request explains what is missing.
+    const blocked = await http()
       .post('/api/v1/requests')
       .set('Authorization', `Bearer ${done.body.accessToken}`)
-      .send({})
-      .expect((r) => expect(JSON.stringify(r.body)).not.toMatch(/not in a department/));
+      .send({
+        pickup: { address: 'Hill Cart Road', lat: 26.7, lng: 88.4 },
+        drop: { address: 'Bagdogra Airport', lat: 26.6, lng: 88.3 },
+        startAt: new Date(Date.now() + 86_400_000).toISOString(),
+        passengers: 1,
+        purpose: 'test',
+      });
+    expect(JSON.stringify(blocked.body)).toMatch(/department/i);
 
-    // Only an admin can move them to another department.
-    await http()
-      .patch('/api/v1/auth/me')
-      .set('Authorization', `Bearer ${done.body.accessToken}`)
-      .send({ name: 'Neha New', departmentId: finance.id })
-      .expect(400);
-
+    await prisma.notification.deleteMany({ where: { template: 'new_user_joined' } });
     await prisma.user.deleteMany({ where: { phone } });
   });
 

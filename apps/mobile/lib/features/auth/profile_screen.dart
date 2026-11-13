@@ -4,22 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api.dart';
 import 'session_controller.dart';
 
-typedef _Department = ({String id, String name});
-
-final _departmentsProvider = FutureProvider.autoDispose<List<_Department>>((
-  ref,
-) async {
-  final res = await ref
-      .read(apiProvider)
-      .dio
-      .get<List<dynamic>>('/api/v1/departments');
-  return [
-    for (final d in res.data ?? const [])
-      (id: d['id'] as String, name: d['name'] as String),
-  ];
-});
-
-/// Shown once after a new number's first login: their name and department.
+/// Shown once after a new number's first login. An admin sets their department later.
 class ProfileScreen extends ConsumerStatefulWidget {
   const ProfileScreen({super.key});
 
@@ -28,15 +13,8 @@ class ProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen> {
-  late final _name = TextEditingController(
-    text: ref.read(sessionControllerProvider).value?.name ?? '',
-  );
+  final _name = TextEditingController();
   final _email = TextEditingController();
-  late String? _departmentId = ref
-      .read(sessionControllerProvider)
-      .value
-      ?.department
-      ?.id;
   String? _error;
   bool _busy = false;
 
@@ -49,14 +27,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
 
   Future<void> _save() async {
     if (_busy) return;
-    String? error;
     if (_name.text.trim().length < 2) {
-      error = 'Enter your full name';
-    } else if (_departmentId == null) {
-      error = 'Choose your department';
-    }
-    if (error != null) {
-      setState(() => _error = error);
+      setState(() => _error = 'Enter your full name');
       return;
     }
     setState(() {
@@ -66,12 +38,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     try {
       await ref
           .read(sessionControllerProvider.notifier)
-          .saveProfile(
-            name: _name.text.trim(),
-            departmentId: _departmentId!,
-            email: _email.text.trim(),
-          );
-      // The router moves on once the profile is complete.
+          .saveProfile(name: _name.text.trim(), email: _email.text.trim());
+      // The router moves on once the name is saved.
     } catch (e) {
       if (mounted) {
         setState(() {
@@ -85,9 +53,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final departments = ref.watch(_departmentsProvider);
-    final hasDepartment =
-        ref.watch(sessionControllerProvider).value?.department != null;
 
     return Scaffold(
       appBar: AppBar(
@@ -110,53 +75,20 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    "Tell us your name and department. Your trip requests "
-                    "go to that department's HOD.",
+                    'Tell us your name to get started.',
                     style: theme.textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 24),
                   TextField(
                     key: const Key('profile-name'),
                     controller: _name,
+                    autofocus: true,
                     textCapitalization: TextCapitalization.words,
                     autofillHints: const [AutofillHints.name],
                     textInputAction: TextInputAction.next,
                     decoration: const InputDecoration(
                       labelText: 'Full name',
                       border: OutlineInputBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  departments.when(
-                    loading: () => const LinearProgressIndicator(),
-                    error: (e, _) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          errorMessage(e),
-                          style: TextStyle(color: theme.colorScheme.error),
-                        ),
-                        TextButton(
-                          onPressed: () => ref.invalidate(_departmentsProvider),
-                          child: const Text('Try again'),
-                        ),
-                      ],
-                    ),
-                    data: (list) => DropdownButtonFormField<String>(
-                      key: const Key('profile-department'),
-                      initialValue: _departmentId,
-                      isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Department',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        for (final d in list)
-                          DropdownMenuItem(value: d.id, child: Text(d.name)),
-                      ],
-                      onChanged: hasDepartment
-                          ? null
-                          : (v) => setState(() => _departmentId = v),
                     ),
                   ),
                   const SizedBox(height: 16),
