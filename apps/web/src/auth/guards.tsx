@@ -2,7 +2,8 @@ import type { Role } from '@prismgo/shared';
 import type { ReactNode } from 'react';
 import { Navigate, useLocation } from 'react-router';
 import { Button } from '../components/ui';
-import { hasRole, useAuth } from './auth-context';
+import { ProfileSetup } from '../pages/ProfileSetup';
+import { hasRole, needsProfile, useAuth } from './auth-context';
 
 export function FullPageSpinner() {
   return (
@@ -31,6 +32,7 @@ export function RequireAuth({ children }: { children: ReactNode }) {
   if (state.status === 'anonymous') {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
+  if (needsProfile(state.user)) return <ProfileSetup />;
   return children;
 }
 

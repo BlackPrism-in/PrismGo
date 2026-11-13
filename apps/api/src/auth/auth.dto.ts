@@ -1,6 +1,16 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ROLES, type Role } from '@prismgo/shared';
-import { IsOptional, IsString, Length, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Length,
+  Matches,
+  MaxLength,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
 
 export class RequestOtpDto {
   @ApiProperty({ example: '9812345678', description: 'Indian mobile, any common format' })
@@ -30,6 +40,30 @@ export class VerifyOtpDto {
 
 export class RefreshDto {
   @ApiPropertyOptional({ description: 'Mobile sends it here; web uses the httpOnly cookie' })
+  @IsOptional()
+  @IsString()
+  refreshToken?: string;
+}
+
+export class UpdateProfileDto {
+  @ApiProperty({ example: 'Rahul Verma' })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(80)
+  name: string;
+
+  @ApiPropertyOptional({ description: 'Only while the user has no department yet' })
+  @IsOptional()
+  @IsUUID()
+  departmentId?: string;
+
+  @ApiPropertyOptional({ description: 'Empty string clears it' })
+  @IsOptional()
+  @ValidateIf((o: UpdateProfileDto) => !!o.email)
+  @IsEmail()
+  email?: string;
+
+  @ApiPropertyOptional({ description: 'Mobile: the current refresh token, replaced by a new one' })
   @IsOptional()
   @IsString()
   refreshToken?: string;

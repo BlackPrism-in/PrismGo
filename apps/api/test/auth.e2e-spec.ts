@@ -48,12 +48,60 @@ describe('auth', () => {
     expect(me.body.name).toBe('Rahul Requester');
   });
 
-  it('answers the same for unknown numbers and sends nothing', async () => {
-    const res = await http()
-      .post('/api/v1/auth/otp/request')
-      .send({ phone: '9999999999' })
+  it('signs up a new number on first login as a requester who then picks a department', async () => {
+    const phone = '+919000000091';
+    await prisma.user.deleteMany({ where: { phone } });
+    await prisma.otpCode.deleteMany({ where: { phone } });
+
+    const otp = await http().post('/api/v1/auth/otp/request').send({ phone }).expect(200);
+    expect(otp.body.devCode).toMatch(/^\d{6}$/);
+    const login = await http()
+      .post('/api/v1/auth/otp/verify')
+      .send({ phone, code: otp.body.devCode })
       .expect(200);
+    expect(login.body.user).toMatchObject({ name: '', roles: ['requester'], department: null });
+
+    const ops = await prisma.department.findFirstOrThrow({ where: { name: 'Operations' } });
+    const finance = await prisma.department.findFirstOrThrow({ where: { name: 'Finance' } });
+    const done = await http()
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${login.body.accessToken}`)
+      .send({ name: 'Neha New', departmentId: ops.id, refreshToken: login.body.refreshToken })
+      .expect(200);
+    expect(done.body.user).toMatchObject({ name: 'Neha New', department: { name: 'Operations' } });
+    // The old refresh token was replaced.
+    await http()
+      .post('/api/v1/auth/refresh')
+      .send({ refreshToken: login.body.refreshToken })
+      .expect(401);
+
+    // The new access token carries the department, so they can request a vehicle.
+    await http()
+      .post('/api/v1/requests')
+      .set('Authorization', `Bearer ${done.body.accessToken}`)
+      .send({})
+      .expect((r) => expect(JSON.stringify(r.body)).not.toMatch(/not in a department/));
+
+    // Only an admin can move them to another department.
+    await http()
+      .patch('/api/v1/auth/me')
+      .set('Authorization', `Bearer ${done.body.accessToken}`)
+      .send({ name: 'Neha New', departmentId: finance.id })
+      .expect(400);
+
+    await prisma.user.deleteMany({ where: { phone } });
+  });
+
+  it('sends nothing to a deactivated user but answers the same', async () => {
+    const phone = '+919000000092';
+    await prisma.user.deleteMany({ where: { phone } });
+    const org = await prisma.organisation.findFirstOrThrow();
+    await prisma.user.create({
+      data: { orgId: org.id, name: 'Gone', phone, roles: ['requester'], status: 'inactive' },
+    });
+    const res = await http().post('/api/v1/auth/otp/request').send({ phone }).expect(200);
     expect(res.body).toEqual({ sent: true });
+    await prisma.user.deleteMany({ where: { phone } });
   });
 
   it('rejects an invalid number format', async () => {

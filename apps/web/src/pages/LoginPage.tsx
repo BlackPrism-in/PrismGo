@@ -1,6 +1,6 @@
 import { formatIndianMobile, normalizeIndianMobile } from '@prismgo/shared';
 import { useState, type FormEvent } from 'react';
-import { Link, Navigate, useLocation } from 'react-router';
+import { Navigate, useLocation } from 'react-router';
 import { useAuth } from '../auth/auth-context';
 import { FullPageSpinner, Unreachable } from '../auth/guards';
 import { Logo } from '../components/Logo';
@@ -87,18 +87,12 @@ export function LoginPage() {
               <Button type="submit" className="w-full" disabled={busy || !phoneInput}>
                 {busy ? 'Sending…' : 'Send code'}
               </Button>
-              <p className="text-center text-sm text-sand-600">
-                New to PrismGo?{' '}
-                <Link to="/signup" className="text-coral-700 hover:underline">
-                  Request access
-                </Link>
-              </p>
             </form>
           ) : (
             <form onSubmit={submitCode} className="space-y-4" noValidate>
               <h1 className="text-lg font-semibold">Enter code</h1>
               <p className="text-sm text-sand-600">
-                If {formatIndianMobile(step.phone)} is registered, a code is on its way.
+                A code is on its way to {formatIndianMobile(step.phone)} on WhatsApp.
               </p>
               {step.devCode && (
                 <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
@@ -141,12 +135,6 @@ export function LoginPage() {
                   Resend code
                 </button>
               </div>
-              <p className="text-center text-xs text-sand-500">
-                No code? You may not have access yet.{' '}
-                <Link to="/signup" className="text-coral-700 hover:underline">
-                  Request access
-                </Link>
-              </p>
             </form>
           )}
         </div>

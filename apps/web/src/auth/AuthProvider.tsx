@@ -1,6 +1,14 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { ApiError, get, onSessionExpiry, post, refreshSession, setAccessToken } from '../lib/api';
+import {
+  api,
+  ApiError,
+  get,
+  onSessionExpiry,
+  post,
+  refreshSession,
+  setAccessToken,
+} from '../lib/api';
 import type { AuthResponse, Me, RequestOtpResponse } from '../lib/types';
 import { AuthContext, type AuthState } from './auth-context';
 
@@ -55,6 +63,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ status: 'authenticated', user: res.user });
   }, []);
 
+  const saveProfile = useCallback(
+    async (body: { name: string; departmentId?: string; email?: string }) => {
+      const res = await api<AuthResponse>('PATCH', '/auth/me', body);
+      setAccessToken(res.accessToken);
+      setState({ status: 'authenticated', user: res.user });
+    },
+    [],
+  );
+
   const logout = useCallback(async () => {
     try {
       await post('/auth/logout');
@@ -64,8 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [signOutLocally]);
 
   const value = useMemo(
-    () => ({ state, requestCode, verifyCode, logout, retry }),
-    [state, requestCode, verifyCode, logout, retry],
+    () => ({ state, requestCode, verifyCode, logout, retry, saveProfile }),
+    [state, requestCode, verifyCode, logout, retry, saveProfile],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

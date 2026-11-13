@@ -99,4 +99,25 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('a brand-new number is asked for name and department first', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: offline(session: FakeSession(me(name: ''))),
+        child: const PrismGoApp(),
+      ),
+    );
+    // The department list keeps a progress bar animating, so pump a fixed time.
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('Welcome to PrismGo'), findsOneWidget);
+    expect(find.text('Hello, Rahul'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('profile-save')));
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('Enter your full name'), findsOneWidget);
+  });
 }

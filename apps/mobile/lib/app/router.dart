@@ -6,6 +6,7 @@ import '../features/approvals/approvals_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/offline_screen.dart';
 import '../features/auth/session_controller.dart';
+import '../features/auth/profile_screen.dart';
 import '../features/auth/signup_screen.dart';
 import '../features/home/home_screen.dart';
 import '../features/notifications/notifications_screen.dart';
@@ -30,7 +31,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       final at = state.matchedLocation;
       const publicPages = {'/login', '/signup'};
       if (!loggedIn) return publicPages.contains(at) ? null : '/login';
-      if (publicPages.contains(at) || at == '/splash' || at == '/offline') {
+      if (needsProfile(session.value!)) {
+        return at == '/profile' ? null : '/profile';
+      }
+      if (publicPages.contains(at) ||
+          at == '/splash' ||
+          at == '/offline' ||
+          at == '/profile') {
         return '/';
       }
       return null;
@@ -42,6 +49,10 @@ final routerProvider = Provider<GoRouter>((ref) {
             const Scaffold(body: Center(child: CircularProgressIndicator())),
       ),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(
+        path: '/profile',
+        builder: (context, state) => const ProfileScreen(),
+      ),
       GoRoute(
         path: '/signup',
         builder: (context, state) =>

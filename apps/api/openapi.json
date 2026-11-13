@@ -192,6 +192,50 @@
         "tags": [
           "auth"
         ]
+      },
+      "patch": {
+        "operationId": "AuthController_updateMe",
+        "parameters": [
+          {
+            "name": "X-Client",
+            "in": "header",
+            "description": "\"web\" for browser sessions",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/health": {
@@ -496,6 +540,32 @@
                 }
               }
             }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
           }
         },
         "security": [
@@ -1872,6 +1942,30 @@
             "description": "Mobile sends it here; web uses the httpOnly cookie"
           }
         }
+      },
+      "UpdateProfileDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Rahul Verma"
+          },
+          "departmentId": {
+            "type": "string",
+            "description": "Only while the user has no department yet"
+          },
+          "email": {
+            "type": "string",
+            "description": "Empty string clears it"
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Mobile: the current refresh token, replaced by a new one"
+          }
+        },
+        "required": [
+          "name"
+        ]
       },
       "HealthDto": {
         "type": "object",

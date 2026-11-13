@@ -49,6 +49,34 @@ class SessionController extends AsyncNotifier<MeDto?> {
     state = AsyncData(auth.user);
   }
 
+  /// First-login name and department. The reply carries new tokens because the
+  /// access token holds the department.
+  Future<void> saveProfile({
+    required String name,
+    required String departmentId,
+    String? email,
+  }) async {
+    final tokens = ref.read(tokenStorageProvider);
+    final res = await ref
+        .read(apiProvider)
+        .dio
+        .patch<Map<String, dynamic>>(
+          '/api/v1/auth/me',
+          data: {
+            'name': name,
+            'departmentId': departmentId,
+            if (email != null && email.isNotEmpty) 'email': email,
+            'refreshToken': await tokens.refreshToken,
+          },
+        );
+    final body = res.data!;
+    await tokens.save(
+      access: body['accessToken'] as String,
+      refresh: body['refreshToken'] as String?,
+    );
+    state = AsyncData(MeDto.fromJson(body['user'] as Map<String, dynamic>));
+  }
+
   Future<void> logout() async {
     final tokens = ref.read(tokenStorageProvider);
     final refresh = await tokens.refreshToken;
@@ -69,6 +97,13 @@ class SessionController extends AsyncNotifier<MeDto?> {
 
   /// Called by the interceptor when the refresh token is rejected.
   void expire() => state = const AsyncData(null);
+}
+
+/// New self-signed-up requesters give their name and department before using the app.
+bool needsProfile(MeDto me) {
+  if (me.name.trim().isEmpty) return true;
+  const staff = {Role.hod, Role.transportManager, Role.superAdmin};
+  return me.department == null && !me.roles.any(staff.contains);
 }
 
 final sessionControllerProvider =

@@ -10,6 +10,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { normalizeIndianMobile } from '@prismgo/shared';
 import { AuditService } from '../audit/audit.service';
+import { signupOrgId } from '../auth/signup-org';
 import type { AuthUser } from '../auth/auth.types';
 import type { Prisma } from '../generated/prisma/client';
 import { messages } from '../notifications/messages';
@@ -179,12 +180,7 @@ export class AccessService {
     return row;
   }
 
-  /** SIGNUP_ORG_ID, or the only organisation when there is just one. */
-  private async signupOrgId(): Promise<string> {
-    const configured = this.config.get<string>('SIGNUP_ORG_ID');
-    if (configured) return configured;
-    const orgs = await this.prisma.organisation.findMany({ select: { id: true }, take: 2 });
-    if (orgs.length !== 1) throw new NotFoundException('Sign-up is not available');
-    return orgs[0]!.id;
+  private signupOrgId(): Promise<string> {
+    return signupOrgId(this.prisma, this.config);
   }
 }

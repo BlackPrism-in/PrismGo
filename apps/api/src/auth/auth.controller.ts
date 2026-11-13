@@ -4,6 +4,7 @@ import {
   Get,
   Headers,
   HttpCode,
+  Patch,
   Post,
   Req,
   Res,
@@ -20,6 +21,7 @@ import {
   RefreshDto,
   RequestOtpDto,
   RequestOtpResponseDto,
+  UpdateProfileDto,
   VerifyOtpDto,
 } from './auth.dto';
 import { AuthService } from './auth.service';
@@ -99,6 +101,28 @@ export class AuthController {
   @ApiOkResponse({ type: MeDto })
   me(@CurrentUser() user: AuthUser): Promise<MeDto> {
     return this.auth.me(user.id);
+  }
+
+  /**
+   * Saves the user's own name and department (first login). Returns fresh tokens,
+   * because the access token carries the department.
+   */
+  @ApiBearerAuth()
+  @Patch('me')
+  @ApiOkResponse({ type: AuthResponseDto })
+  async updateMe(
+    @CurrentUser() user: AuthUser,
+    @Body() dto: UpdateProfileDto,
+    @Req() req: Request,
+    @Headers('x-client') client: string | undefined,
+    @Headers('user-agent') userAgent: string | undefined,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<AuthResponseDto> {
+    const updated = await this.auth.updateProfile(user.id, dto);
+    const old = dto.refreshToken ?? (req.cookies?.[REFRESH_COOKIE] as string | undefined);
+    if (old) await this.tokens.revoke(old);
+    const pair = await this.tokens.issue(updated, userAgent);
+    return { ...this.deliverTokens(pair, client, res), user: await this.auth.me(user.id) };
   }
 
   private deliverTokens(pair: TokenPair, client: string | undefined, res: Response) {

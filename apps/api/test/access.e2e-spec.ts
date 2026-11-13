@@ -42,7 +42,7 @@ describe('self-service access requests', () => {
     expect(finance).toBeTruthy();
   });
 
-  it('saves a pending requester who cannot log in until approved', async () => {
+  it('saves a pending requester and tells their HOD', async () => {
     await http()
       .post('/api/v1/access/requests')
       .send({ name: 'Nina New', phone: '90000 00071', departmentId: ops.id })
@@ -50,12 +50,6 @@ describe('self-service access requests', () => {
 
     const user = await prisma.user.findUniqueOrThrow({ where: { phone: NEW_PHONE } });
     expect(user).toMatchObject({ status: 'pending', roles: ['requester'], departmentId: ops.id });
-
-    const otp = await http()
-      .post('/api/v1/auth/otp/request')
-      .send({ phone: NEW_PHONE })
-      .expect(200);
-    expect(otp.body).toEqual({ sent: true });
 
     const hod = await prisma.user.findUniqueOrThrow({ where: { phone: PHONES.hodOps } });
     const note = await prisma.notification.findFirst({
