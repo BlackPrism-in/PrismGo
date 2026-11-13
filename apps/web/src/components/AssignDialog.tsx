@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { Link } from 'react-router';
 import { formatDateTime, formatTime } from '../lib/format';
 import { useAvailability, useRequestAction } from '../lib/queries';
 import type { TripRequest } from '../lib/types';
@@ -121,6 +122,15 @@ function AssignForm({ request, onDone }: { request: TripRequest; onDone: () => v
           </fieldset>
           <fieldset>
             <legend className="mb-2 text-sm font-medium text-sand-700">Driver</legend>
+            {data.drivers.length === 0 && (
+              <p className="rounded-lg border border-dashed border-sand-300 px-3 py-3 text-sm text-sand-600">
+                No drivers yet.{' '}
+                <Link to="/admin/drivers" className="text-coral-700 hover:underline">
+                  Add a driver
+                </Link>{' '}
+                (name and WhatsApp number), then come back to assign.
+              </p>
+            )}
             <div className="space-y-2">
               {data.drivers.map((d) => {
                 const free = d.available || ownsConflict(d.conflict);
