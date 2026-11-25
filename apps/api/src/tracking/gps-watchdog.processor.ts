@@ -27,10 +27,19 @@ export class GpsWatchdogProcessor extends WorkerHost implements OnModuleInit {
   }
 
   async onModuleInit(): Promise<void> {
+    // Clear finished jobs left by older versions that kept every run. First, because
+    // registering the schedule needs free memory when Redis is full.
+    try {
+      await this.queue.clean(0, 100_000, 'completed');
+      await this.queue.clean(24 * 60 * 60 * 1000, 100_000, 'failed');
+    } catch (err) {
+      this.logger.warn(`Could not clean old tracking jobs: ${(err as Error).message}`);
+    }
     await this.queue.upsertJobScheduler(
       'gps-watchdog',
       { every: 60_000 },
-      { name: 'gps-watchdog' },
+      // Runs every minute: keeping finished runs would fill Redis (free tier: 25 MB).
+      { name: 'gps-watchdog', opts: { removeOnComplete: true, removeOnFail: 100 } },
     );
   }
 

@@ -133,7 +133,12 @@ export class NotificationsService {
       await this.outbox.add(
         message.template,
         { notificationId: row.id, phone, message },
-        { attempts: 5, backoff: { type: 'exponential', delay: 5_000 }, removeOnComplete: 1000 },
+        {
+          attempts: 5,
+          backoff: { type: 'exponential', delay: 5_000 },
+          removeOnComplete: 1000,
+          removeOnFail: 1000,
+        },
       );
     }
   }
