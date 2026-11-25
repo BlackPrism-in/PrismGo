@@ -62,6 +62,8 @@ function buildPushSender(config: ConfigService): PushSender {
         // Keyed by database so dev, test and other environments sharing a Redis
         // never process each other's jobs.
         prefix: `prismgo:${new URL(config.getOrThrow<string>('DATABASE_URL')).pathname.slice(1)}`,
+        // Event history per queue; BullMQ keeps 10,000 by default, too much for a 25 MB Redis.
+        streams: { events: { maxLen: 1000 } },
       }),
     }),
     BullModule.registerQueue({ name: OUTBOX_QUEUE }, { name: PUSH_QUEUE }),
